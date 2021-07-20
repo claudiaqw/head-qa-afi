@@ -1,17 +1,4 @@
-import numpy as np
-import pandas as pd
-from datasets import load_dataset
-
-from torch.utils.data import Dataset, DataLoader
-
-
-def clean_words(input_str):
-    punctuation = '.,;:"!?”“_-'
-    word_list = input_str.lower().replace('\n',' ').split()
-    word_list = [word.strip(punctuation) for word in word_list]
-    return word_list
-
-
+import spacy
 
 class Vocabulary(object):
     def __init__(self, vocab2index={}, add_unk={}, unk_token='UNK'):
@@ -68,3 +55,7 @@ class HeadQA(Dataset):
     def __init__(self, data: dict, vectorizer, language='es'):
         self.data= load_dataset('head_qa', language)
         self.vectorizer = vectorizer
+
+
+    def parse_dataset(training_data):
+        for i in training_data:
