@@ -5,6 +5,14 @@ from datasets import load_dataset
 from torch.utils.data import Dataset, DataLoader
 
 
+def clean_words(input_str):
+    punctuation = '.,;:"!?”“_-'
+    word_list = input_str.lower().replace('\n',' ').split()
+    word_list = [word.strip(punctuation) for word in word_list]
+    return word_list
+
+
+
 class Vocabulary(object):
     def __init__(self, vocab2index={}, add_unk={}, unk_token='UNK'):
         self.vocab2index = vocab2index
@@ -57,7 +65,11 @@ class Vectorizer(object):
         return enc
 
 class HeadQA(Dataset):
-    def __init__(self, data: dict, category):
-        self.data_es = load_dataset('head_qa', 'es')
-        self.data_en = load_dataset('head_qa', 'en')
+    def __init__(self, data: dict, vectorizer, language='es'):
+        self.data= load_dataset('head_qa', language)
+        self.vectorizer = vectorizer
+
+
+    def parse_dataset(training_data):
+        for i in dattraining_data:
 
