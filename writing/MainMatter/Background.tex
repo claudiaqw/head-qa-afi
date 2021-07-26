@@ -1,0 +1,16 @@
+\chapter{Estado del Arte}\label{chapter:background}
+
+En el presente capítulo se discuten brevemente aquellos conceptos que constituyen el fundamento teórico para el desarrollo de este trabajo.
+
+\section{Sistemas Pregunta/Respuesta}
+
+
+\section{Aprendizaje Profundo}
+
+En la presente sección se introduce brevemente el concepto de \textit{word embedding}, el cual constituye un enfoque clave en gran parte de las propuestas contemporáneas. De igual manera se presenta una revisión de los principales resultados logrados en los sistemas pregunta/resppuesta utilizando el enfoque del aprendizaje profundo.
+
+Uno de los principales retos en los problemas de procesamiento del lenguaje natural es encontrar una representación vectorial de un texto que sea lo suficientemente rica y expresiva. En otras palabras, una forma matemática de representar la información relevante y el conocimiento contenidos en el lenguaje humano. Intuitivamente, mientras más rica sea la representación, más información estarán utilizando los modelos de aprendizaje y estarán más cerca de lograr buenos resultados en el entendimiento del lenguaje natural.
+
+Un documento textual es representado matemáticamente por un vector numérico. El primer acercamiento en este sentido fue la representación \textit{one-hot}, donde a cada \textit{token}\footnote{En los idiomas inglés y español, en el área de procesamiento del lenguaje natural, generalmente se utiliza el término \textit{token} para referirse a una palabra. En la presente tesis se seguirá este convenio.} se le asocia un índice y es representado por un vector con tantas componentes como \textit{tokens} tiene el vocabulario (\cite{goyal-2018-deepnlp}). De esta manera es posible hacerle corresponder a cada palabra una componente del vector, el cual tiene valor 0 en todas las componentes, excepto en la posición correspondiente a la palabra que representa, donde toma valor 1. La estrategia tradicional empleada sigue el mismo principio con la diferencia de que la componente de la palabra activa en lugar de 1, toma un valor mayor que puede ser la cantidad de veces que aparece la palabra en el documento. Otra variante muy utilizada es utilizar el resultado de la expresión conocida como $tf$\footnote{del inglés, \textit{term frequency}}$-idf$\footnote{del inglés, \textit{inverse document frequency}}. Ambas representaciones requieren vectores de gran dimensión y son insuficientes para capturar la semántica de las palabras.
+
+Como alternativa, se incorporan otras características del lenguaje como anotaciones de las partes de la oración (POS, del inglés \textit{part-of-speech}), funciones gramaticales y análisis sintáctico. Según establece \cite{chollet-2017-deeplearningpython}, estas herramientas no son exactas y muchas veces cometen errores que afectan el rendimiento de la tarea principal. Además, al basarse solamente en elementos sintácticos de una oración tampoco se logra atrapar toda la riqueza semántica de las palabras.
