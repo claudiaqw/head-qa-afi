@@ -111,7 +111,7 @@ class Vectorizer(object):
         return cls(vocab, label_vocab, vocab.vocab2index, label_vocab.vocab2index)
 
 class HeadQA(Dataset):
-    def __init__(self, instances, vectorizer, language='es', max_length=150, right_padding = False):
+    def __init__(self, instances, vectorizer, language='es', max_length=20, right_padding = False):
         self.instances = instances
         self.data= load_dataset('head_qa', language)
         self.vectorizer = vectorizer
@@ -123,7 +123,7 @@ class HeadQA(Dataset):
         sample_tok = item['sample_tok']
         label = item['label']
         x = self.vectorizer.vectorize(sample_tok, self.max_length, self.right_padding)
-        y = self.vectorizer.label_vocab.lookup_token(label)
+        y = np.array([self.vectorizer.label_vocab.lookup_token(label)])        
         return x, y
 
     def __len__(self):
