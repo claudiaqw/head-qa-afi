@@ -1,0 +1,58 @@
+Que se adaptan a los datasets de manera que los sistemas pueden lograr alcanzar buenos resultados con un conocimiento muy superficial.
+
+Los sistemas QA de múltiples opciones surgen para contrarrestar este efecto. 
+Este tipo de conjunto de datos es muy escaso en áreas del conocimiento específicas como Medicina.
+
+HEAD-QA: A Healthcare Dataset for Complex Reasoning presenta un complejo conjunto de datos de selección múltiple, que requiere conocimiento y razonamiento en dominios complejos y que, incluso para los huamnos, es una tarea difícil.
+
+El conjunto de datos está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en train, development y test. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
+
+* ID: el id y el texto de la pregunta
+* path e la imagen si hay
+* Una lista con las posibles respuestas
+* El id de la respuesta correcta
+
+En (Vilares et. al. 2019) todas las propuestas que se presentan son no supervisadas o supervisadas a distancia.
+
+El conjunto de datos se puede representar como una lista de tuplas de la forma [(q0, A0), ..., (qn, An)] donde qi es una pregunta i y Ai el conjunto de respuestas para esa pregunta i. 
+
+Este dataset a diferencia de otros de Q/A que se centran en el entendimiento del lenguaje requiere, Q/A requiere un razonamiento más profundo y conocimiento sobre materias específicas.
+
+Este tipo de problema se considera más difícil de resolver que los sistemas Q/A comunes y el mejor performance alcanzado no está muy por encima de un clasificador aleatorio. 
+
+## Métodos de control:
+
+1. Random -> Multinomial
+2. Blind -> Elegir la i-esima opción
+3. Tamaño: Elegir la respuesta más larga
+
+
+## Métodos:
+
+### Recuperación de Información
+Tratar el problema como un problema de Recuperación de Información. En un problema de recuperación de información tìpico, tendremos una consulta q y un conjunto de documentos D, siendo el objetivo: a partir de q obtener un ordenamiento de los documentos de acuerdo a la relevancia o nivel de similaridad con la consulta q. 
+En este caso, por cada pregunta se construyen tantas queries como numero de opciones, de manera que una query q es el resultado de concatenar la pregunta y cada posible respuesta. la respuesta correcta es la query que más ala probabilidad alcanzó el documento en primer lugar.
+
+### Cross-lingual
+La mayor parte del trabajo en esta área ha sido en el idoma inglés. 
+1. Cross-lingual information Retrieval: La misma idea de recuperación de información pero apliacada al dataset en inglés.
+    * Multi-choice DrQA: 
+    * Multi-choice BiDAF: 
+    * Multi-choice DGEM and Decompatt
+
+
+Los resultados mostraron que todos los sistemas obtuvieron un apuntuación muy inferior a los resultados alcanzados por los humanos , siendo los basados en redes neuronales, los de menor accuracy. La mejor approach fue la de recuperación de información. 
+
+
+Otro de los trabajos enfocados en este conjunto de datos específico se presenta en (2020, Lie et. al). Liu presenta un sistema multi-pasos basado en un framework de extraccción de conocimiento (MurKe). Inicialmente, extrae información de un gran corpus conformado por documentos de salud. Para encontrar la cadena de razonamiento y elegir la respuesta correcta, MurKe itera entre seleccionar los documentos de respaldo, reformular la representación de la consulta utilizando los documentos de respaldo y obtener la puntuación de vinculación para cada elección utilizando el modelo de vinculación. El módulo de reformulación aprovecha documentos seleccionados para evidencia faltante, lo que mantiene la interpretabilidad. Además, nos esforzamos por hacer un uso completo de los modelos pre-entrenados listos para usar. Con menos peso entrenable, el modelo previamente entrenado puede adaptarse fácilmente a las tareas de atención médica con ejemplos de entrenamiento limitados. A partir de los resultados experimentales, este sistema es capaz de superar varias líneas de base sólidas en el conjunto de datos HeadQA.
+
+
+
+
+
+
+
+
+
+
+
