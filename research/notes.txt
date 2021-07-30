@@ -7,6 +7,11 @@ Este tipo de conjunto de datos es muy escaso en áreas del conocimiento específ
 
 HEAD-QA: A Healthcare Dataset for Complex Reasoning presenta un complejo conjunto de datos de selección múltiple, que requiere conocimiento y razonamiento en dominios complejos y que, incluso para los huamnos, es una tarea difícil.
 
+En este tipo de problemas de selección múltiple, un simple match de palabras no es suficiente.
+
+
+## Descripcion del dataset
+
 El conjunto de datos está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en train, development y test. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
 
 * ID: el id y el texto de la pregunta
@@ -27,6 +32,22 @@ Este tipo de problema se considera más difícil de resolver que los sistemas Q/
 1. Random -> Multinomial
 2. Blind -> Elegir la i-esima opción
 3. Tamaño: Elegir la respuesta más larga
+
+## Estado del adaptarse
+
+### Sistemas Answer Selection
+
+(2018, review on answer selection)
+
+Un sistema Q/A típico consiste en:
+
+1. Análisis de la pregunta
+2. Recuperación de los documentos relevantes
+3. Ordenamiento por relevancia y selección de las oraciones más relevantes a la pregunta
+4. Extracción de la frase excata en lenguaje natural que responda a la pregunta
+
+
+
 
 
 ## Métodos:
