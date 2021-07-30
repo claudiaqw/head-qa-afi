@@ -5,28 +5,44 @@
 \addcontentsline{toc}{chapter}{Introducción}
 %===================================================================================
 
-Desde tiempos inmemoriales, el ser humano procesa la información con el fin de descubrir conocimiento. Con el surgimiento de la Web y el avance de las tecnologías digitales, la generación de información ha experimentado un crecimiento desmesurado. El gran volumen existente actualmente hace imposible procesar toda la información manualmente al mismo ritmo que se genera. Como resultado, existe una gran acumulación de información que está siendo desaprovechada en términos del descubrimiento de  conocimiento. Por esta razón, una alternativa es recurrir a la extracción automática de información con el fin de reconocer la información relevante y organizarla de manera que pueda ser procesada por una computadora. Actualmente uno de los retos consiste en que la mayor parte del contenido presente en la Web es de naturaleza no estructurada pues se genera principalmente en forma de texto.
+Desde tiempos inmemoriales, el ser humano procesa la información con el fin de descubrir conocimiento. Con el surgimiento de la Web y el avance de las tecnologías digitales, la generación de información ha experimentado un crecimiento desmesurado. El gran volumen existente actualmente hace imposible procesar toda la información manualmente al mismo ritmo que se genera. Como resultado, existe una gran acumulación de información que está siendo desaprovechada en términos del descubrimiento de  conocimiento. Por esta razón, una alternativa es recurrir al procesamiento automático de información con el fin de extraer la información relevante y organizarla de manera que pueda ser procesada por una computadora. Actualmente uno de los retos consiste en que la mayor parte del contenido presente en la Web es de naturaleza no estructurada pues se genera principalmente en forma de texto.
 
-El lenguaje humano es increíblemente complejo y diverso. Nos expresamos de disímiles maneras, verbalmente y por escrito. No solo existen cientos de idiomas y dialectos, sino que en cada idioma existe un conjunto único de reglas gramaticales y de sintaxis, términos y palabras coloquiales. Entender, interpretar y manipular el lenguaje humano no es tarea fácil para una computadora.
+Dada esta sobrecarga de información y la creciente necesidad de consultar el contenido de la información generada, los sistemas pregunta/respuesta (conocidos como Q/A, del inglés \textit{Question/Answering}) se han vuelto cada vez más importantes. Estos sistemas tienen como objetivo satisfacer a los usuarios que buscan la respuesta a una pregunta específica en lenguaje natural de manera automática. 
 
-La meta general es tomar texto del lenguaje y aplicar la lingüística y algoritmos para transformar o enriquecer el texto de tal forma que provea un mayor valor. Simulando la lógica humana, la clave consiste en localizar los aspectos importantes de la información y estructurar la información de manera que pueda ser manipulada por una computadora. A este proceso de transformar la información no estructurada en estructurada se le conoce como extracción de información y es un paso crucial en el procesamiento del lenguaje humano.
+El lenguaje humano es increíblemente complejo y diverso. Nos expresamos de disímiles maneras, verbalmente y por escrito. No solo existen cientos de idiomas y dialectos, sino que en cada idioma existe un conjunto único de reglas gramaticales y de sintaxis, términos y palabras coloquiales. Entender, interpretar y manipular el lenguaje humano no es tarea fácil para una computadora. La importancia de dar solución a este problema es un hecho que la comunidad científica no ha tardado en percibir, por lo cual muchos esfuerzos han sido dedicados a resolver esta tarea. Aunque todavía no se considera un problema resuelto, lo cierto es que se han presentado numerosas propuestas que se han superado en el tiempo, fundamentalmente en el idioma inglés. 
 
-TODO
+La meta general es tomar texto del lenguaje y aplicar la lingüística y algoritmos para transformar o enriquecer el texto de tal forma que provea un mayor valor. Simulando la lógica humana, la clave consiste en localizar los aspectos importantes de la información y estructurar la información de manera que pueda ser manipulada por una computadora. Desde el punto de vista computacional, un sistema Q/A es un sistema de recuperación de información que dada una consulta en lenguaje natural debe dar una respuesta concreta que responda a dicha pregunta. 
 
-Este es un hecho que la comunidad científica no tardó en percibir, por lo cual muchos esfuerzos han sido dedicados a resolver esta tarea. Aunque todavía no se considera un problema resuelto, lo cierto es que se han presentado numerosas propuestas que se han superado en el tiempo, fundamentalmente en el idioma inglés. 
+Los avances más recientes en este tema se han enfocado en el uso de modelos neuronales dada su facilidad para trabajar con texto en bruto. Los modelos neuronales han probado ser muy eficaces en el contexto del aprendizaje supervisado, por lo que se ha visto una tendencia entre los investigadores a desarrollar conjuntos de datos y métodos que se adaptan a la gran cantidad de datos y fortalezas de los métodos neuronales actuales. Sin embargo, estos sistemas son capaces de alcanzar un rendimiento muy cercano al rendimiento humano con un conocimiento muy superficial. Con el objetivo de contrarrestar este hecho, se han propuesto y desarrollado conjuntos de datos y algoritmos orientados a dar resppuesta a preguntas de selección múltiple, de manera que, se requiera un razonamiento mínimo para responder correctamente. A esta tarea, aú aún dentro del ámbito de los sistemas Q/A, se le conoce como \textoy{Answer Selection}. 
 
+El problema de \textit{Answer Selection} consiste en dada una pregunta y un conjunto de respuestas, identificar cuál es la respuesta correcta entre las candidatas. Recientemente, varios métodos basados en aprendizaje profundo has sido propuestos para dar solución a esta tarea. Sin embargo, la escacez de conjuntos de datos principalmente en idiomas diferentes al español ha limitado el avance en esta lengua. 
 
-El \textbf{objetivo general} consiste en desarrollar un modelo pregunta/respuesta para el idioma español fundamentado científica y tecnológicamente.
+\cite{2019-head-qa} presentan un complejo conjunto de datos de selección múltiple en español, que requiere conocimiento y razonamiento en dominios complejos y que, incluso para los humanos con años de entrenamiento, es una tarea difícil. Aborda textos de dominios específicos como Medicina, Biología, entre otros. Este dataset constituye un paso de avance hacia modelos de aprendizaje robustos y confiables para construir sistemas Q/A en idioma español. 
 
-Para lograr el cumplimiento del objetivo general, se plantea a continuación un conjunto de objetivos específicos:
+Este dataset a diferencia de otros de Q/A que se centran en el entendimiento del lenguaje, requiere un razonamiento más profundo y conocimiento sobre materias específicas. Por esta razón, las propuestas presentadas hasta el momento obtienen resultados muy inferiores a los alcanzados por humanos. Los autores presentan un conjunto de técnica a ser utilizadas como benchmarks. Sin embargo, todas las propuestas que se presentan son no supervisadas o supervisadas a distancia, los autores recomiendan como trabajos futuros incursionar en la aplicación de metodologías supervisadas, lo cual motiva este trabajo.
+
+Teniendo en cuenta que el español es el segundo idioma más hablado en el mundo, después del chino mandarín, surge el \textbf{problema científico} que motiva la realización de esta investigación. A pesar de los avances en el idioma inglés, en el idioma español continúa la escasez de soluciones que aborden el problema de \textit{Answer Selection} por lo que se mantiene la imposibilidad de transformar los datos existentes en la Web y otras fuentes de información no estructuradas y aprovechar la información y el conocimiento derivados.
+
+La \textbf{pregunta científica} que se plantea es: ¿Será posible crear un modelo matemático computacional supervisado de selección múltiple dedicado a responder preguntas en idioma español sobre la base de las concepciones y tecnologías de la inteligencia artificial y el aprendizaje automático?
+
+El \textbf{objetivo general} consiste en desarrollar un modelo pregunta/respuesta para el idioma español fundamentado científica y tecnológicamente. Para lograr el cumplimiento del objetivo general, se plantea a continuación un conjunto de objetivos específicos:
 
 \begin{enumerate}
-    \item Profundizar desde los puntos de vista teórico-conceptual y práctico en el área de los sistemas pregunta/respuesta. 
+    \item Profundizar desde los puntos de vista teórico-conceptual y práctico en el área de los sistemas pregunta/respuesta, especialmente en los de selección múltiple. 
     \item Concebir y diseñar un algoritmo que utilice el enfoque supervisado. Diseñar e implementar modelos de aprendizaje profundo con diferentes arquitecturas de red para dar respuesta a las preguntas.
     \item Evaluar cualitativa y experimentalmente los modelos propuestos y comparar los resultados de las soluciones concebidas.
 \end{enumerate}
 
-La memoria escrita se divide en cuatro capítulos:
+
+El aporte principal del presente trabajo es desarrollar modelos supervisados sobre el dataset HeadQA que sirvan como benchmarks en la aplicación de modelos que sigan esta metodología. La memoria escrita se divide en cuatro capítulos:
+
+En el capítulo 1 "Estado del Arte", se reseña el estado actual de la ciencia y la tecnología en los temas tratados, que han servido como base para la investigación y la obtención de los resultados.
+
+En el capítulo 2 "TODO" ....
+
+
+En el capítulo 3 "TODO" ...
+
 
 En el capítulo 4 “Evaluación” se examina cualitativa y experimentalmente la validez de la solución implementada. Se comparan los resultados obtenidos por los modelos de aprendizaje implementados sobre el corpus creado.
 

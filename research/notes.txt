@@ -1,3 +1,5 @@
+Los sistemas preguntas/respuesta o de seleccion multiple, conocidos en inglés como Answer Selection, 
+
 Que se adaptan a los datasets de manera que los sistemas pueden lograr alcanzar buenos resultados con un conocimiento muy superficial.
 
 Los sistemas QA de múltiples opciones surgen para contrarrestar este efecto. 

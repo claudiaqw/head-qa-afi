@@ -2,15 +2,37 @@
 
 En el presente capítulo se discuten brevemente aquellos conceptos que constituyen el fundamento teórico para el desarrollo de este trabajo.
 
+
 \section{Sistemas Pregunta/Respuesta}
 
+Los sistemas Preguntas/Respuestas han sido uno de los problemas planteados por los humanos como primer paso para el entendimiento del lenguaje natural, de ahí que los diferentes enfoques para intentar resolver este tipo de problemas se remonten al siglo anterior.
 
-\section{Aprendizaje Profundo}
+Los primeros enfoques se caracterizaban por el uso de reglas predefinidas, estas soluciones aunque logran dar una respuesta muy exacta a determinadas preguntas en dominios específicos, no escalan bien cuando se trata de textos con formatos y temas variados. Posteriormente, los avances se centran en el uso de \textiy{feature engineering}, herramientas linguísticas o recursos de la lengua externos como WordNet. \cite{2013-yih-lexical-semantic-model}, \cite{2013-yao-edit-distance} y \cite{2010-textual-entailment} son algunos de los exponentes de esta tendencia. Aunque estos métodos muestran efectividad, pueden verse afectados por la disponibilidad de recursos adicionales, el esfuerzo de la ingeniería de características y la complejidad sistemática al introducir herramientas lingüísticas, como árboles de análisis y árboles de dependencia. 
 
-En la presente sección se introduce brevemente el concepto de \textit{word embedding}, el cual constituye un enfoque clave en gran parte de las propuestas contemporáneas. De igual manera se presenta una revisión de los principales resultados logrados en los sistemas pregunta/resppuesta utilizando el enfoque del aprendizaje profundo.
+Los avances más recientes en Q/A, y en el área de procesamiento del lenguaje natural en general, han sido protagonizados por modelos basados en redes neuronales. Muchas propuestas han sido enfocadas desde el aprendizaje supervisado, de ahí que existan varios conjuntos de datos como son bAbI y SQuAD. En algunos de estos datasets los sistemas artificiales han llegado a obtener un rendimiento cercano a los resultados alcanzados por humanos. 
+
+Sin embargo, estos modelos se adaptan a los datasets de manera que los sistemas pueden lograr alcanzar buenos resultados con un conocimiento muy superficial. Los sistemas QA de múltiples opciones surgen para contrarrestar este efecto y son conocidos en la literatura como sistemas de selección de respuestas (en inglés, sistemas \textit{Answer Selection}). 
+
+Adicionalmente, la mayor parte de estos datasets antes mencionados están enfocados en el idioma inglés y en dominios del conocimiento generales. Esto ha ocasionado que la mayoría de los avances en el área del descubrimiento de conocimiento a partir de texto en lenguaje natural se hayan concentrado en este idioma, provocando incluso que autores de origen hispano enfoquen sus trabajos y aportes en el idioma inglés. Adicionalmente y por la dificultad que conlleva la construcción de datasets de este tipo, existen muy pocos datasets sobre dominios específicos como Medicina, Biología, entre otros. Aunque existen trabajos en estos dominios como \cite{2015-semantic-medical-texts} y \cite{2018-nentidis-results}, los autores \cite{2019-head-qa} hallan en esta problemática la motivación para la presentación de Head QA, un dataset Q/A específicamente de selección de respuestas en español e inglés, que combina la necesidad de conocimiento y razonamiento en dominios complejos y que resulta difícil responder correctamente, incluso para humanos con años de entrenamiento.
+
+Dado que los mejores resultados han sido alcanzados mediante la aplicación de modelos de aprendizaje profundo, este trabajo se concentrará en el desarrollo e implementación de modelos neuronales aplicados al conjunto de datos Head QA. Por esta razón, en la siguiente sección serán abordados los avances más recientes en el aprendizaje profundo aplicado al procesamiento del lenguaje natural con el fin de sentar las bases de los modelos a proponer.
+
+
+\section{Aprendizaje Profundo en NLP}
+
+En la presente sección se introduce brevemente el concepto de \textit{word embedding}, el cual constituye un enfoque clave en gran parte de las propuestas contemporáneas. De igual manera se presenta una revisión de los principales resultados logrados en los sistemas Q/A utilizando el enfoque del aprendizaje profundo.
 
 Uno de los principales retos en los problemas de procesamiento del lenguaje natural es encontrar una representación vectorial de un texto que sea lo suficientemente rica y expresiva. En otras palabras, una forma matemática de representar la información relevante y el conocimiento contenidos en el lenguaje humano. Intuitivamente, mientras más rica sea la representación, más información estarán utilizando los modelos de aprendizaje y estarán más cerca de lograr buenos resultados en el entendimiento del lenguaje natural.
 
 Un documento textual es representado matemáticamente por un vector numérico. El primer acercamiento en este sentido fue la representación \textit{one-hot}, donde a cada \textit{token}\footnote{En los idiomas inglés y español, en el área de procesamiento del lenguaje natural, generalmente se utiliza el término \textit{token} para referirse a una palabra. En la presente tesis se seguirá este convenio.} se le asocia un índice y es representado por un vector con tantas componentes como \textit{tokens} tiene el vocabulario (\cite{goyal-2018-deepnlp}). De esta manera es posible hacerle corresponder a cada palabra una componente del vector, el cual tiene valor 0 en todas las componentes, excepto en la posición correspondiente a la palabra que representa, donde toma valor 1. La estrategia tradicional empleada sigue el mismo principio con la diferencia de que la componente de la palabra activa en lugar de 1, toma un valor mayor que puede ser la cantidad de veces que aparece la palabra en el documento. Otra variante muy utilizada es utilizar el resultado de la expresión conocida como $tf$\footnote{del inglés, \textit{term frequency}}$-idf$\footnote{del inglés, \textit{inverse document frequency}}. Ambas representaciones requieren vectores de gran dimensión y son insuficientes para capturar la semántica de las palabras.
 
 Como alternativa, se incorporan otras características del lenguaje como anotaciones de las partes de la oración (POS, del inglés \textit{part-of-speech}), funciones gramaticales y análisis sintáctico. Según establece \cite{chollet-2017-deeplearningpython}, estas herramientas no son exactas y muchas veces cometen errores que afectan el rendimiento de la tarea principal. Además, al basarse solamente en elementos sintácticos de una oración tampoco se logra atrapar toda la riqueza semántica de las palabras.
+
+
+\section{Aprendizaje profundo en sistemas Q/A}
+
+
+\subsection{Recuperación de Información}
+
+
+\subsection{Aprendizaje supervisado}
