@@ -42,11 +42,13 @@ Un documento textual es representado matemáticamente por un vector numérico. E
 
 Como alternativa, se incorporan otras características del lenguaje como anotaciones de las partes de la oración (POS, del inglés \textit{part-of-speech}), funciones gramaticales y análisis sintáctico. Según establece \cite{chollet-2017-deeplearningpython}, estas herramientas no son exactas y muchas veces cometen errores que afectan el rendimiento de la tarea principal. Además, al basarse solamente en elementos sintácticos de una oración tampoco se logra atrapar toda la riqueza semántica de las palabras.
 
-Como alternativa, se incorporan otras características del lenguaje como anotaciones de las partes de la oración (POS, del inglés \textit{part-of-speech}), funciones gramaticales y análisis sintáctico. Según establece \cite{chollet-2017-deeplearningpython}, estas herramientas no son exactas y muchas veces cometen errores que afectan el rendimiento de la tarea principal. Además, al basarse solamente en elementos sintácticos de una oración tampoco se logra atrapar toda la riqueza semántica de las palabras.
-
 Los \textit{word embeddings}, introducidos por \cite{mikolov-2013-word2vec}, son una forma diferente de representación. Un \textit{word embedding} es una forma de representación distribuida de las palabras de un vocabulario en un vector. Cada palabra es representada por un vector de pequeñas dimensiones respecto al tamaño del vocabulario. La gran novedad de esta representación es su capacidad para capturar el significado de una palabra teniendo en cuenta el contexto en que aparece, captando tanto rasgos sintácticos como semánticos que permiten establecer similitud entre las palabras.
 
 La representación embebida de una palabra, como también se puede llamar en español, es aprendida en tareas auxiliares enfocadas en predecir la palabra que mejor se ajusta al contexto, entrenadas sobre grandes cantidades de texto. A estas tareas auxiliares se les conoce como \textit{language modeling} y a los modelos resultantes se les llama en la literatura \textit{language models} (\cite{rao-2019-nlpPython}). Word2vec (\cite{mikolov-2013-word2vec}), GloVe (\cite{pennington-2014-glove}) y FastText (\cite{mikolov-2016-fastext}) son algunos de los \textit{frameworks} que brindan técnicas para el aprendizaje de los \textit{word embeddings} y, además, facilitan el uso de \textit{embeddings} pre-entrenados. Al enfoque de utilizar \textit{embeddings} preentrenados en una tarea auxiliar en la solución de un problema diferente se le llama \textit{fine tuning} (\cite{rao-2019-nlpPython}), también es conocido en la literatura como \textit{transfer learning}.
+
+Otro enfoque que ha tenido gran aceptación en el área del procesamiento del lenguaje es el aprendizaje profundo por el poder de aprendizaje y generalización que han demostrado estos modelos en diferentes áreas del conocimiento. Los primeros trabajos en utilizar el enfoque de aprendizaje profundo tratan el problema de extracción de relaciones como un problema de clasificación binario, intentando asignar una clase a cada par (pregunta, respuesta).
+
+Dentro del aprendizaje profundo, las Redes Neuronales Convolucionales (CNN, del inglés \textit{Convolutional Neural Networks}) y las Redes Recurrentes (RNN, del inglés \textit{Recurrent Neural Networks}) son ampliamente utilizadas para extraer relaciones (\cite{kumar-2017-surveydeeplearning}). Ambas son tipos especiales de redes neuronales, con diferencias en sus arquitecturas que las hacen más adecuadas para un dominio u otro.
 
 
 \subsection{Aprendizaje profundo en sistemas Q/A}
@@ -70,11 +72,17 @@ Existen tres tipos de arquitecturas de red generales para calcular la relevancia
 
 \subsubsection{Arquitecturas siamesas}
 
-La arquitectura siamesa en esencia consiste en que el codificador o en inglés \textit{encoder} crea por separado las representaciones vectoriales de las oraciones de entrada, en este caso, de la pregunta y la respuesta que está siendo analizada. De manera que, las oraciones no influyen en el cálculo de la representación de cada una de ellas. Luego, las oraciones codificadas se comparan a través de una medida de similutid, que puede ser el coseno, cualquier operación elemento a elemento o combinaciones basadas en redes neuronales. 
+La arquitectura siamesa en esencia consiste en que el codificador o en inglés \textit{encoder} crea por separado las representaciones vectoriales de las oraciones de entrada, en este caso, de la pregunta y la respuesta que está siendo analizada. De manera que, las oraciones no influyen en el cálculo de la representación de cada una de ellas. Luego, las oraciones codificadas se comparan a través de una medida de similutid, que puede ser el coseno como en \cite{2015-feng-siamese-cosine}, cualquier operación elemento a elemento \cite{2015-tai-element-wise} o combinaciones basadas en redes neuronales como proponen \cite{2015-manning-inference}.
+
+Uno de los primeros modelos de aprendizaje profundo aplicado a la selección de respuestas fue el propuesto por \cite{2014-yu-answer-sentence}. En esta primera propuesta el modelo genera la representación vectorial de cada secuencia tomando la media de todos los vectores palabras de la oración, además integra características adicionales como la cantidad de palabras que se superponen en ambas secuencias. Este modelo logró un mejor rendimiento que los modelos tradicionales basados en la extracción e ingeniería de características linguísticas.
+
+Una arquitectura innovadora fue la presentada por \cite{2015-tan-qalstm} con el nombre de QA-LSTM, la cual utiliza una red bidireccional de tipo LSTM (del inglés, \textit{Long Short-Term Memory}), que constituye un tipo especial de red neuronal recurrente, y una capa \textit{pooling} para obtener una representación vectorial distribuida de las secuencias de entrada de manera independiente. Posteriormente, el modelo utiliza la similitud del coseno para computar la distancia entre las representaciones. 
+
+Un ejemplo del uso de las redes convolucionales para generar una representación de las oraciones de entrada es el publicado por \cite{2015-moschitti-cnn}, donde las representaciones se obtienen tras aplicar diferentes tipos de \textot{pooling} en varios niveles de granularidad de la red. La comparación entre las secuencias se realiza utilizando varias métricas de similitud también en diferentes niveles de granularidad de la red. Posteriormente, los resultados de las métricas son utilizados como entrada a una capa \textit{fully connected} para obtener la relevancia final. 
 
 \subsubsection{Arquitectura basada en mecanismos de atención}
 
-Conceptualmente, un mecanismo de atención da más ponderaciones a ciertas palabras en la respuesta candidata, y los pesos se calculan de acuerdo con la pregunta. En este caso, el mecanismo de atención se realiza solo en una única dirección.
+Conceptualmente, un mecanismo de atención da mayor ponderación a ciertas palabras en la respuesta candidata, y los pesos se calculan de acuerdo con la pregunta. En este caso, el mecanismo de atención se realiza solo en una única dirección.
 
 \subsubsection{Arquitectura \textit{Compare-Aggregate}}
 
@@ -82,3 +90,7 @@ Conceptualmente, un mecanismo de atención da más ponderaciones a ciertas palab
 \section{Consideraciones generales}
 
 La selección de respuestas es un problema importante en el procesamiento del lenguaje natural y muchos métodos de aprendizaje profundo han sido propuestos para la tarea. En este capítulo, se ha brindado una revisión integral y sistemática de varios métodos de aprendizaje profundo para la selección de respuestas en dos dimensiones: enfoques de aprendizaje (\textit{pointwise}, \textit{pairwise} y \textit{listwise}) y arquitecturas de redes neuronales (arquitectura siamesa, arquitectura basada en atención, y arquitectura \textit{Compare-Aggregate}).
+
+El escaso avance en el idioma español es perceptible. La mayoría de los esfuerzos se han concentrado en sistemas Q/A para la lengua inglesa. Aunque se carece de antecedentes directos que puedan ser utilizados como punto de partida, los avances en el idioma inglés pueden ser aprovechados teniendo en cuenta las diferencias de complejidad gramatical de ambos idiomas.
+
+A pesar de que el trabajo está orientado al idioma español, la presente propuesta puede ser generalizada a cualquier idioma pues no se hace uso de recursos propios de la gramática española.
