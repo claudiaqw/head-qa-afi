@@ -2,7 +2,6 @@
 
 En el presente capítulo se discuten brevemente aquellos conceptos que constituyen el fundamento teórico para el desarrollo de este trabajo.
 
-
 \section{Sistemas Pregunta/Respuesta}
 
 Los sistemas Preguntas/Respuestas han sido uno de los problemas planteados por los humanos como primer paso para el entendimiento del lenguaje natural, de ahí que los diferentes enfoques para intentar resolver este tipo de problemas se remonten al siglo anterior.
@@ -17,6 +16,21 @@ Adicionalmente, la mayor parte de estos datasets antes mencionados están enfoca
 
 Dado que los mejores resultados han sido alcanzados mediante la aplicación de modelos de aprendizaje profundo, este trabajo se concentrará en el desarrollo e implementación de modelos neuronales aplicados al conjunto de datos Head QA. Por esta razón, en la siguiente sección serán abordados los avances más recientes en el aprendizaje profundo aplicado al procesamiento del lenguaje natural con el fin de sentar las bases de los modelos a proponer.
 
+\section{Recuperación de Información}
+
+En \cite{2019-head-qa}, se presentan un conjunto de modelos que pueden ser utilizados como \textit{baselines} para el conjunto de datos en inglés y español. Todos los \textit{baselines} siguen el paradigma de recuperación de información clásica utilizando Wikipedia como fuente de información externa. 
+
+Un sistema de recuperación de información clásico tiene como base un corpus compuesto por un conjunto de documentos $D$. El objetivo es a partir de una consulta $q$ expresada en lenguaje natural, obtener un ordenamiento de los documentos de acuerdo a su relevancia o nivel de similaridad con dicha consulta. De manera que, los primeros lugares del \textit{ranking} correspondan a los documentos más relevantes a la consulta.
+
+Desde el punto de vista de recuperación de información, un sistema Q/A de selección puede ser planteado como: 
+
+Sean $(q_{i}, [a_{i0}, a_{i1}, ..., a_{im}]$ una pregunta y las posibles respuestas. Se crean $m$ consultas de la forma $q_{i} + a{i}{m}$ que son enviadas al motor de búsqueda de manera independiente. El motor de búsqueda devuelve para cada consulta enviada un número que indica la mayor relevancia obtenida, es decir, el \textit{score} del documento que mayor puntuación alcanzó en cada caso. Luego, la respuesta correcta $a{i}{m}$ es seleccionada en base a la consulta $q_{i} + a{i}{m}$ que mayor probabilidad alcanzó, lo que indica que es la respuesta donde se encontró el documento con mayor relevancia de todo el corpus. 
+
+En \cite{2019-head-qa} para el conjunto de datos en español se utilizó como motor de búsqueda el presentado en \cite{2017-chen-wikipedia}, el cual calcula la similitud entre la consulta y los documentos representados vectorialmente con el $tf\_idf$ como la suma ponderada de los vectores palabra, además también tiene en cuenta el orden y el conteo de bigramas.
+
+Otro de los trabajos enfocados en este conjunto de datos específico se presenta en \cite{2020-multi-step}. Los autores presentan un sistema multipasos basado en un framework de extraccción de conocimiento llamado MurKe. Inicialmente, extrae información de un gran corpus conformado por documentos de salud. Para encontrar la cadena de razonamiento y elegir la respuesta correcta, MurKe itera entre seleccionar los documentos de respaldo, reformular la representación de la consulta utilizando los documentos de respaldo y obtener la puntuación de vinculación para cada elección utilizando el modelo de vinculación. El módulo de reformulación aprovecha documentos seleccionados para evidencia faltante, lo que mantiene la interpretabilidad. Además, hacen un uso completo de los modelos pre-entrenados listos para usar. Con menos peso entrenable, el modelo previamente entrenado puede adaptarse fácilmente a las tareas de atención médica con ejemplos de entrenamiento limitados. A partir de los resultados experimentales, este sistema es capaz de superar varias líneas de base sólidas en el conjunto de datos HeadQA. 
+
+En el dataset no ha sido aplicado ninguna técnica de selección de respuestas sobre la base del aprendizaje supervisado y sin el uso de fuentes de conocimiento externeas, por lo que este trabajo se enfocará en la aplicación de modelos supervisados. Dada la dificultad de la tarea en el ámbito del entendimiento del lenguaje humano y teniendo el cuenta el estado del arte en procesamiento del lenguaje natural, los modelos a implementar estarán orientados al uso de técnicas de aprendizaje profundo.
 
 \section{Aprendizaje Profundo en NLP}
 
@@ -28,14 +42,43 @@ Un documento textual es representado matemáticamente por un vector numérico. E
 
 Como alternativa, se incorporan otras características del lenguaje como anotaciones de las partes de la oración (POS, del inglés \textit{part-of-speech}), funciones gramaticales y análisis sintáctico. Según establece \cite{chollet-2017-deeplearningpython}, estas herramientas no son exactas y muchas veces cometen errores que afectan el rendimiento de la tarea principal. Además, al basarse solamente en elementos sintácticos de una oración tampoco se logra atrapar toda la riqueza semántica de las palabras.
 
+Como alternativa, se incorporan otras características del lenguaje como anotaciones de las partes de la oración (POS, del inglés \textit{part-of-speech}), funciones gramaticales y análisis sintáctico. Según establece \cite{chollet-2017-deeplearningpython}, estas herramientas no son exactas y muchas veces cometen errores que afectan el rendimiento de la tarea principal. Además, al basarse solamente en elementos sintácticos de una oración tampoco se logra atrapar toda la riqueza semántica de las palabras.
 
-\section{Aprendizaje profundo en sistemas Q/A}
+Los \textit{word embeddings}, introducidos por \cite{mikolov-2013-word2vec}, son una forma diferente de representación. Un \textit{word embedding} es una forma de representación distribuida de las palabras de un vocabulario en un vector. Cada palabra es representada por un vector de pequeñas dimensiones respecto al tamaño del vocabulario. La gran novedad de esta representación es su capacidad para capturar el significado de una palabra teniendo en cuenta el contexto en que aparece, captando tanto rasgos sintácticos como semánticos que permiten establecer similitud entre las palabras.
 
-Superan a las técnicas tradicionales. Además, no necesitan ningún esfuerzo de ingeniería de funciones o recursos codificados a mano más allá de algunos grandes sin etiqueta
-corpus en el que aprender las incrustaciones de palabras iniciales, como word2vec (TODO referencia)
-
-
-\subsection{Recuperación de Información}
+La representación embebida de una palabra, como también se puede llamar en español, es aprendida en tareas auxiliares enfocadas en predecir la palabra que mejor se ajusta al contexto, entrenadas sobre grandes cantidades de texto. A estas tareas auxiliares se les conoce como \textit{language modeling} y a los modelos resultantes se les llama en la literatura \textit{language models} (\cite{rao-2019-nlpPython}). Word2vec (\cite{mikolov-2013-word2vec}), GloVe (\cite{pennington-2014-glove}) y FastText (\cite{mikolov-2016-fastext}) son algunos de los \textit{frameworks} que brindan técnicas para el aprendizaje de los \textit{word embeddings} y, además, facilitan el uso de \textit{embeddings} pre-entrenados. Al enfoque de utilizar \textit{embeddings} preentrenados en una tarea auxiliar en la solución de un problema diferente se le llama \textit{fine tuning} (\cite{rao-2019-nlpPython}), también es conocido en la literatura como \textit{transfer learning}.
 
 
-\subsection{Aprendizaje supervisado}
+\subsection{Aprendizaje profundo en sistemas Q/A}
+
+Los avances más recientes en procesamiento del lenguaje natural, casi en su mayoría, están enfocados en el empleo del aprendizaje profundo. La razón principal es que superan las técnicas tradicionales sin depender de ningún recurso externo. Además, no necesitan ningún esfuerzo de ingeniería de funciones o recursos codificados a mano más allá de algunos grandes sin etiqueta corpus en el que aprender las incrustaciones de palabras iniciales, como los \textit{word embeddings}. Este hecho no es ajeno a los sistemas Q/A. El aprendizaje profundo constituye una opción más acertada porque la recuperación de información tradicional se basa en la coincidencia, exacta o parcial, de palabras. Sin embargo, en el problema de selección de la respuesta correcta un enfoque de coincidencia no es suficiente, porque las respuestan guardan cierto parecido sintáctico entre sí, y la clave para diferenciar la correcta está en la comprensión y razonamiento de la pregunta. Aunque aún no se puede afirmar que la computadora logre razonar, los modelos de aprendizaje profundo han demostrado un cierto "conocimiento" del idioma y el campo específico en que sean entrenados.
+
+El problema puede ser planteado en término generales como: 
+
+Dada una pregunta $q_{i}$ en el dataset y un conjunto de oraciones candidatas ${c_{i1}, c_{i2}, ..., c_{im}}$, la tarea es identificar oraciones candidatas que contienen
+la respuesta correcta a la pregunta. A partir de la definición, el problema se puede formular como un problema de \textit{ranking}, donde el objetivo es dar una mejor posición a las oraciones candidatas que son relevantes a la pregunta.
+
+Desde el punto de vista del aprendizaje automático, según \cite{2018-lai-review} existen tres tipos de enfoques para tratar el problema de selección de respuestas. A continuación, se explican brevemente cada uno de ellos.
+
+\begin{itemize}
+	\item Pointwise: El problema de \textit{ranking} se transforma en un problema de clasificación binario, donde las instancias de entrenamiento tienen la forma $(q_{i}, c_{ij}, y_{ij})$ y $y_{ij}$ puede tomar valores 0 o 1 si la respuesta es correcta o no. En la etapa de inferencia, el resultado de la función $h_{0}$ toma valores en el rango $0 \leq h_{0} \leq 1$, donde cada número salida puede ser interpretado como la probabilidad de que la respuesta sea correcta o no, de manera que la respuesta correcta es entre las candidatas aquella que mayor valor de $h_0$ tenga.
+	\item Pairwise: La función de \textit{ranking} se entrena explícitamente para puntuar las respuestas correctas con un mayor valor que las incorrectas. Dada una pregunta, la instancia entrenante toma dos respuestas candidatas, una correcta y la otra incorrecta, hecho que es recogido por la función de pérdida, de manera que el modelo aprende cuál de las respuestas es más relevante a la pregunta. 
+	\item Listwise: A diferencia de los métodos anteriores que ignoran que la selección se hace sobre una lista de respuestas candidatas, en este enfoque una instancia consiste en la pregunta y la lista de respuestas. La función de pérdida se adapta, de igual manera, para determinar cuál de las oraciones acandidatas es la más relevante a la pregunta.
+\end{itemize}
+
+Existen tres tipos de arquitecturas de red generales para calcular la relevancia de una oración candidata a una pregunta. El matiz que las diferencia es la forma de aprender la función de \textit{ranking} $h_{0}$. Según \cite{2018-lai-review}, los límites entre cada una de las arquitecturas no están siempre bien definidos.
+
+\subsubsection{Arquitecturas siamesas}
+
+La arquitectura siamesa en esencia consiste en que el codificador o en inglés \textit{encoder} crea por separado las representaciones vectoriales de las oraciones de entrada, en este caso, de la pregunta y la respuesta que está siendo analizada. De manera que, las oraciones no influyen en el cálculo de la representación de cada una de ellas. Luego, las oraciones codificadas se comparan a través de una medida de similutid, que puede ser el coseno, cualquier operación elemento a elemento o combinaciones basadas en redes neuronales. 
+
+\subsubsection{Arquitectura basada en mecanismos de atención}
+
+Conceptualmente, un mecanismo de atención da más ponderaciones a ciertas palabras en la respuesta candidata, y los pesos se calculan de acuerdo con la pregunta. En este caso, el mecanismo de atención se realiza solo en una única dirección.
+
+\subsubsection{Arquitectura \textit{Compare-Aggregate}}
+
+
+\section{Consideraciones generales}
+
+La selección de respuestas es un problema importante en el procesamiento del lenguaje natural y muchos métodos de aprendizaje profundo han sido propuestos para la tarea. En este capítulo, se ha brindado una revisión integral y sistemática de varios métodos de aprendizaje profundo para la selección de respuestas en dos dimensiones: enfoques de aprendizaje (\textit{pointwise}, \textit{pairwise} y \textit{listwise}) y arquitecturas de redes neuronales (arquitectura siamesa, arquitectura basada en atención, y arquitectura \textit{Compare-Aggregate}).
