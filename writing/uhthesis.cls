@@ -49,11 +49,12 @@
     \fancyhead[L]{\slshape \leftmark}
     \fancyhead[R]{\thepage}
 \fi
-\renewcommand{\headheight}{28pt}
+\renewcommand{\headheight}{25pt}
 	
-\setlength\oddsidemargin{36.1\p@}
-\setlength\evensidemargin{36.1\p@}
-\setlength\marginparwidth{36.1\p@}
+\setlength{\textwidth}{16cm}
+\setlength\oddsidemargin{12pt}
+\setlength\evensidemargin{12pt}
+\setlength\marginparwidth{12pt}
 \marginparsep 10pt
 \topmargin 0pt \headsep .5in
 %\textheight 8.1in \textwidth 6in
@@ -65,16 +66,17 @@
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{4}
 \renewcommand{\textfraction}{0.07}
+\renewcommand{\baselinestretch}{1.2}
 
 % Backreferences in the bibliography.
 \backrefspanish
 \renewcommand{\backref}[1]{}
-\renewcommand{\backrefalt}[4]{%
-  \ifcase #1 \relax%
-  \or (Citado en la página~#2).%
-  \else (Citado en las páginas~#2).%
-  \fi%
-}
+% \renewcommand{\backrefalt}[4]{%
+%   \ifcase #1 \relax%
+%   \or (Citado en la página~#2).%
+%   \else (Citado en las páginas~#2).%
+%   \fi%
+% }
 \btxifchangecaseoff
 \renewcommand{\btxselectlanguage}[1]{\relax}
 
@@ -148,19 +150,19 @@
 \def\maketitle{%
   \thispagestyle{empty}%
   \begin{center}
-    {\large Universidad de La Habana} \\ \@faculty \\ 
+    {\large AFI Escuela de Finanzas, Madrid} \\ \@faculty \\ 
     \vskip 0.25cm
-    \includegraphics[width=1.75cm]{\@logo} \\
+    \includegraphics[width=5cm]{\@logo} \\
     \vfill
     {\LARGE \textbf{\@title}} \\
     \vskip 2cm
-    {\Large Autor: \textbf{\@author}} \\
+    {\Large \textbf{\@author}} \\
     \vskip 0.5cm
-    {\Large Tutores: \textbf{\@advisor}} \\
+    {\Large Tutor: \textbf{\@advisor}} \\
     \vfill
-    {\large Trabajo de Diploma \\presentado en opción al título de \\ \@degree} \\
+    {\large Memoria escrita \\presentada en opción al título de \\ \@degree} \\
     \vskip 0.25cm
-    \includegraphics[width=2.5cm]{Graphics/qrcode-tesis}
+    \includegraphics[width=2.5cm]{Graphics/qrcode}
     \vskip 0.25cm
     \@date
   \end{center}

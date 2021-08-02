@@ -48,7 +48,7 @@ La representación embebida de una palabra, como también se puede llamar en esp
 
 Otro enfoque que ha tenido gran aceptación en el área del procesamiento del lenguaje es el aprendizaje profundo por el poder de aprendizaje y generalización que han demostrado estos modelos en diferentes áreas del conocimiento. Los primeros trabajos en utilizar el enfoque de aprendizaje profundo tratan el problema de extracción de relaciones como un problema de clasificación binario, intentando asignar una clase a cada par (pregunta, respuesta).
 
-Dentro del aprendizaje profundo, las Redes Neuronales Convolucionales (CNN, del inglés \textit{Convolutional Neural Networks}) y las Redes Recurrentes (RNN, del inglés \textit{Recurrent Neural Networks}) son ampliamente utilizadas para extraer relaciones (\cite{kumar-2017-surveydeeplearning}). Ambas son tipos especiales de redes neuronales, con diferencias en sus arquitecturas que las hacen más adecuadas para un dominio u otro.
+Dentro del aprendizaje profundo, las Redes Neuronales Convolucionales (CNN, del inglés \textit{Convolutional Neural Networks}) y las Redes Recurrentes (RNN, del inglés \textit{Recurrent Neural Networks}) son ampliamente utilizadas para hallar representaciones vectoriales ricas semánticamente de secuencias textuales. Ambas son tipos especiales de redes neuronales, con diferencias en sus arquitecturas que las hacen más adecuadas para un dominio u otro.
 
 
 \subsection{Aprendizaje profundo en sistemas Q/A}
@@ -78,13 +78,22 @@ Uno de los primeros modelos de aprendizaje profundo aplicado a la selección de 
 
 Una arquitectura innovadora fue la presentada por \cite{2015-tan-qalstm} con el nombre de QA-LSTM, la cual utiliza una red bidireccional de tipo LSTM (del inglés, \textit{Long Short-Term Memory}), que constituye un tipo especial de red neuronal recurrente, y una capa \textit{pooling} para obtener una representación vectorial distribuida de las secuencias de entrada de manera independiente. Posteriormente, el modelo utiliza la similitud del coseno para computar la distancia entre las representaciones. 
 
-Un ejemplo del uso de las redes convolucionales para generar una representación de las oraciones de entrada es el publicado por \cite{2015-moschitti-cnn}, donde las representaciones se obtienen tras aplicar diferentes tipos de \textot{pooling} en varios niveles de granularidad de la red. La comparación entre las secuencias se realiza utilizando varias métricas de similitud también en diferentes niveles de granularidad de la red. Posteriormente, los resultados de las métricas son utilizados como entrada a una capa \textit{fully connected} para obtener la relevancia final. 
+Un ejemplo del uso de las redes convolucionales para generar una representación de las oraciones de entrada es el publicado por \cite{2015-moschitti-cnn}, donde las representaciones se obtienen tras aplicar diferentes tipos de \textit{pooling} en varios niveles de granularidad de la red. La comparación entre las secuencias se realiza utilizando varias métricas de similitud también en diferentes niveles de granularidad de la red. Posteriormente, los resultados de las métricas son utilizados como entrada a una capa \textit{fully connected} para obtener la relevancia final. 
 
 \subsubsection{Arquitectura basada en mecanismos de atención}
 
-Conceptualmente, un mecanismo de atención da mayor ponderación a ciertas palabras en la respuesta candidata, y los pesos se calculan de acuerdo con la pregunta. En este caso, el mecanismo de atención se realiza solo en una única dirección.
+En una arquitectura siamesa, las oraciones de entrada se codifican en representaciones vectoriales de longitud fija e independientes y luego, se comparan. A pesar de su sencillez conceptual, una desventaja es la ausencia de interacción explícita entre las oraciones de entrada durante el proceso de codificación. A una pregunta siempre se le asigna al mismo vector independientemente de la respuesta candidata en consideración, y viceversa. 
+
+\cite{2015-tan-qalstm} enriquece el modelo QA-LSTM presentado con un mecanismo de atención. 
+Conceptualmente, un mecanismo de atención da mayor importancia a ciertas palabras en la respuesta candidata, y los pesos se calculan de acuerdo con la pregunta. En este caso, el mecanismo de atención se realiza solo en una única dirección, pues solo se emplea para codificar la respuesta candidata en función de la pregunta. Por tra parte, \cite{2016-santos-attentive} emplea un mecanismo de atención en doble sentido, de manera que tanto la pregunta como la respuesta candidata influye en la representación de la otra.  
 
 \subsubsection{Arquitectura \textit{Compare-Aggregate}}
+
+La idea de esta arquitectura es comparar unidades de la red más pequeñas que las oraciones como comúnmente se hace. Se comparan unidades como palabras o incluso letras de las oraciones de entrada y luego los resultados de la comparación se agregan mediante redes recurrentes o convolucionales para tomar una decisión definitiva, como se presenta en \cite{2018-tran-context}.
+
+De manera general un modelo \textit{Compare-Aggregate} consta de 5 capas, como se detalla en \cite{2017-wang-bimpm}. La primera capa se encarga de la representación de las palabras (\textit{word representation layer}), su fin es representar cada palabra en un vector $d$-dimensional. El objetivo de la capa de representación del contexto (\textit{context representation layer}) es obtener una nueva representación para cada posición en las oraciones de entrada que capture alguna información contextual además de la posición de la palabra. La capa de comparación (\textit{matching layer}) compara cada representación contextual de una oración con todas las representaciones contextuales de la otra oración. La salida de esta capa son dos secuencias de vectores coincidentes, donde cada vector coincidente corresponde al resultado de la comparación de una posición de una oración con todas las posiciones de la otra oración. Posteriormente, la capa de agregación (\textit{aggregation layer}) se encarga de agregar los resultados de la comparación de la capa anterior. Por último, la capa de predicción (\textit{prediction layer}) encargada de obtener el valor final que indica la relevancia de la respuesta para la pregunta dada.
+
+Las arquitecturas \textit{Compare-Aggregate} pueden capturar más características interactivas entre las oraciones de entrada que las arquitecturas siamesas y las arquitecturas \textit{Attentive}, por lo tanto, por lo general, tienen un mejor rendimiento como se ha demostrado cuando se evalúan en conjuntos de datos públicos como TrecQA.
 
 
 \section{Consideraciones generales}
