@@ -48,8 +48,12 @@ def validate_answer(model, dataloader, encoder, pytorch_model=True):
         x, y = encoder(instance)
         #x, y = torch.Tensor(x), torch.Tensor(y)
         y_ = model(x)
+        print(y_.shape)
         pred = torch.max(y_, dim=0)[1]
+        print(pred)
         acc = (pred + 1 == y).float()
+        print(acc)
+        print(acc.shape)
         points = 3 if acc == 1 else -1
         return acc, points
     

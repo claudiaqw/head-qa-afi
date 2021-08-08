@@ -156,9 +156,9 @@ class HeadQA(Dataset):
         return x, y
 
 
-def parse_training(training):
+def parse_dataset(dataset):
     train = []
-    for sample in training:
+    for sample in dataset:
         qtext, answers = sample['qtext'], sample['answers']
         q = nlp(qtext)
         tok_qtext = [token.text for token in q]
