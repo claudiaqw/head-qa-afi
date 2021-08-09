@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import random as rnd
 from datasets import load_dataset
 
 import torch
@@ -133,6 +134,7 @@ class HeadQA(Dataset):
     # recibe una pregunta raw y retorna una lista de 5 (o 5) elementos (x, y)
     # con la pregunta codificada (preg + [SEP] + ans) y el label correspondiente.
     def encode(self, sample):
+        length = 0
         qtext, answers = sample['qtext'], sample['answers']
         q = nlp(qtext)
         tok_qtext = [token.text for token in q]
@@ -145,16 +147,19 @@ class HeadQA(Dataset):
             instance_x = tok_qtext + ['SEP'] + tok_atext
             instance_y = 1 if right_answer == aid else 0
             x, y = self.vectorize(instance_x, instance_y)
+            x = torch.unsqueeze(x, 0)
+            length = len(x)
             X.append(x)
             Y.append(y)
-        return torch.Tensor(X), torch.Tensor(Y)
+        x, y = torch.Tensor(len(X), length), torch.tensor(Y)
+        x = torch.cat(X, out=x)
+        return x, y
 
     def vectorize(self, instance, label):
         x = torch.Tensor(self.vectorizer.vectorize(
             instance, self.max_length, self.right_padding))
         y = torch.Tensor([self.vectorizer.label_vocab.lookup_token(label)])
         return x, y
-
 
 def parse_dataset(dataset):
     train = []
@@ -178,6 +183,16 @@ def parse_dataset(dataset):
             train.append(training_sample)
     return train
 
+def random_oversamplig(instances):
+    positive_instances = [item for item in instances if item['label'] == 1]
+    diff = len(instances) - 2 * len(positive_instances)
+    randomlist = [rnd.randint(0, len(positive_instances) - 1)
+                  for i in range(diff)]
+
+    ovsersampled_dataset = instances.copy()
+    for i in randomlist:
+        ovsersampled_dataset.append(positive_instances[i])
+    return ovsersampled_dataset
 
 
 

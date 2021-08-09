@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 
-def train(model, optimizer, train_dl, test_dl, validate, encoder, epochs=100):
+def train(model, optimizer, train_dl, test_dl, validate, epochs=50):
     y_trues, y_preds = [], []
     epochs_results = []
     for i in range(epochs):
@@ -19,12 +19,12 @@ def train(model, optimizer, train_dl, test_dl, validate, encoder, epochs=100):
             total += batch
             sum_loss += batch*(loss.item())
         train_loss = sum_loss/total
-        test_acc, points = validate(model, test_dl, encoder)
-        #y_trues.append(y_real)
-        #y_preds.append(y_pred)
-        epochs_results.append([train_loss, points, test_acc])
-        print("Epoch %s train loss  %.4f points %.3f and accuracy %.4f" %
-              (i, train_loss, points, test_acc))
+        valid_loss, valid_acc, y_real, y_pred = validate(model, test_dl)
+        y_trues.append(y_real)
+        y_preds.append(y_pred)
+        epochs_results.append([train_loss, valid_loss, valid_acc])
+        print("Epoch %s train loss  %.4f valid loss %.3f and accuracy %.4f" %
+              (i, train_loss, valid_loss, valid_acc))
     return epochs_results
 
 def validate(model, dataloader):
@@ -43,20 +43,16 @@ def validate(model, dataloader):
         right += (pred == y).float().sum().item()
     return loss/total, right/total, y_true, y_preds
 
-def validate_answer(model, dataloader, encoder, pytorch_model=True):
+def evaluate(model, dataloader, encoder, pytorch_model=True):
     def evaluator(model, instance, encoder):
         x, y = encoder(instance)
-        #x, y = torch.Tensor(x), torch.Tensor(y)
         y_ = model(x)
-        print(y_.shape)
         pred = torch.max(y_, dim=0)[1]
-        print(pred)
-        acc = (pred + 1 == y).float()
-        print(acc)
-        print(acc.shape)
+        real = torch.max(y, dim=0)[1]
+        acc = (pred == real).float()
         points = 3 if acc == 1 else -1
         return acc, points
-    
+
     if pytorch_model:
         model.eval()
     right, score = 0, 0
@@ -64,7 +60,7 @@ def validate_answer(model, dataloader, encoder, pytorch_model=True):
         acc, point = evaluator(model, instance, encoder)
         right += acc
         score += point
-    return right/len(), score
+    return right/len(dataloader), score
 
 
 
