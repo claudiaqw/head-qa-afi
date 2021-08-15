@@ -116,7 +116,6 @@ class Vectorizer(object):
 class HeadQA(Dataset):
     def __init__(self, instances, vectorizer, language='es', max_length=20, right_padding = False):
         self.instances = instances
-        # self.data= load_dataset('head_qa', language)
         self.vectorizer = vectorizer
         self.max_length = max_length
         self.right_padding = right_padding
@@ -158,8 +157,27 @@ class HeadQA(Dataset):
     def vectorize(self, instance, label):
         x = torch.Tensor(self.vectorizer.vectorize(
             instance, self.max_length, self.right_padding))
-        y = torch.Tensor([self.vectorizer.label_vocab.lookup_token(label)])
+        y = torch.Tensor(
+            [self.vectorizer.label_vocab.lookup_token(label)])
         return x, y
+
+
+class HeadQA_IR(Dataset):
+    def __init__(self, instances, vectorizer, max_length=20, right_padding=False):
+        self.instances = instances
+        self.vectorizer = vectorizer
+        self.max_length = max_length
+        self.right_padding = right_padding
+
+    def __getitem__(self, index):
+        pass
+
+    def encode(self, sample):
+        pass
+
+    def vectorize(self, instance, label):
+        pass
+
 
 def parse_dataset(dataset):
     train = []
@@ -194,9 +212,35 @@ def random_oversamplig(instances):
         ovsersampled_dataset.append(positive_instances[i])
     return ovsersampled_dataset
 
+def parse_ir_dataset(dataset):
+    data = []
+    for sample in dataset:
+        qtext, answers = sample['qtext'], sample['answers']
+        q = nlp(qtext)
+        tok_qtext = [token.text for token in q]
+        right_answer = sample['ra']
+        for answer in answers:
+            aid, atext = answer['aid'], answer['atext']
+            a = nlp(atext)
+            tok_atext = [token.text for token in a]
+            instance_y = 1 if right_answer == aid else 0
+            new_sample = {}
+            new_sample['question'] = qtext
+            new_sample['answer'] = atext
+            new_sample['tok_qtext'] = tok_qtext
+            new_sample['tok_atext'] = tok_atext
+            new_sample['label'] = instance_y
+            new_sample['category'] = sample['category']
+            data.append(new_sample)
+    return data
 
-
-
+def filter_by_category(dataset, category):
+    filtered_dataset = []
+    for instance in dataset:
+        categ = instance['category']
+        if categ == category:
+            filtered_dataset.append(instance)
+    filtered_dataset
 
 
 

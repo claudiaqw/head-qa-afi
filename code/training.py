@@ -11,7 +11,7 @@ def train(model, optimizer, train_dl, test_dl, validate, epochs=50):
         sum_loss = 0
         for x, y in train_dl:
             batch = y.shape[0]
-            out = model(x.float())
+            out = model(x.long())
             loss = F.binary_cross_entropy(out, y.float())
             optimizer.zero_grad()
             loss.backward()
@@ -33,7 +33,7 @@ def validate(model, dataloader):
     y_true, y_preds = [], []
     for x, y in dataloader:
         batch = y.shape[0]
-        out = model(x.float())
+        out = model(x.long())
         loss = F.binary_cross_entropy(out, y.float())
         loss += batch*(loss.item())
         total += batch
@@ -46,7 +46,7 @@ def validate(model, dataloader):
 def evaluate(model, dataloader, encoder, pytorch_model=True):
     def evaluator(model, instance, encoder):
         x, y = encoder(instance)
-        y_ = model(x)
+        y_ = model(x.long())
         pred = torch.max(y_, dim=0)[1]
         real = torch.max(y, dim=0)[1]
         acc = (pred == real).float()

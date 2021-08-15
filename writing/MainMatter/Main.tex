@@ -9,10 +9,12 @@ En este capítulo se describe detalladamente el proceso de
 
 El conjunto de datos está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en train, development y test. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
 
-* ID: el id y el texto de la pregunta
-* path e la imagen si hay
-* Una lista con las posibles respuestas
-* El id de la respuesta correcta
+\begin{itemize}
+  \item Id: identificador y texto de la pregunta
+  \item Ruta: camino a la imagen si lo hay
+  \item Respuestas: Una lista con las posibles respuestas
+  \item El id de la respuesta correcta
+\end{itemize}
 
 
 \section{Análisis del conjunto de datos}
@@ -25,6 +27,9 @@ El conjunto de datos está organizado en preguntas y respuestas de las categorí
 \chapter{Modelos propuestos}\label{chapter:models}
 
 \section{Regresión Logística}
+
+El primer modelo a implementar es un regresor logístico. La simplicidad de este modelo lo hace un buen candidato para establecer un \textit{baseline} entre los modelos de aprendizaje supervisado.
+
 
 \section{\textit{LSTM} Básico}\label{lstm_t}
 
@@ -101,6 +106,29 @@ Es importante destacar que los parámetros $E$, $W^{(i)}$, $W^{(f)}$, $W^{(o)}$,
 Las operaciones presentadas en las ecuaciones \ref{lstm:ig} - \ref{lstm:hidden_state} son ejecutadas $T$ veces, por cada uno de los \textit{tokens} que conforman una oración. Tras el análisis del último \textit{token} $T$, el estado final $h_{T}$ constituye una representación de la oración $S$. Finalmente, una capa lineal (Ecuación \ref{lstm:pred}) utiliza la representación de la oración obtenida $h_{T}$ para predecir la relación $\hat{y}$ existente en la oración. Esta salida se convierte en una distribución de probabilidades empleando la función \textit{softmax}. Esta operación, a diferencia de las ecuaciones anteriores, solo se aplica una vez al estado final $h_{T}$ de la capa \textit{LSTM}.
 
 La sencillez arquitectónica del modelo permite que se pueda utilizar como base para la comparación con otros modelos más complejos que serán abordados a continuación.
+
+\section{\textit{Transfer Learning} basado en BERT}\label{bert_t}
+
+\cite{2018-devlin-bert} plantea que el uso de BERT en el enfoque \textit{fine tuning} obtiene nuevos resultados en el estado del arte en varias tareas de procesamiento del lenguaje natural, entre ellas, el reconocimiento de entidades nombradas y los sistemas pregunta/respuesta.
+
+La diferencia con otros modelos de representación del lenguaje, en cuanto a arquitectura, es que BERT está basado en un \textit{Transformer} bidireccional. En el artículo de \cite{2018-devlin-bert} no se detalla la arquitectura del modelo \textit{Transformer}. Otra diferencia es que modifica la tarea tradicional de \textit{language modeling} sobre la que se entrena introduciendo nuevas tareas. La primera tarea introducida recibe el nombre de \textit{masked language model} y consiste en ocultar palabras aleatorias en un texto y predecir, teniendo en cuenta el contexto, el \textit{token} que corresponde a la posición oculta, mientras que la segunda tarea consiste en, dada una oración en un texto, predecir la oración siguiente.
+
+Los autores de BERT señalan como principal contribución la demostración de la efectividad del pre-entrenamiento bidireccional en la representación del lenguaje sobre las arquitecturas unidireccionales utilizadas hasta ese momento y, además, plantean que con el uso de esta nueva representación se puede reducir la complejidad de la arquitectura del modelo y aún así, obtener mejores resultados.
+
+En esta tesis se propone un modelo que hace uso del modelo de lenguaje aprendido utilizando BERT e incorpora un modelo de predicción simple. La propuesta tiene como objetivo comprobar si los aportes de BERT se pueden extender al idioma español y, específicamente, a la tarea de extracción de relaciones semánticas entre entidades.
+
+\subsection{Especificidad del preprocesamiento}
+
+Con el objetivo de transformar una oración en un vector computacionalmente interpretable, se propuso un preprocesamiento que fue aplicado a los modelos de aprendizaje presentados. Sin embargo, en el caso de BERT, las oraciones no pueden ser traducidas a vectores numéricos de la misma forma que se hizo en las propuestas anteriores, sino que BERT requiere un formato diferente. Con el fin de obtener los resultados esperados, el corpus original siempre debe ser modificado en función de las pautas planteadas por los autores en \cite{2018-devlin-bert}.
+
+BERT define los siguientes \textit{tokens} especiales para la representación de una oración. Dichos \textit{tokens} reciben una interpretación diferente en la etapa de entrenamiento.
+\begin{itemize}
+  \item \textbf{[CLS]}: Indica el inicio de una oración
+  \item \textbf{[SEP]}: Indica el fin de una oración
+  \item \textbf{[MASK]}: Se utiliza para denotar \textit{tokens} que deben ser ignorados por el modelo
+\end{itemize}
+
+BERT no acepta secuencias de tamaño variable por lo que se recurre a la estrategia de \textit{padding}, en la que se establece un tamaño máximo. Las oraciones que tienen una cantidad menor de \textit{tokens} son completadas con el \textit{token} especial \textbf{[MASK]}, para indicar que esas posiciones deben ser ignoradas.
 
 \section{Implementación}
 
