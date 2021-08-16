@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 import pandas as pd
 import random as rnd
@@ -8,13 +9,6 @@ from torch.utils.data import Dataset
 
 import spacy
 nlp = spacy.load("es_core_news_sm")
-
-def clean_words(input_str):
-    punctuation = '.,;:"!?”“_-'
-    word_list = input_str.lower().replace('\n',' ').split()
-    word_list = [word.strip(punctuation) for word in word_list]
-    return word_list
-
 
 class Vocabulary(object):
     def __init__(self, vocab2index={}, add_unk={}, unk_token='UNK'):
@@ -89,7 +83,7 @@ class Vectorizer(object):
         self.vocab2index = vocab2index
         self.label2index = label2index
 
-    def vectorize(self, x, N, padding_start = False):
+    def vectorize(self, x, N, padding_start=False):
         enc = np.zeros(N, dtype=np.int32)
         enc1 = np.array([self.vocab2index.get(w, self.vocab2index["UNK"]) for w in x]) #value if w is in voca2index, else vocab2index["UNK"] 
         l = min(N, len(enc1))
@@ -100,9 +94,14 @@ class Vectorizer(object):
             enc[N-l:] = enc1[:l]
         return enc
 
+    def vectorize_ir(self, x_0, x_1, N, padding_start=False):
+        vec_0 = self.vectorize(x_0, N, padding_start)
+        vec_1 = self.vectorize(x_1, N, padding_start)
+        return vec_0, vec_1
+
     @classmethod
     def vectorize_training(cls, array):        
-        vocab = Vocabulary(vocab2index = {'UNK': 0})
+        vocab = Vocabulary(vocab2index = {'UNK': 0, '[SEP]': 1})
         label_vocab = Vocabulary(vocab2index = {}, add_unk = False)        
         
         for item in array:
@@ -113,8 +112,22 @@ class Vectorizer(object):
             label_vocab.add_token(label)
         return cls(vocab, label_vocab, vocab.vocab2index, label_vocab.vocab2index)
 
+    @classmethod
+    def vectorize_ir_dataset(cls, array):
+        vocab = Vocabulary(vocab2index = {'UNK': 0, '[SEP]': 1})
+        label_vocab = Vocabulary(vocab2index = {}, add_unk=False)
+
+        for item in array:
+            tok_qtext, tok_atext = item['tok_qtext'], item['tok_atext']
+            tokens = tok_qtext + tok_atext
+            for tok in tokens:
+                vocab.add_token(tok)
+            label = item['label']            
+            label_vocab.add_token(label)
+        return cls(vocab, label_vocab, vocab.vocab2index, label_vocab.vocab2index)
+
 class HeadQA(Dataset):
-    def __init__(self, instances, vectorizer, language='es', max_length=20, right_padding = False):
+    def __init__(self, instances, vectorizer, max_length=20, right_padding = False):
         self.instances = instances
         self.vectorizer = vectorizer
         self.max_length = max_length
@@ -161,7 +174,6 @@ class HeadQA(Dataset):
             [self.vectorizer.label_vocab.lookup_token(label)])
         return x, y
 
-
 class HeadQA_IR(Dataset):
     def __init__(self, instances, vectorizer, max_length=20, right_padding=False):
         self.instances = instances
@@ -170,14 +182,49 @@ class HeadQA_IR(Dataset):
         self.right_padding = right_padding
 
     def __getitem__(self, index):
-        pass
+        item = self.instances[index]
+        question_tok, answer_tok = item['tok_qtext'], item['tok_atext']
+        label = item['label']
+        x_0, x_1, y = self.vectorize(question_tok, answer_tok, label)
+        return x_0, x_1, y
 
-    def encode(self, sample):
-        pass
+    def __len__(self):
+        return len(self.instances)
 
-    def vectorize(self, instance, label):
-        pass
+    def encode(self, sample):        
+        length = 0
+        qtext, answers = sample['qtext'], sample['answers']
+        q = nlp(qtext)
+        tok_qtext = [token.text for token in q]
+        right_answer = sample['ra']
+        X_0, X_1, Y = [], [], []
+        for answer in answers:   
+            aid, atext = answer['aid'], answer['atext']
+            a = nlp(atext)
+            tok_atext = [token.text for token in a]            
+            instance_y = 1 if right_answer == aid else 0
+            x_0, x_1, y = self.vectorize(tok_qtext, tok_atext, instance_y)
+            x_0, x_1 = torch.unsqueeze(x_0, 0), torch.unsqueeze(x_1, 0)
+            length = len(x_0)
+            X_0.append(x_0)
+            X_1.append(x_1)
+            Y.append(y)
+        x_0, x_1, y = torch.Tensor(len(X_0), length), torch.Tensor(len(X_1), length), torch.tensor(Y)
+        x_0, x_1 = torch.cat(X_0, out=x_0), torch.cat(X_1, out=x_1)
+        return x_0, x_1, y
 
+    def vectorize(self, question_tok, answer_tok, label):
+        x_0, x_1 = self.vectorizer.vectorize_ir(question_tok, answer_tok, self.max_length, self.right_padding)
+        x_0, x_1 = torch.Tensor(x_0), torch.Tensor(x_1)
+        y = torch.Tensor([self.vectorizer.label_vocab.lookup_token(label)])
+        return x_0, x_1, y
+
+
+def clean_words(input_str):
+    punctuation = '.,;:"!?”“_-'
+    word_list = input_str.lower().replace('\n',' ').split()
+    word_list = [word.strip(punctuation) for word in word_list]
+    return word_list
 
 def parse_dataset(dataset):
     train = []
@@ -241,6 +288,17 @@ def filter_by_category(dataset, category):
         if categ == category:
             filtered_dataset.append(instance)
     filtered_dataset
+
+def save_dataset_to_pickle(filename, dataset):
+    with open(filename, 'wb') as handle:
+        pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+def load_dataset_from_pickle(filename):
+    with open(filename, 'rb') as handle:
+        return pickle.load(handle)
+
+
+
 
 
 
