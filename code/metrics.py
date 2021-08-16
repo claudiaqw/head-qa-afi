@@ -1,7 +1,7 @@
 def accuracy():
     pass
 
-def evaluate_test(exam):
+def evaluate_exam(exam):
     pass
 
 
