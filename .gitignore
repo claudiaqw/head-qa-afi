@@ -6,6 +6,7 @@ __pycache__/
 # project
 
 *.vec
+code/trained_models/biomedical_embeddings/*.pickle
 
 # C extensions
 *.so
