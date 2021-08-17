@@ -1,6 +1,9 @@
 import torch
 import torch.nn.functional as F
 
+import numpy as np
+
+
 
 def train(model, optimizer, train_dl, test_dl, validate, epochs=50):
     y_trues, y_preds = [], []
@@ -26,7 +29,6 @@ def train(model, optimizer, train_dl, test_dl, validate, epochs=50):
         print("Epoch %s train loss  %.4f valid loss %.3f and accuracy %.4f" %
               (i, train_loss, valid_loss, valid_acc))
     return epochs_results
-
 
 def train_ir(model, optimizer, train_dl, test_dl, validate, epochs=50):
     y_trues, y_preds = [], []
@@ -104,7 +106,38 @@ def evaluate(model, dataloader, encoder, pytorch_model=True):
         score += point
     return right/len(dataloader), score
 
+def evaluate_ir(model, dataloader, encoder, pytorch_model=True):
+    pass
 
+def load_embeddings_from_file(filepath):
+    word_to_index, embeddings = {}, []
+    with open(filepath, "r", encoding='utf-8') as fp:
+        _, emb_size = fp.readline().split()
+        index = 0
+        for line in fp:            
+            line = line.split() # each line: word num1 num2 ...            
+            word = line[0]
+            if len(line) != int(emb_size) + 1 or word in word_to_index:
+                continue
+            word_to_index[word] = index
+            embedding_i = np.array([float(val) for val in line[1:]])
+            embeddings.append(embedding_i)
+            index += 1
+    return word_to_index, np.stack(embeddings)
+
+def make_embedding_matrix(filepath, words, word_to_idx=None, glove_embeddings=None):
+    if word_to_idx is None or glove_embeddings is None:
+        word_to_idx, glove_embeddings = load_embeddings_from_file(filepath)
+    embedding_size = glove_embeddings.shape[1]
+    final_embeddings = np.zeros((len(words), embedding_size))
+    for i, word in enumerate(words):
+        if word in word_to_idx:
+            final_embeddings[i,:] = glove_embeddings[word_to_idx[word]]
+        else:
+            embedding_i = torch.ones(1, embedding_size) #si el embedding no esta, se genera a partir de una distribución
+            torch.nn.init.xavier_uniform_(embedding_i)
+            final_embeddings[i,:] = embedding_i
+    return final_embeddings
 
 
 

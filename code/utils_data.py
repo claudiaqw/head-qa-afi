@@ -237,7 +237,7 @@ def parse_dataset(dataset):
             aid, atext = answer['aid'], answer['atext']
             a = nlp(atext)
             tok_atext = [token.text for token in a]
-            instance_x = tok_qtext + ['SEP'] + tok_atext
+            instance_x = tok_qtext + ['[SEP]'] + tok_atext
             instance_y = 1 if right_answer == aid else 0
             training_sample = {}
             training_sample['question'] = qtext
