@@ -1,13 +1,27 @@
 \chapter{Metodología}\label{chapter:methods}
 
-En este capítulo se describe detalladamente el proceso de
+En este capítulo se describe detalladamente el proceso de modelización de los datos y diseño de los algoritmos. Inicialmente, se presenta la descripción CRISP-DM (del inglés, \textit{Cross Industry Standard Process for Data Mining}) con el objetivo de detallar a grandes rasgos el ciclo de vida del proyecto y las diferentes fases. Las siguientes secciones están dedicadas al análisis descriptivo del conjunto de datos a utilizar y la definición de los modelos concebidos para solucionar el problema planteado. 
 
+De manera general, los modelos presentados siguen la metodología \textit{Pointwise}, explicada en el capítulo anterior, transformando el problema de selección de respuestas en un problema de clasificación binaria.
 
 \section{Descripción CRISP-DM}
 
+El proyecto se consta de las siguientes fases:
+
+\begin{itemize}
+  \item Comprensión del problema: Definición de necesidades del cliente (comprensión del negocio)
+  \item Comprensión de los datos: Estudio y comprensión de los datos
+  \item Preparación de los datos: Análisis de los datos y selección de características
+  \item Modelado
+  \item Evaluación (obtención de resultados)
+\end{itemize}
+
+TODO: poner esquema con horas y el ciclo
+
+
 \section{Descripción del conjunto de datos}
 
-El conjunto de datos está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en train, development y test. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
+El conjunto de datos Head-QA está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en \textit{train}, \textit{development} y \textit{test}. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
 
 \begin{itemize}
   \item Id: identificador y texto de la pregunta
@@ -19,9 +33,14 @@ El conjunto de datos está organizado en preguntas y respuestas de las categorí
 
 \section{Análisis del conjunto de datos}
 
-\subsection{Análisis descriptivo}
+TODO: Cantidad de muestras por conjunto, palabras más comunes
+
 
 \subsection{Procesamiento de datos}
+
+Se presentan dos enfoques, el primero aplica arquitecturas propias del aprendizaje supervisado, mientras que el segundo combina técnicas de recuperación de información en arquitecturas de aprendizaje profundo. Cada uno de los enfoques requiere un preprocesamiento y representación de la información diferentes, los cuales se detallan en esta sección.
+
+TODO: Tokenización. Abordar las dos formas de representar los datos
 
 
 \chapter{Modelos propuestos}\label{chapter:models}
@@ -107,6 +126,66 @@ Las operaciones presentadas en las ecuaciones \ref{lstm:ig} - \ref{lstm:hidden_s
 
 La sencillez arquitectónica del modelo permite que se pueda utilizar como base para la comparación con otros modelos más complejos que serán abordados a continuación.
 
+\section{\textit{BiLSTM+Att}}\label{bilstm_t}
+
+El tercer modelo propuesto tiene una arquitectura más compleja que el anterior consistiendo, esencialmente, en una red \textit{BiLSTM} integrada con un mecanismo de atención.
+
+En este caso, se adiciona el uso de un modelo del lenguaje (en inglés, \textit{language model})  (\cite{mikolov-2016-fastext}) pre-entrenado en un conjunto de documentos en idioma español con el propósito de ganar riqueza semántica en la representación de la oración. Utilizar un modelo pre-entrenado ofrece la posibilidad de aprovechar el conocimiento del lenguaje contenido en la representación de las palabras (a través de los \textit{embeddings} pre-entrenados en una tarea auxiliar) en nuestra tarea específica que, en este caso, es la selección de respuestas. El modelo del lenguaje empleado es el presentado por \cite{mikolov-2016-fastext}, entrenado sobre un conjunto de artículos médicos tomados de la biblioteca electrónica \textit{Scielo}\footnote{https://scielo.isciii.es/scielo.php} tomados de \cite{2019-medical-fastext}.
+
+Las redes recurrentes unidireccionales en general, en el análisis de una palabra, tienen en cuenta solo las palabras anteriores (o posteriores), sin embargo sería útil que al hallar la representación de una palabra se tuviera en cuenta tanto las palabras que aparecen antes como las que aparecen después en una oración. Por esta razón se decide utilizar una capa \textit{BiLSTM}, esto posibilita que en cada estado de una secuencia, la red tenga una visión completa y consecutiva de todos los estados anteriores y posteriores. Se propone la inclusión de una capa de atención pues podría ayudar al modelo a darle más peso a ciertas palabras en la oración que pueden ser determinantes en la predicción.
+
+En la figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo matemático que se presenta en esta sección. Seguidamente se presenta una parte de la representación formal del modelo.
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=0.75\textwidth]{Graphics/bilstm.png}
+  \end{center}
+    \caption{Arquitectura del modelo de extracción de relaciones \textit{BiLSTM+Att}}\label{bilstm}
+\end{figure}
+
+Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$, donde $x^{(t)}$ representa el t-ésimo \textit{token} con $(t = 1, 2, ..., T)$ y $T$, la cantidad de \textit{tokens} de la oración $S$. El modelo puede ser definido formalmente como:
+
+\begin{align}
+  x_{t} &= Ex^{(t)} \label{bilstm:emb}\\
+  \nonumber \\
+  \overrightarrow{i_{t}} &= \sigma{(\overrightarrow{W^{(i)}} x_{t} + \overrightarrow{U^{(i)}}\overrightarrow{h_{t-1}})} \label{bilstm:ig} \\
+  \overrightarrow{f_{t}} &= \sigma{(\overrightarrow{W^{(f)}} x_{t} + \overrightarrow{U^{(f)}}\overrightarrow{h_{t-1}})} \label{bilstm:fg} \\
+  \overrightarrow{o_{t}} &= \sigma{(\overrightarrow{W^{(o)}} x_{t} + \overrightarrow{U^{(o)}}\overrightarrow{h_{t-1}})} \label{bilstm:og} \\
+  \overrightarrow{\tilde{c_{t}}} &= \tanh(\overrightarrow{W^{(c)}} x_{t} + \overrightarrow{U^{(c)}}\overrightarrow{h_{t-1}}) \label{bilstm:new_memory_cell}
+\end{align}
+
+\begin{align}
+  \overrightarrow{c_{t}} &= \overrightarrow{f_{t}}\overrightarrow{c_{t-1}} + \overrightarrow{i_{t}}\overrightarrow{\tilde{c_{t}}} \label{bilstm:cell_state} \\
+  \overrightarrow{h_{t}} &= \overrightarrow{o_{t}}\tanh{\overrightarrow{c_{t}}} \label{bilstm:hidden_state}\\
+  \nonumber \\
+  \overleftarrow{i_{t}} &= \sigma{(\overleftarrow{W^{(i)}} x_{t} + \overleftarrow{U^{(i)}}\overleftarrow{h_{t+1}})} \label{bilstml:ig} \\
+  \overleftarrow{f_{t}} &= \sigma{(\overleftarrow{W^{(f)}} x_{t} + \overleftarrow{U^{(f)}}\overleftarrow{h_{t+1}})} \label{bilstml:fg} \\
+  \overleftarrow{o_{t}} &= \sigma{(\overleftarrow{W^{(o)}} x_{t} + \overleftarrow{U^{(o)}}\overleftarrow{h_{t+1}})} \label{bilstml:og} \\
+  \overleftarrow{\tilde{c_{t}}} &= \tanh(\overleftarrow{W^{(c)}} x_{t} + \overleftarrow{U^{(c)}}\overleftarrow{h_{t+1}}) \label{bilstml:new_memory_cell} \\
+  \overleftarrow{c_{t}} &= \overleftarrow{f_{t}}\overleftarrow{c_{t+1}} + \overleftarrow{i_{t}}\overleftarrow{\tilde{c_{t}}} \label{bilstml:cell_state} \\
+  \overleftarrow{h_{t}} &= \overleftarrow{o_{t}}\tanh{\overleftarrow{c_{t}}} \label{bilstml:hidden_state}
+\end{align}
+
+El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector $x_{t} \in {\mathbb{R}} ^{d}$, donde $d$ es la dimensión de los \textit{embeddings} que constituye un hiperparámetro del modelo. Es importante aclarar que la Ecuación \ref{bilstm:emb} luce exactamente como la Ecuación \ref{lstm:emb} correspondiente al modelo anterior, la diferencia se encuentra en que en el modelo \textit{LSTM} los pesos de la capa de \textit{embeddings} $E$ se aprenden durante la etapa de entrenamiento, mientras que, en este caso, los pesos que se utilizan pertenecen a \textit {embeddings} pre-entrenados tomados de \cite{2019-medical-fastext} que ya contienen un conocimiento del idioma español y del dominio médico específicamente, adquirido previamente.
+
+Una segunda capa está conformada por una red \textit{Bi-LSTM}, la cual permite tener en cuenta para el cómputo de un estado no solo las palabras anteriores sino también las siguientes. Las Ecuaciones \ref{bilstm:ig} - \ref{bilstm:hidden_state} representan la \textit{LSTM} orientada de izquierda a derecha, que comienza en el principio de la oración y concluye en el final, mientras que en las Ecuaciones \ref{bilstml:ig} - \ref{bilstml:hidden_state} representan la \textit{LSTM} orientada en sentido contrario, de derecha a izquierda. La arquitectura de la red bidireccional es muy similar a la presentada en el modelo anterior, con la diferencia que se han incluido las flechas para indicar el sentido de la red.
+
+Las ecuaciones serán aplicadas secuencialmente a cada uno de los \textit{tokens} $x^{(t)}$ que conforman una oración $S$. En este caso, a diferencia del modelo presentado anteriormente, en lugar de utilizar solo el último estado $h_{T}$ de la red, se utilizan todos los estados intermedios $h_{t}$  $(t = 1, 2, ..., T)$. De manera que, por cada capa \textit{LSTM}, se obtiene un conjunto de estados $h_{1}, h_{2}, ..., h_{T}$.
+
+En el caso de la red \textit{BiLSTM} se obtienen dos conjuntos de estados. Se utiliza la notación $\overrightarrow{h_{t}}$ y $\overleftarrow{h_{t}}$ como referencia al t-ésimo estado de la red izquiera-derecha y derecha-izquierda respectivamente. Por lo que, los dos conjuntos de estados intermedios se representan como $\overrightarrow{h_{1}}, \overrightarrow{h_{2}}, ... \overrightarrow{h_{T}}$ y $\overleftarrow{h_{1}}, \overleftarrow{h_{2}}, ... \overleftarrow{h_{T}}$. En el resto del modelo, en función de ganar claridad en la escritura, se utilizará $\overrightarrow{h_{t}}$ y  $\overleftarrow{h_{t}}$ para denotar los estados intermedios de forma genérica.
+
+\begin{align}
+  h_{t} &= [\overrightarrow{h_{t}} \oplus \overleftarrow{h_{t}}] \label{bilstm:concat} \\
+  W &= \tanh{(IW_{a} + B)} \label{bilstm:dense} \\
+  A &= sofmax(W) \label{bilstm:sig} \\
+  c &= IA^{T} \label{bilstm:dot} \\
+  \hat{y} &= softmax(Uc + b) \label{bilstm:pred}
+\end{align}
+
+donde $h_{t} \in {\mathbb{R}} ^{2d}$ es el resultado de concatenar $\overrightarrow{h_{t}} \in {\mathbb{R}} ^{d}$ con $\overleftarrow{h_{t}} \in {\mathbb{R}} ^{d}$ y constituye el estado definitivo de la celda $t$, expresado en la Ecuación \ref{bilstm:concat}. La salida de la capa \textit{BiLSTM} constituye entonces, un conjunto de estados $I  = {[h_{1}, h_{2}, ..., h_{T}]}$ con $I \in {\mathbb{R}}^{(T \times 1)}$.
+
+El objetivo de incluir un mecanismo de atención es que el modelo dé mayor peso a aquellas palabras que tienen una mayor influencia en la predicción final. Intuitivamente, lo que se quiere es un vector de pesos con el mismo tamaño $T$ que la cantidad de palabras de la oración. Dicho vector debe poseer en cada componente un número positivo entre 0 y 1 que indique cuán relevante es esa palabra para la clasificación. Por esta razón, la Ecuación \ref{bilstm:dense} toma la salida de la red \textit{BiLSTM}, $I \in {\mathbb{R}}^{(T \times 1)}$, como entrada a una capa densa, donde $W_{a}$ es la matriz aprendida durante la etapa de entrenamiento, con función de activación tangente que obtiene como salida el vector de pesos no normalizado $W$. Con el objetivo de expresar los valores de $W$ en una escala entre 0 y 1 se aplica la función \textit{softmax}, como se muestra en la Ecuación \ref{bilstm:sig}, obteniendo un vector $A$ distribuido probabilísticamente cuyas componentes representan los pesos de atención. En la Ecuación \ref{bilstm:dot} se combina el vector de pesos de atención $A$ con la salida de la capa \textit{BiLSTM} dando como resultado un vector $c$, conocido como vector contexto, que constituye la representación final de la oración. Finalmente, una capa lineal utiliza la representación de la oración obtenida $c$ para predecir la relación $\hat{y}$ existente en la oración. Esta salida se convierte en una distribución de probabilidades empleando la función \textit{softmax}.
+
 \section{\textit{Transfer Learning} basado en BERT}\label{bert_t}
 
 \cite{2018-devlin-bert} plantea que el uso de BERT en el enfoque \textit{fine tuning} obtiene nuevos resultados en el estado del arte en varias tareas de procesamiento del lenguaje natural, entre ellas, el reconocimiento de entidades nombradas y los sistemas pregunta/respuesta.
@@ -116,6 +195,12 @@ La diferencia con otros modelos de representación del lenguaje, en cuanto a arq
 Los autores de BERT señalan como principal contribución la demostración de la efectividad del pre-entrenamiento bidireccional en la representación del lenguaje sobre las arquitecturas unidireccionales utilizadas hasta ese momento y, además, plantean que con el uso de esta nueva representación se puede reducir la complejidad de la arquitectura del modelo y aún así, obtener mejores resultados.
 
 En esta tesis se propone un modelo que hace uso del modelo de lenguaje aprendido utilizando BERT e incorpora un modelo de predicción simple. La propuesta tiene como objetivo comprobar si los aportes de BERT se pueden extender al idioma español y, específicamente, a la tarea de extracción de relaciones semánticas entre entidades.
+
+\section{QA LSTM}
+
+\section{QA LSTM + CNN}
+
+\section{QA BERT}
 
 \subsection{Especificidad del preprocesamiento}
 

@@ -12,14 +12,6 @@ En este tipo de problemas de selección múltiple, un simple match de palabras n
 
 ## Descripcion del dataset
 
-El conjunto de datos está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en train, development y test. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
-
-* ID: el id y el texto de la pregunta
-* path e la imagen si hay
-* Una lista con las posibles respuestas
-* El id de la respuesta correcta
-
-En (Vilares et. al. 2019) todas las propuestas que se presentan son no supervisadas o supervisadas a distancia.
 
 El conjunto de datos se puede representar como una lista de tuplas de la forma [(q0, A0), ..., (qn, An)] donde qi es una pregunta i y Ai el conjunto de respuestas para esa pregunta i. 
 
