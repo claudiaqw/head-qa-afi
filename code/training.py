@@ -3,8 +3,6 @@ import torch.nn.functional as F
 
 import numpy as np
 
-
-
 def train(model, optimizer, train_dl, test_dl, validate, epochs=50):
     y_trues, y_preds = [], []
     epochs_results = []
@@ -65,7 +63,8 @@ def validate(model, dataloader):
         loss = F.binary_cross_entropy(out, y.float())
         loss += batch*(loss.item())
         total += batch
-        pred = torch.max(out, dim=1)[1]
+        # pred = torch.max(out, dim=1)[1]
+        pred = torch.where(out > 0.4, 1, 0)
         y_true.append(y)
         y_preds.append(pred)
         right += (pred == y).float().sum().item()
@@ -81,22 +80,32 @@ def validate_ir(model, dataloader):
         loss = F.binary_cross_entropy(out, y.float())
         loss += batch*(loss.item())
         total += batch
-        pred = torch.max(out, dim=1)[1]
+        # pred = torch.max(out, dim=1)[1]
+        pred = torch.where(out > 0.4, 1, 0)
         y_true.append(y)
         y_preds.append(pred)
         right += (pred == y).float().sum().item()
     return loss/total, right/total, y_true, y_preds
 
-def evaluate(model, dataloader, encoder, pytorch_model=True):
-    def evaluator(model, instance, encoder):
-        x, y = encoder(instance)
-        y_ = model(x.long())
-        pred = torch.max(y_, dim=0)[1]
-        real = torch.max(y, dim=0)[1]
-        acc = (pred == real).float()
-        points = 3 if acc == 1 else -1
-        return acc, points
+def evaluator(model, instance, encoder):
+    x, y = encoder(instance)
+    y_ = model(x.long())
+    pred = torch.max(y_, dim=0)[1]
+    real = torch.max(y, dim=0)[1]
+    acc = (pred == real).float()
+    points = 3 if acc == 1 else -1
+    return acc, points
 
+def evaluator_ir(model, instance, encoder):
+    x_0, y_0, y = encoder(instance)
+    y_ = model(x_0.long(), y_0.long())
+    pred = torch.max(y_, dim=0)[1]
+    real = torch.max(y, dim=0)[1]
+    acc = (pred == real).float()
+    points = 3 if acc == 1 else -1
+    return acc, points
+
+def evaluate(model, dataloader, encoder, evaluator, pytorch_model=True):
     if pytorch_model:
         model.eval()
     right, score = 0, 0
@@ -105,9 +114,6 @@ def evaluate(model, dataloader, encoder, pytorch_model=True):
         right += acc
         score += point
     return right/len(dataloader), score
-
-def evaluate_ir(model, dataloader, encoder, pytorch_model=True):
-    pass
 
 def load_embeddings_from_file(filepath):
     word_to_index, embeddings = {}, []
