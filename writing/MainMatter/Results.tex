@@ -1,3 +1,44 @@
 \chapter{Resultados}\label{chapter:results}
 
+A lo largo de esta tesis se han concebido y diseñado varios modelos de aprendizaje profundo para resolver la tarea de extracción de relaciones a partir de un corpus previamente construido. En el presente capítulo, se expone un conjunto de experimentos desarrollados con el propósito de comprobar la efectividad de los modelos propuestos en la tarea de selección de respuestas. Asimismo, se verifica la validez del prototipo en función de los objetivos trazados al inicio de la investigación.
+
 \section{Medidas de Evaluación}
+
+Con el propósito de medir la eficacia de los modelos propuestos en la extracción de relaciones es necesario la aplicación de medidas estándares utilizadas en el paradigma del aprendizaje automático. Para la evaluación de los modelos propuestos se utiliza como métrica la \textbf{Exactitud}. Asimismo, teniendo en cuenta el escenario también se utiliza como métrica de evaluación la puntuación característica de estos exámenes y que es la empleada realmente para calificar los exámenes cada año.
+
+Supongamos que estamos en presencia de un problema de clasificación binario cualquiera, donde solo existen dos clases que llamaremos $C^{+}$ y $C^{-}$. Los tipos de respuestas mencionados anteriormente se definen como:
+
+\begin{description}
+  \item \textbf{\textit{True Positive} (TP)}: Un ejemplo se clasifica en \textbf{TP}, traducido al español como Verdadero Positivo, cuando la clase predicha coincide con la clase correcta $C^{+}$. En este caso, la predicción hecha fue correcta.
+  \item \textbf{\textit{False Positive} (FP)}: Un ejemplo se clasifica en \textbf{FP}, en español Falso Positivo, cuando el valor predicho es $C^{+}$, sin embargo su valor correcto es $C^{-}$. En este caso, el modelo hizo una predicción equivocada.
+  \item \textbf{\textit{False Negative} (FN)}: Una instancia se clasifica en \textbf{FN}, en español Falso Negativo, cuando el valor predicho es $C^{-}$, sin embargo su clase correcta es $C^{+}$. En este caso, como en el anterior, el modelo hizo una predicción incorrecta.
+  \item \textbf{\textit{True Negative} (TN)}: Una instancia se clasifica en \textbf{TN}, en español, Verdadero Negativo, cuando la clase predicha corresponde con la clase correcta $C^{-}$, lo que implica que el modelo hizo una predicción acertada.
+\end{description}
+
+Estos tipos de respuestas se representan visualmente en la matriz de confusión que se muestra en la tabla \ref{tab:confusion}.
+
+\begin{table}[h!]
+  \caption{Matriz de confusión para un problema de clasificación binario}
+  \begin{center}
+    \begin{tabular}{ccc|cc|cc}
+        & Valor Correcto/Valor Predicho &    & $\mathbf{C}^{\boldsymbol{+}}$ & & $\mathbf{C}^{\boldsymbol{-}}$  \\
+        \hline
+        & $\mathbf{C}^{\boldsymbol{+}}$ &   & TP & & FN  \\
+        \hline
+        & $\mathbf{C}^{\boldsymbol{-}}$ &   & FP & & TN  \\
+    \end{tabular}
+  \end{center}
+  \label{tab:confusion}
+\end{table}
+
+La \textbf{Exactitud} (en inglés \textit{Accuracy}) se interpreta como la razón entre las predicciones correctas ($TP + TN$) y la cantidad total de instancias que analizó el modelo. Se computa sobre los resultados generales del modelo y se define como:
+
+\begin{equation}
+  E = \frac{TP + TN}{\textit{Total de Ejemplos}}
+\end{equation}
+
+
+\section{Evaluación de los modelos}
+
+Dado que una instancia del conjunto original se convierte en varios ejemplos diferentes, una por cada posible respuesta y que solo una de las respuestas es correcta, el conjunto de datos resultante del procesamiento de texto es un conjunto desbalanceado. De manera geenral, por una instancia positiva pueden aparecer al menos 3 instancias negativas.
+

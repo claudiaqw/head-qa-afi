@@ -1,49 +1,185 @@
-\chapter{Metodología}\label{chapter:methods}
+\chapter{Análisis y preprocesamiento}\label{chapter:methods}
 
-En este capítulo se describe detalladamente el proceso de modelización de los datos y diseño de los algoritmos. Inicialmente, se presenta la descripción CRISP-DM (del inglés, \textit{Cross Industry Standard Process for Data Mining}) con el objetivo de detallar a grandes rasgos el ciclo de vida del proyecto y las diferentes fases. Las siguientes secciones están dedicadas al análisis descriptivo del conjunto de datos a utilizar y la definición de los modelos concebidos para solucionar el problema planteado. 
+Este capítulo consta de dos partes principales. La primera sección está dedicada a la planificación del proyecto presentando un esquema de pasos y tareas que fueron llevados a cabo en la realización de este proyecto, desde el análisis del problema inicial hasta la presentación de los resultados. 
 
-De manera general, los modelos presentados siguen la metodología \textit{Pointwise}, explicada en el capítulo anterior, transformando el problema de selección de respuestas en un problema de clasificación binaria.
+Las siguientes secciones están dedicadas al análisis descriptivo, transformación y modelización de los datos a utilizar con el objetivo de prepararlos para que sean una entrada válida a los modelos de aprendizaje que se presen´tan más adelante.
 
 \section{Descripción CRISP-DM}
 
-El proyecto se consta de las siguientes fases:
+Esta sección está dedicada a la presentación de las diferentes fases del proyecto. Para la organizaciónde este trabajo se sigue la metodolodía CRISP-DM (del inglés, \textit{Cross Industry Standard Process for Data Mining}), seguida con el objetivo de organizar el proceso de desarrollo. A continuación, se detalla a grandes rasgos el ciclo de vida del proyecto y las diferentes fases. 
+
+El proyecto consta de las siguientes fases:
 
 \begin{itemize}
-  \item Comprensión del problema: Definición de necesidades del cliente (comprensión del negocio)
-  \item Comprensión de los datos: Estudio y comprensión de los datos
-  \item Preparación de los datos: Análisis de los datos y selección de características
+  \item Comprensión del negocio
+  \item Comprensión de los datos
+  \item Preparación de los datos
   \item Modelado
-  \item Evaluación (obtención de resultados)
+  \item Evaluación
 \end{itemize}
 
-TODO: poner esquema con horas y el ciclo
+A continuación se describen brevemente las diferentes fases del proyecto, de igualmanera en la Figura \ref{crisp} se muestran los pasos de manera gráfica y se detallan las actividades desarrolladas en cada caso.\\
+
+\textbf{Comprensión del Negocio}: En esta fase inicial se define y entiende el problema en cuestión, planteado en la Introducción del trabajo. Asimismo, se trazan el objetivo general y los objetivos específicos para dar respuesta a la pregunta científica. Se realiza un estudio minucioso del estado del arte de los sistemas Q/A que permite no sola la comprensión del problema sino las principales formas de solución.
+
+\textbf{Comprensión de los Datos}: La fase de entendimiento de datos comienza con la colección de datos inicial y continúa con las actividades que permiten familiarizarse con los datos, identificar los problemas de calidad y descubrir conocimiento preliminar sobre los datos a través de un análisis descriptivo.
+
+\textbf{Preparación de los Datos}: La fase de preparación de datos cubre todas las actividades necesarias para construir el conjunto final de datos a partir de los datos en bruto iniciales. Las tareas incluyen la transformación, la limpieza y la vectorización de datos para la modelación.
+
+\textbf{Modelado}: En esta fase, se seleccionan y aplican las técnicas de modelado que sean pertinentes al problema en cuestión. Se diseñan e implementan las diferentes arquitecturas de red y algoritmos de aprendizaje automático.
+
+\textbf{Evaluación}: Finalmente, en esta etapa del proyecto se evalúan los modelos anteriormente implementados y se comparan entre sí. Se analizan los resultados obtenidos cuantitativamente y también cualitativamente teniendo en cuenta su alineación con los objetivos inicialmente propuestos.
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/crisp.png}
+  \end{center}
+    \caption{Etapas y tiempos de desaroollo del proyecto}\label{crisp}
+\end{figure}
+
+En la Figura \ref{crisp} se pueden visualizar cada una de las fases de desarrollo del proyecto, incluyendo las actividades específicas que se desarrollaron en cada etapa y la cantidad de horas dedicadas. A las fases anteriormente señaladas se añade la escritura de la memoria, haciendo un total de 100 horas.
 
 
-\section{Descripción del conjunto de datos}
+\subsection{Descripción del conjunto de datos}
 
-El conjunto de datos Head-QA está organizado en preguntas y respuestas de las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en \textit{train}, \textit{development} y \textit{test}. El datset está compuesto por un conjunto de preguntas/respuestas en formato JSON siguiendo la siguientes estructura:
+El conjunto de datos Head-QA presentado por \cite{2019-head-qa} y orientado al dominio biomédico, es un conjunto de preguntas y respuestas de múltiples opciones. El conjunto se crea a partir de los exámenes confeccionados por el Ministerio de Sanidad, Consumo y Bienestar Social de España \footnote{https://www.mscbs.gob.es} y realizados cada año para acceder a distintas especialidades dentro del sistema de salud. Más información sobre la confección del \textit{dataset} puede ser encontrada en \cite{2019-head-qa}.
+
+Cada instancia del conjunto de datos está compuesta principalemnte por una pregunta y las posibles respuestas, de las cuales solo una es correcta. Las preguntas y respuestas están organizadas en las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en \textit{train}, \textit{development} y \textit{test}.
+
+En la Figura \ref{sample} se muestra un ejemplo de pregunta/respuesta del \text{dataset}. Como se puede observar cada instancia del conjunto está en formato JSON y tiene los siguientes atributos:
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/sample.png}
+  \end{center}
+    \caption{Ejemplo de instancia del conjunto de datos}\label{sample}
+\end{figure}
 
 \begin{itemize}
-  \item Id: identificador y texto de la pregunta
-  \item Ruta: camino a la imagen si lo hay
-  \item Respuestas: Una lista con las posibles respuestas
-  \item El id de la respuesta correcta
+  \item name: nombre del examen
+  \item qid: identificador de la pregunta
+  \item qtext: texto de la pregunta
+  \item category: categoría del examen (Medicina, Enfermería, Biología, ...)
+  \item year: año del examen
+  \item answers: lista de posibles respuestas, conformada por su número y el texto
+  \item ra: número de la respuesta correcta
+  \item image: camino a la imagen si lo hay
 \end{itemize}
 
+Aunque en el idioma inglés se han realizado avances en la selección de respuestas y existen varios conjuntos de datos que permiten la evaluación de los modelos propuestos, incluso en ese idioma, \textit{datasets} de dominios específicos y tan complejos, como el actual, son escasos. 
 
-\section{Análisis del conjunto de datos}
+\section{Análisis descriptivo}
 
-TODO: Cantidad de muestras por conjunto, palabras más comunes
+En esta sección se presenta un análisis exploratorio sobre el conjunto de dato sobre el cual se construirán los modelos. Aunque los algoritmos diseñados sobre estos datos hasta el moneto han seguido el enfoque no supervisado y/o supervisado a distancia, los autores han presentado una partición con el fin de que pueda ser utilizado por algotirmos supervisados.
+
+En total, Head-QA cuenta con 6.765 preguntas con sus respuestas posibles, organizadas en 6 categorías según la temática. La siguiente Tabla \ref{size} muestra la distribución de las instancias teniendo en cuenta las categorías y las particiones.
+
+\begin{table}[!tb]
+  \begin{center}
+    \caption{Distribución de las preguntas en Head-QA}
+    \begin{tabular}{l|c|c|c|c|c}
+      \textbf{Categoría} & \textbf{Distribución total} & \textbf{Train} & \textbf{Dev} & \textbf{Test} \\
+      \hline
+      Biología & 1.132 & 452 & 226 & 454 \\
+      Enfermería & 1.069 & 384 & 230 & 455 \\
+      Farmacología & 1.139 & 457 & 225 & 457 \\
+      Medicina & 1.149 & 455 & 231 & 463 \\
+      Psicología & 1.134 & 453 & 226 & 455 \\
+      Química & 1.142 & 456 & 228 & 458 \\ 
+      \textbf{Total} & \textbf{6.765} & \textbf{2.657} & \textbf{1.366} & \textbf{2.742}\\       
+    \end{tabular}
+  \end{center}
+  \label{size}
+\end{table}
+
+La Figura \ref{train_dev_test} muestra la distribución de preguntas por categorías en los subconjuntos \textit{train}, \textit{dev} y \textit{test}.
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/train_dev_test.png}
+  \end{center}
+    \caption{Distribución de instancias por categoría}\label{train_dev_test}
+\end{figure}
+
+La Figura \ref{category} muestra una nube de palabras por cada una de las categorías que definen el dominio de cada pregunta. La nube de palabras muestra las palabras más comunes en mayor tamaño.
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/word_category.png}
+  \end{center}
+    \caption{Nube de palabras por categoría}\label{category}
+\end{figure}
+
+Como se puede observar las palabras más comunes difieren en gran medida de categoría a categoría. Esto sugiere que puede ser recomendable construir modelos independientes para cada uno de los dominios. 
+
+Asimismo, la Tabla \ref{count} muestra la máxima y media cantidad de palabras que tienen las preguntas y las respuestas respectivamente.
+
+\begin{table}[!tb]
+  \begin{center}
+    \caption{Tamaño de las preguntas y respuestas}
+    \begin{tabular}{l|c|c|c|c|c}
+      \textbf{Categoría} & \textbf{Max. pregunta} & \textbf{Avg. pregunta} & \textbf{Max. respuesta} & \textbf{Avg. respuesta} \\
+      \hline
+      Biología & 43 & 11 & 40 & 5 \\
+      Enfermería & 187 & 29 & 94 & 9 \\
+      Farmacología & 104 & 18 & 43 & 6 \\
+      Medicina & 308 & 55 & 85 & 9 \\
+      Psicología & 103 & 21 & 43 & 7 \\
+      Química & 63 & 15 & 52 & 7 \\     
+    \end{tabular}
+  \end{center}
+  \label{count}
+\end{table}
+
+Este análisis denota que las preguntas suelen tener una longitud media mayor que las respuestas. La longitud media varía en dependencia de la categoría, siendo los textos de Medicina los de mayor tamaño. 
 
 
-\subsection{Procesamiento de datos}
+\section{Preprocesamiento}
 
-Se presentan dos enfoques, el primero aplica arquitecturas propias del aprendizaje supervisado, mientras que el segundo combina técnicas de recuperación de información en arquitecturas de aprendizaje profundo. Cada uno de los enfoques requiere un preprocesamiento y representación de la información diferentes, los cuales se detallan en esta sección.
+Como se plantea en el capítulo anterior, una instancia del corpus en esencia está conformada por la oración correspondiente a la pregunta, las correspondientes a las posibles respuestas y la respuesta correcta. Con el propósito de utilizar el corpus antes descrito como entrada a los modelos matemáticos que se presentan es necesario transformar cada una de las instancias en un vector numérico. En este caso, es necesario transformar las oraciones en una secuencia de \textit{tokens}.
 
-TODO: Tokenización. Abordar las dos formas de representar los datos
+En el idioma español, un \textit{token} constituye una cadena de caracteres consecutivos entre dos espacios, o entre un espacio y un signo de puntuación. Todos los signos constituyen \textit{tokens} excepto las comillas alrededor de una palabra, sin espacios intermedios, que simbolizan citas textuales.
+
+Una oración se puede transformar en una secuencia de \textit{tokens}. El conjunto de los \textit{tokens} presentes en el corpus constituye el vocabulario de palabras, donde a cada \textit{token} del vocabulario se le hace corresponder un número entero único. De esta manera, cada \textit{token} es representado por el índice de la palabra en el vocabulario de palabras. En este caso, el vocabulario de palabras está compuesto por todas las palabras que aparecen en el corpus, tanto en preguntas como en respuestas, junto a un conjunto de \textit{tokens} especiales.
+
+Acorde con los modelos a desarrollar más adelante, se hace necesario emplear dos enfoques diferentes para vectorizar una instancia del conjunto de datos. El primero se ajusta a arquitecturas propias del aprendizaje supervisado, mientras que el segundo combina técnicas de recuperación de información en arquitecturas de aprendizaje profundo. Cada uno de los enfoques requiere un preprocesamiento y representación de la información diferentes, los cuales se detallan a continuación.
+
+\subsection{Representación supervisada}
+
+Este enfoque consiste en que los modelos reciban un único vector numérico, por lo tanto el objetivo es representar en un mismo vector la pregunta y cada respuesta.
+
+Siguiendo los métodos \textit{Pointwise} donde el problema de selección de respuestas se transforma en un problema de clasificación binario, a partir de una instancia del conjunto de datos original se construyen varios ejemplos vectorizados. Cada instancia original se transforma en tantos vectores como respuestas posibles haya (pueden ser 4 o 5, dependiendo del examen). De manera que cada nuevo ejemplo vectorizado está formado por el texto de la pregunta y el texto de la respuesta separados por un carácter especial, introducido en el vocabulario de palabras con ese objetivo. Se le asigna 1 como etiqueta si el par (pregunta, respuesta) es verdadero, en caso contrario, se le asigna la etiqueta negativa.
+
+En la Figura \ref{vect_1} se muestra como una instancia del conjunto original es transformada en vectores numéricos, teniendo en cuenta la pregunta y si la respuesta es correcta o no.
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/vect_1.png}
+  \end{center}
+    \caption{Ejemplo de instancia vectorizada según el enfoque supervisado puro}\label{vect_1}
+\end{figure}
+
+Con el objetivo de transformar una oración en una secuencia de \textit{tokens} es necesario utilizar un \textit{tokenizer}. Un \textit{tokenizer} no es más que un algoritmo cuyo objetivo es separar texto en bruto en una secuencia de \text{tokens}. En este caso, se utiliza el tokenizador de la librería Spacy\footnote{https://spacy.io/}, específicamente el modelo \texttt{es\_core\_news\_sm}. Este modelo es el más pequeño disponible en español, se selecciona el más pequeño porque la tarea de tokenizar no es muy complicada en términos linguísticos por lo que la autora considera que no es necesario utilizar otro modelo más grande y complejo solo para realizar esta tarea.
+
+\subsection{Representación RI}
+
+El otro enfoque constituye una combinación entre el modelo vectorial clásico en el área de recuperación de información y un modelo de aprendizaje supervisado genérico.  En este caso, los modelos de este perfil en lugar de un único vector numérico que represente ambos textos, la pregunta y la respuesta, están preparados para recibir como entrada una representación vectorial de la pregunta y otra de la respuesta.
+
+La transformación es muy similar a la vista en la sección anterior, con la diferencia de que al admitir dos entradas no es necesario concatenar ambas representaciones. 
+
+En la Figura \ref{vect_2} se muestra un ejemplo de cómo es transformada una instancia del conjunto original, en varias instancias vectorizadas. 
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/vect_2.png}
+  \end{center}
+    \caption{Ejemplo de instancia vectorizada según el enfoque RI}\label{vect_2}
+\end{figure}
 
 
 \chapter{Modelos propuestos}\label{chapter:models}
+
+En el presente capítulo se propone interpretar el problema de selección de respuestas como un problema de clasificación binaria, según el enfoque \textit{Pointwise}, explicado en el capítulo 2. En esta metodología cada par $<pregunta, respuesta>$ se convierte en una instancia y se clasifica en positiva o negativa dependiendo si la respuesta es correcta. Habiendo obtenido el corpus, el objetivo desde este punto es concebir modelos matemáticos-computacionales de aprendizaje profundo principalmente. En este capítulo se presentan diferentes propuestas de modelos para la selección automática de respuestas.
 
 \section{Regresión Logística}
 
@@ -60,7 +196,7 @@ La primera propuesta consiste en una red neuronal recurrente de tipo \textit{LST
   \begin{center}    
     \includegraphics[angle=0, width=0.75\textwidth]{Graphics/lstm2.png} 
   \end{center}
-    \caption{Arquitectura del modelo de extracción de relaciones LSTM básico}\label{lstm}
+    \caption{Arquitectura del modelo LSTM básico}\label{lstm}
 \end{figure}
 
 Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$ la representación vectorial de una oración $S$, donde $x^{(t)}$ representa el t-ésimo \textit{token} con $(t = 1, 2, ..., T)$ y $T$, la cantidad de \textit{tokens} de la oración. El modelo puede ser definido formalmente como:
@@ -134,13 +270,13 @@ En este caso, se adiciona el uso de un modelo del lenguaje (en inglés, \textit{
 
 Las redes recurrentes unidireccionales en general, en el análisis de una palabra, tienen en cuenta solo las palabras anteriores (o posteriores), sin embargo sería útil que al hallar la representación de una palabra se tuviera en cuenta tanto las palabras que aparecen antes como las que aparecen después en una oración. Por esta razón se decide utilizar una capa \textit{BiLSTM}, esto posibilita que en cada estado de una secuencia, la red tenga una visión completa y consecutiva de todos los estados anteriores y posteriores. Se propone la inclusión de una capa de atención pues podría ayudar al modelo a darle más peso a ciertas palabras en la oración que pueden ser determinantes en la predicción.
 
-En la figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo matemático que se presenta en esta sección. Seguidamente se presenta una parte de la representación formal del modelo.
+En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo matemático que se presenta en esta sección. Seguidamente se presenta una parte de la representación formal del modelo.
 
 \begin{figure}[!tb]
   \begin{center}
     \includegraphics[angle=0, width=0.75\textwidth]{Graphics/bilstm.png}
   \end{center}
-    \caption{Arquitectura del modelo de extracción de relaciones \textit{BiLSTM+Att}}\label{bilstm}
+    \caption{Arquitectura del modelo \textit{BiLSTM+Att}}\label{bilstm}
 \end{figure}
 
 Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$, donde $x^{(t)}$ representa el t-ésimo \textit{token} con $(t = 1, 2, ..., T)$ y $T$, la cantidad de \textit{tokens} de la oración $S$. El modelo puede ser definido formalmente como:
@@ -198,7 +334,24 @@ En esta tesis se propone un modelo que hace uso del modelo de lenguaje aprendido
 
 \section{QA LSTM}
 
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/lstm_qa.png}
+  \end{center}
+    \caption{Arquitectura del modelo QA LSTM}\label{lstm_qa}
+\end{figure}
+
+
 \section{QA LSTM + CNN}
+
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/lstm_cnn_qa.png}
+  \end{center}
+    \caption{Arquitectura del modelo QA LSTM-CNN }\label{lstm_cnn_qa}
+\end{figure}
 
 \section{QA BERT}
 

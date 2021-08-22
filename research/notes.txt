@@ -39,9 +39,6 @@ Un sistema Q/A típico consiste en:
 4. Extracción de la frase excata en lenguaje natural que responda a la pregunta
 
 
-
-
-
 ## Métodos:
 
 ### Recuperación de Información
@@ -59,7 +56,7 @@ La mayor parte del trabajo en esta área ha sido en el idoma inglés.
 Los resultados mostraron que todos los sistemas obtuvieron un apuntuación muy inferior a los resultados alcanzados por los humanos , siendo los basados en redes neuronales, los de menor accuracy. La mejor approach fue la de recuperación de información. 
 
 
-Otro de los trabajos enfocados en este conjunto de datos específico se presenta en (2020, Lie et. al). Liu presenta un sistema multi-pasos basado en un framework de extraccción de conocimiento (MurKe). Inicialmente, extrae información de un gran corpus conformado por documentos de salud. Para encontrar la cadena de razonamiento y elegir la respuesta correcta, MurKe itera entre seleccionar los documentos de respaldo, reformular la representación de la consulta utilizando los documentos de respaldo y obtener la puntuación de vinculación para cada elección utilizando el modelo de vinculación. El módulo de reformulación aprovecha documentos seleccionados para evidencia faltante, lo que mantiene la interpretabilidad. Además, nos esforzamos por hacer un uso completo de los modelos pre-entrenados listos para usar. Con menos peso entrenable, el modelo previamente entrenado puede adaptarse fácilmente a las tareas de atención médica con ejemplos de entrenamiento limitados. A partir de los resultados experimentales, este sistema es capaz de superar varias líneas de base sólidas en el conjunto de datos HeadQA.
+
 
 que utiliza representaciones del lenguaje pre-entrenadas en lugar de características lingúísticas explícitas, pues defienden que los métodos de extracción de relaciones del estado del arte al utilizar características léxicas, sintácticas y semánticas computadas con anticipación son más difíciles de extender y aplicar a otros lenguajes.
 
