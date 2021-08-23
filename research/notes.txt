@@ -56,11 +56,20 @@ La mayor parte del trabajo en esta área ha sido en el idoma inglés.
 Los resultados mostraron que todos los sistemas obtuvieron un apuntuación muy inferior a los resultados alcanzados por los humanos , siendo los basados en redes neuronales, los de menor accuracy. La mejor approach fue la de recuperación de información. 
 
 
+def _embed(self, query_tok, doc_tok):
+        tokens_tensor, segments_tensors, sep_index = self._format_input(query_tok, doc_tok)
 
+        self.model.eval()
+        with torch.no_grad():
+            last_hidden_state, pooled_output,_ = self.model(tokens_tensor, segments_tensors)
 
-que utiliza representaciones del lenguaje pre-entrenadas en lugar de características lingúísticas explícitas, pues defienden que los métodos de extracción de relaciones del estado del arte al utilizar características léxicas, sintácticas y semánticas computadas con anticipación son más difíciles de extender y aplicar a otros lenguajes.
+        last_hidden_state = last_hidden_state.squeeze(dim = 0)
+        query_embed = last_hidden_state[1: sep_index]
+        doc_embed = last_hidden_state[sep_index + 1:]
 
-
+        query_embed = torch.sum(query_embed, dim = 0)
+        doc_embed = torch.sum(doc_embed, dim=0)
+        return query_embed, doc_embed
 
 
 

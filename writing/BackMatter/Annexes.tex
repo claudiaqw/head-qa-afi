@@ -1,0 +1,36 @@
+\appendix
+\chapter{Apéndice A: Modelo BiLSTM}\label{anex_1}
+
+Este anexo está dedicado a la definición matmética y formal del modelo BiLSTM+\textit{Attn}, presentado anteriormente.
+
+Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$, donde $x^{(t)}$ representa el t-ésimo \textit{token} con $(t = 1, 2, ..., T)$ y $T$, la cantidad de \textit{tokens} de la oración $S$. El modelo puede ser definido formalmente como:
+
+\begin{align}
+  x_{t} &= Ex^{(t)} \label{bilstm:emb}\\
+  \nonumber \\
+  \overrightarrow{i_{t}} &= \sigma{(\overrightarrow{W^{(i)}} x_{t} + \overrightarrow{U^{(i)}}\overrightarrow{h_{t-1}})} \label{bilstm:ig} \\
+  \overrightarrow{f_{t}} &= \sigma{(\overrightarrow{W^{(f)}} x_{t} + \overrightarrow{U^{(f)}}\overrightarrow{h_{t-1}})} \label{bilstm:fg} \\
+  \overrightarrow{o_{t}} &= \sigma{(\overrightarrow{W^{(o)}} x_{t} + \overrightarrow{U^{(o)}}\overrightarrow{h_{t-1}})} \label{bilstm:og} \\
+  \overrightarrow{\tilde{c_{t}}} &= \tanh(\overrightarrow{W^{(c)}} x_{t} + \overrightarrow{U^{(c)}}\overrightarrow{h_{t-1}}) \label{bilstm:new_memory_cell}
+\end{align}
+
+\begin{align}
+  \overrightarrow{c_{t}} &= \overrightarrow{f_{t}}\overrightarrow{c_{t-1}} + \overrightarrow{i_{t}}\overrightarrow{\tilde{c_{t}}} \label{bilstm:cell_state} \\
+  \overrightarrow{h_{t}} &= \overrightarrow{o_{t}}\tanh{\overrightarrow{c_{t}}} \label{bilstm:hidden_state}\\
+  \nonumber \\
+  \overleftarrow{i_{t}} &= \sigma{(\overleftarrow{W^{(i)}} x_{t} + \overleftarrow{U^{(i)}}\overleftarrow{h_{t+1}})} \label{bilstml:ig} \\
+  \overleftarrow{f_{t}} &= \sigma{(\overleftarrow{W^{(f)}} x_{t} + \overleftarrow{U^{(f)}}\overleftarrow{h_{t+1}})} \label{bilstml:fg} \\
+  \overleftarrow{o_{t}} &= \sigma{(\overleftarrow{W^{(o)}} x_{t} + \overleftarrow{U^{(o)}}\overleftarrow{h_{t+1}})} \label{bilstml:og} \\
+  \overleftarrow{\tilde{c_{t}}} &= \tanh(\overleftarrow{W^{(c)}} x_{t} + \overleftarrow{U^{(c)}}\overleftarrow{h_{t+1}}) \label{bilstml:new_memory_cell} \\
+  \overleftarrow{c_{t}} &= \overleftarrow{f_{t}}\overleftarrow{c_{t+1}} + \overleftarrow{i_{t}}\overleftarrow{\tilde{c_{t}}} \label{bilstml:cell_state} \\
+  \overleftarrow{h_{t}} &= \overleftarrow{o_{t}}\tanh{\overleftarrow{c_{t}}} \label{bilstml:hidden_state}\\
+  \nonumber \\
+  h_{t} &= [\overrightarrow{h_{t}} \oplus \overleftarrow{h_{t}}] \label{bilstm:concat} \\
+  W &= \tanh{(IW_{a} + B)} \label{bilstm:dense} \\
+  A &= sofmax(W) \label{bilstm:sig} \\
+  c &= IA^{T} \label{bilstm:dot} \\
+  \hat{y} &= softmax(Uc + b) \label{bilstm:pred}
+\end{align}
+
+
+donde $h_{t} \in {\mathbb{R}} ^{2d}$ es el resultado de concatenar $\overrightarrow{h_{t}} \in {\mathbb{R}} ^{d}$ con $\overleftarrow{h_{t}} \in {\mathbb{R}} ^{d}$ y constituye el estado definitivo de la celda $t$, expresado en la Ecuación \ref{bilstm:concat}. La salida de la capa \textit{BiLSTM} constituye entonces, un conjunto de estados $I  = {[h_{1}, h_{2}, ..., h_{T}]}$ con $I \in {\mathbb{R}}^{(T \times 1)}$.
