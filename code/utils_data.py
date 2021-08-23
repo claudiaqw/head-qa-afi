@@ -250,7 +250,7 @@ def parse_dataset(dataset):
 
 def random_oversamplig(instances):
     positive_instances = [item for item in instances if item['label'] == 1]
-    diff = len(instances) - 2 * len(positive_instances)
+    diff = len(instances) - 2 * len(positive_instances) # how many will be added
     randomlist = [rnd.randint(0, len(positive_instances) - 1)
                   for i in range(diff)]
 
@@ -258,6 +258,18 @@ def random_oversamplig(instances):
     for i in randomlist:
         ovsersampled_dataset.append(positive_instances[i])
     return ovsersampled_dataset
+
+def random_undersampling(instances):
+    positive_instances = [item for item in instances if item['label'] == 1]
+    negative_instances = [item for item in instances if item['label'] == 0]
+
+    randomlist = [rnd.randint(0, len(negative_instances) - 1)
+                  for i in range(len(positive_instances))]
+
+    undersampled_dataset = positive_instances.copy()
+    for i in randomlist:
+        undersampled_dataset.append(negative_instances[i])
+    return undersampled_dataset
 
 def parse_ir_dataset(dataset):
     data = []
