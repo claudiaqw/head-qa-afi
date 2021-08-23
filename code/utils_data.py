@@ -287,7 +287,7 @@ def filter_by_category(dataset, category):
         categ = instance['category']
         if categ == category:
             filtered_dataset.append(instance)
-    filtered_dataset
+    return filtered_dataset
 
 def save_dataset_to_pickle(filename, dataset):
     with open(filename, 'wb') as handle:
