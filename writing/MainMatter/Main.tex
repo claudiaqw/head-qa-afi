@@ -44,9 +44,9 @@ En la Figura \ref{crisp} se pueden visualizar cada una de las fases de desarroll
 
 El conjunto de datos Head-QA presentado por \cite{2019-head-qa} y orientado al dominio biomédico, es un conjunto de preguntas y respuestas de múltiples opciones. El conjunto se crea a partir de los exámenes confeccionados por el Ministerio de Sanidad, Consumo y Bienestar Social de España \footnote{https://www.mscbs.gob.es} y realizados cada año para acceder a distintas especialidades dentro del sistema de salud. Más información sobre la confección del \textit{dataset} puede ser encontrada en \cite{2019-head-qa}.
 
-Cada instancia del conjunto de datos está compuesta principalemnte por una pregunta y las posibles respuestas, de las cuales solo una es correcta. Las preguntas y respuestas están organizadas en las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología. Y está dividido en \textit{train}, \textit{development} y \textit{test}.
+Cada instancia del conjunto de datos está compuesta en esencia por una pregunta y las posibles respuestas, de las cuales solo una es correcta. Las preguntas y respuestas están organizadas en las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología, correspondientes a los diferentes exámenes que se realizan. Aunque todas las propuestas publicadas hasta el momento se han construido sobre el paradigma no supervisado, el conjunto de datos está dividido en \textit{train}, \textit{development} y \textit{test}.
 
-En la Figura \ref{sample} se muestra un ejemplo de pregunta/respuesta del \text{dataset}. Como se puede observar cada instancia del conjunto está en formato JSON y tiene los siguientes atributos:
+En la Figura \ref{sample} se muestra un ejemplo de pregunta/respuesta del \text{dataset}. 
 
 \begin{figure}[!tb]
   \begin{center}
@@ -54,6 +54,8 @@ En la Figura \ref{sample} se muestra un ejemplo de pregunta/respuesta del \text{
   \end{center}
     \caption{Ejemplo de instancia del conjunto de datos}\label{sample}
 \end{figure}
+
+Cada instancia del conjunto está en formato JSON y contiene los siguientes atributos:
 
 \begin{itemize}
   \item name: nombre del examen
@@ -66,11 +68,11 @@ En la Figura \ref{sample} se muestra un ejemplo de pregunta/respuesta del \text{
   \item image: camino a la imagen si lo hay
 \end{itemize}
 
-Aunque en el idioma inglés se han realizado avances en la selección de respuestas y existen varios conjuntos de datos que permiten la evaluación de los modelos propuestos, incluso en ese idioma, \textit{datasets} de dominios específicos y tan complejos, como el actual, son escasos. 
+Aunque en el idioma inglés se han realizado avances en la selección de respuestas y existen varios conjuntos de datos que permiten la evaluación de los modelos propuestos, incluso en ese idioma, los \textit{datasets} de dominios específicos y tan complejos, como el actual, son escasos. 
 
 \section{Análisis descriptivo}
 
-En esta sección se presenta un análisis exploratorio sobre el conjunto de dato sobre el cual se construirán los modelos. Aunque los algoritmos diseñados sobre estos datos hasta el moneto han seguido el enfoque no supervisado y/o supervisado a distancia, los autores han presentado una partición con el fin de que pueda ser utilizado por algotirmos supervisados.
+En esta sección se presenta un análisis exploratorio sobre el conjunto de dato sobre el cual se construirán los modelos. Aunque los algoritmos diseñados sobre estos datos hasta el momento han seguido el enfoque no supervisado y/o supervisado a distancia, los autores han presentado una partición con el fin de que pueda ser utilizado por algoritmos supervisados.
 
 En total, Head-QA cuenta con 6.765 preguntas con sus respuestas posibles, organizadas en 6 categorías según la temática. La siguiente Tabla \ref{size} muestra la distribución de las instancias teniendo en cuenta las categorías y las particiones.
 
@@ -86,13 +88,13 @@ En total, Head-QA cuenta con 6.765 preguntas con sus respuestas posibles, organi
       Medicina & 1.149 & 455 & 231 & 463 \\
       Psicología & 1.134 & 453 & 226 & 455 \\
       Química & 1.142 & 456 & 228 & 458 \\ 
-      \textbf{Total} & \textbf{6.765} & \textbf{2.657} & \textbf{1.366} & \textbf{2.742}\\       
+      \textbf{Total} & \textbf{6.765} & \textbf{2.657} & \textbf{1.366} & \textbf{2.742}\\
     \end{tabular}
   \end{center}
   \label{size}
 \end{table}
 
-La Figura \ref{train_dev_test} muestra la distribución de preguntas por categorías en los subconjuntos \textit{train}, \textit{dev} y \textit{test}.
+Asimismo, la Figura \ref{train_dev_test} muestra la distribución de preguntas por categorías en los subconjuntos \textit{train}, \textit{dev} y \textit{test} de manera gráfica.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -100,6 +102,8 @@ La Figura \ref{train_dev_test} muestra la distribución de preguntas por categor
   \end{center}
     \caption{Distribución de instancias por categoría}\label{train_dev_test}
 \end{figure}
+
+Se puede apreciar que las instancias están distribuidas de manera uniforme entre todas las categorías. Aunque el conjunto de datos está balanceado en cuanto a la cantidad de instancias por categoría, sí existen diferencias entre las muestraas en las categorías como se muestra más adelante.
 
 La Figura \ref{category} muestra una nube de palabras por cada una de las categorías que definen el dominio de cada pregunta. La nube de palabras muestra las palabras más comunes en mayor tamaño.
 
@@ -110,9 +114,9 @@ La Figura \ref{category} muestra una nube de palabras por cada una de las catego
     \caption{Nube de palabras por categoría}\label{category}
 \end{figure}
 
-Como se puede observar las palabras más comunes difieren en gran medida de categoría a categoría. Esto sugiere que puede ser recomendable construir modelos independientes para cada uno de los dominios. 
+Como se puede observar, las palabras más comunes difieren en gran medida de categoría a categoría. Esto sugiere que puede ser recomendable construir modelos independientes para cada uno de los dominios. 
 
-Asimismo, la Tabla \ref{count} muestra la máxima y media cantidad de palabras que tienen las preguntas y las respuestas respectivamente.
+La Tabla \ref{count} muestra la máxima y media cantidad de palabras que tienen las preguntas y las respuestas respectivamente.
 
 \begin{table}[!tb]
   \begin{center}
@@ -185,10 +189,12 @@ En el presente capítulo se propone interpretar el problema de selección de res
 
 El primer modelo a implementar es un regresor logístico. La simplicidad de este modelo lo hace un buen candidato para establecer un \textit{baseline} entre los modelos de aprendizaje supervisado.
 
+La vectorización utilizada para transformat el texto en vectores es \textit{one-hot encoding}, pues en esta propuesta se busca minimizar la complejidad del modelo con el fin de utilizarlo como base de comparación respecto a los modelos que serán presentados  más adelante.
+
 
 \section{\textit{LSTM} Básico}\label{lstm_t}
 
-La primera propuesta se puede considerar un modelo de aprendizaje profundo relativamente sencillo cuyo objetivo principal es verificar las ventajas que proporcionan las redes recurrentes en la resolución del problema de selección de respuestas. Por esta razón el modelo presentado aprovecha la arquitectura recurrente de la manera más simple posible.
+La segunda propuesta se puede considerar un modelo de aprendizaje profundo relativamente sencillo cuyo objetivo principal es verificar las ventajas que proporcionan las redes recurrentes en la resolución del problema de selección de respuestas. Por esta razón el modelo presentado aprovecha la arquitectura recurrente de la manera más simple posible.
 
 La primera propuesta consiste en una red neuronal recurrente de tipo \textit{LSTM}, la cual recibe como entrada una oración vectorizada. La arquitectura se divide en tres capas: representación de los \textit{tokens}, representación de la oración y predicción de la etiqueta (respuesta correcta). En la Figura \ref{lstm} se presenta la arquitectura de la red correspondiente al modelo matemático que se expone a continuación.
 
@@ -300,10 +306,12 @@ Los autores de BERT señalan como principal contribución la demostración de la
 
 En esta tesis se propone un modelo que hace uso del modelo de lenguaje aprendido utilizando BERT e incorpora un modelo de predicción simple. La propuesta tiene como objetivo comprobar si los aportes de BERT se pueden extender al idioma español y, específicamente, a la tarea de extracción de relaciones semánticas entre entidades.
 
-\section{QA LSTM}
+\section{QA-BiLSTM}
 
-El modelo que se presenta en esta sección sigue la arquitectura QA-LSTM introducida por \cite{2015-tan-qalstm}. 
+Este modelo hace uso de las redes bidireccionales y emplea un enfoque clásico del área de recuperación de información. Fue introducido por \cite{2015-tan-qalstm}. 
+En la Figura \ref{lstm_qa} se presenta la arquitectura del modelo. Es imporante destacar que mientras las arquitecturas presentadas anteriormente combinaban la pregunta y la respuesta en una misma entrada, los modelos que se presentan a partir de este momento utilizan una representación separada para pregunta y respuesta. Por esta razón, en la figura se presentan dos veces la misma arquitectura, cuyo objetivo es codificar el texto de una manera más rica semánticamente.
 
+Ambas arquitecturas, notables al principio de la red, comparten la misma arquitectura. Se ha visualizado de esta forma para lograr una mejor comprensión por parte del lector.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -312,22 +320,38 @@ El modelo que se presenta en esta sección sigue la arquitectura QA-LSTM introdu
     \caption{Arquitectura del modelo QA LSTM}\label{lstm_qa}
 \end{figure}
 
+El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector de $d$ dimensiones. Al igual que en el modelo \textit{BiLSTM+Attn} se utilizan embeddings pre-entrenados, se toman como base para la capa de \textit{Embeddings} los vectores palabras orientados al dominio biomédico citados anteriormente y publicados por \cite{2019-medical-fastext}.
 
-\section{QA LSTM + CNN}
+Estos embeddings se utilizan como entrada a una capa LSTM bidireccional. La red BiLSTM genera representaciones distribuidas tanto para la pregunta como para la respuesta de forma independiente, y luego utilizan la similitud del coseno para medir su distancia. 
 
-El modelo que se presenta en esta sección sigue la arquitectura introducida por \cite{2015-tan-qalstm}. 
+Como se muestra en la figura y se explicó anteriormente en la introducción de las redes recurrentes de tipo LSTM, al aplicar este tipo de redes es posible obtener una representacíón de cada palabra a través de los estados intermedios y que brindan el atributo de recurrencia. De esta manera, en cada palabra tenemos un vector resultado de analizar las palabras anteriores y que se puede interpretar como una representación de dicha palabra en el contexto de sus antecesoras. Como estamos en presencia de una red recurrente bidireccional, en cada momento se cuenta con dos vectores, uno que constituye la representación de esa palabra a partir de sus anteriores y otros, a partir de sus posteriores. 
 
+En el modelo que se expone se utilizan todos los estados intermedios de la red para representar cada oración. Esto implica que tenemos dos vectores para la pregunta y dos para la respuesta, la representación final de cada una de las oraciones se obtiene concatenando los pares con que se contaba. A partir de estas representaciones de calcula la similitud del coseno resultando igualmente en un vector. Por último, este vector es conectado con una capa de regresión linear que utiliza \textit{Softmax} como función de activación, de manera que la salida en un número entre 0 y 1. Esta salida puede ser interpretada como el nivel de relevancia de la respuesta con la pregunta, y es necesario establecer un punto de corte para determinar si la instancia es positiva o negativa.
+
+\section{QA-LSTM/CNN}
+
+En esta sección se expone el modelo QA-LSTM+CNN, el cual es muy similar al anterior y su arquitectura fue también introducida por \cite{2015-tan-qalstm}. En la Figura \ref{lstm_cnn_qa} se muestra de manera gráfica la arquitectura de este modelo. Como se puede apreciar es muy parecida a la arquitectura presentada anteriormente, la única diferencia es la inclusión de una capa convolucional tras las redes bidireccionales.
 
 \begin{figure}[!tb]
   \begin{center}
     \includegraphics[angle=0, width=1\textwidth]{Graphics/lstm_cnn_qa.png}
   \end{center}
-    \caption{Arquitectura del modelo QA LSTM-CNN }\label{lstm_cnn_qa}
+    \caption{Arquitectura del modelo QA LSTM/CNN }\label{lstm_cnn_qa}
 \end{figure}
 
-\section{QA BERT}
+En la sección anterior, las representaciones de preguntas y respuestas se geenran solo por simple operaciones, en este caso, la concatenación. Este nuevo modelo recurre a una estructura de CNN construida sobre los resultados de BiLSTM, con el fin de ofrecer una representación más compuesta de las preguntas y las respuestas. A diferencia de la red neuronal tradicional, donde cada salida es interactiva con cada entrada, la estructura convolucional solo impone interacciones locales entre las entradas dentro de un tamaño de filtro m. Eesto quiere decir que la representación resultante tiene en cuenta la interacción de las palabras más cercanas, tanto a la derecha como a la izquierda.
 
-Sigue la misma idea pero en lugar de utilizar un red de tipo BiLSTM en las capas bases, utiliza un modelo BERT pre-entrenado.
+Se decide incorporar esta arquitectura porque los autores de \cite{2015-tan-qalstm} alcanzan resultados superiores que con la arquitectura anterior. Sin embargo, aunque esto es una razón para incluirla en la experimentación no asegura el éxito dadas las diferencia de contextos, por ejemplo, el conjunto de datos utilizado.  
+
+\section{QA-BERT}
+
+El modelo que se presenta en esta sección comparte la esencia del modelo QABiLSTM, pero en lugar de utilizar un red de tipo BiLSTM en las capas bases, utiliza un modelo BERT pre-entrenado. 
+
+Los autores de BERT en su trabajo \cite{2018-devlin-bert} afirman que el uso de BERT trae consigo una riqueza semántica mayor que los embeddings tradicionales. Lo cual demuestran al presentar cómo el uso de BERT en arquitecturas del momento logra vencer a varios modelos del estado del arte en diferentes tareas de procesamiento del lenguaje natural como la traducción, inferencia del lenguaje, incluso sistemas Q/A, entre otras. Aunque no fue probado formalmente que BERT tiene conocimiento del lenguaje humano, los resultados sugieren que este modelo posee una capacidad de entendimiento del lenguaje mayor que modelos vistos con anterioridad.
+
+Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema.
+
+Se utiliza como base el modelo BERT entrenado con un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura ... se muestra gráficamente la arquitecturas del modelo que se presenta.
 
 \subsection{Especificidad del preprocesamiento}
 
@@ -342,9 +366,17 @@ BERT define los siguientes \textit{tokens} especiales para la representación de
 
 BERT no acepta secuencias de tamaño variable por lo que se recurre a la estrategia de \textit{padding}, en la que se establece un tamaño máximo. Las oraciones que tienen una cantidad menor de \textit{tokens} son completadas con el \textit{token} especial \textbf{[MASK]}, para indicar que esas posiciones deben ser ignoradas.
 
-\section{Bert No Supervisado}
+\section{BERT No Supervisado}
 
-\section{Implementación}
+Las propuestas no supervisadas publicadas hasta el momento se apoyan en un gran conjunto de documentos textuales de las temáticas relacionadas. Las propuestas presentadas en \cite{2019-head-qa} y \cite{2020-multi-step}, las únicas a saber de la autora sobre este conjunto de datos, utilizan como fuente de información externa artículos de Wikipedia, artículos de la revista Scielo, entre otras. 
+
+El gran volumen de datos que contienen estas bibliotecas hacen que el procesamiento sea muy costoso, tanto de recursos computacionales como de tiempo. Esta propuesta busca aprovechar los recursos y el tipo de procesamiento dedicados anteriormente proponiendo el uso de un modelo pre-entrenado. Como se mencionó anteriormente la introducción de BERT revolucionó el mundo del procesamiento natural, ...
+
+Se propone hallar una representación a partir de BERT, esta representación tiene incluida de alguna manera conocimiento sobre los documentos con que fue entrenado BERT.
+Una limitante es que dado lo costosa de entrenar desde cero un modelo coomo BERT no existen modelos entrenados en idioma español especializado en el dominio biomédico por lo que se utiliza el presentado por \cite{2020-spanish-bert}.
+
+La arquitectura es muy sencilla ...
+
 
 
 

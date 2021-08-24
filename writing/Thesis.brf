@@ -41,4 +41,13 @@
 \backcite {2019-medical-fastext}{{30}{3.3}{figure.3.2}}
 \backcite {2018-devlin-bert}{{31}{3.4}{section.3.4}}
 \backcite {2018-devlin-bert}{{32}{3.4}{section.3.4}}
-\backcite {2018-devlin-bert}{{32}{3.7.1}{subsection.3.7.1}}
+\backcite {2015-tan-qalstm}{{32}{3.5}{section.3.5}}
+\backcite {2019-medical-fastext}{{33}{3.5}{figure.3.3}}
+\backcite {2015-tan-qalstm}{{34}{3.6}{section.3.6}}
+\backcite {2015-tan-qalstm}{{34}{3.6}{figure.3.4}}
+\backcite {2018-devlin-bert}{{35}{3.7}{section.3.7}}
+\backcite {2020-spanish-bert}{{36}{3.7}{section.3.7}}
+\backcite {2018-devlin-bert}{{36}{3.7.1}{subsection.3.7.1}}
+\backcite {2019-head-qa}{{36}{3.8}{section.3.8}}
+\backcite {2020-multi-step}{{36}{3.8}{section.3.8}}
+\backcite {2020-spanish-bert}{{37}{3.8}{section.3.8}}
