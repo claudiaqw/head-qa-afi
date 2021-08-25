@@ -4,6 +4,9 @@ from transformers import BertTokenizer
 
 import numpy as np
 
+def get_optimizer(model, lr=0.01, wd=0.0):
+    return torch.optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
+
 def train(model, optimizer, train_dl, test_dl, validate, epochs=50):
     y_trues, y_preds = [], []
     epochs_results = []
@@ -156,7 +159,23 @@ def pad_seq(x, seq_len=110, right_padding = False):
         z[(seq_len - n):] = x[0:n]
     return z
 
-def encode_bert_ir(samples, tokenizer):
+def encoder_bert(samples, tokenizer):
+    input_ids, labels = [], []
+    for item in samples:
+        sent = item['question'] +' [SEP] ' + item['answer'] 
+        encoded_sent = tokenizer.encode(sent, add_special_tokens = True)
+        padded_sent = pad_seq(encoded_sent, seq_len=30)
+        input_ids.append(padded_sent)
+        labels.append(item['label'])
+        
+    attention_masks = []
+    for sent in input_ids:  
+        att_mask = [int(token_id > 0) for token_id in sent]
+        attention_masks.append(att_mask)
+        
+    return input_ids, attention_masks, labels
+
+def encoder_bert_ir(samples, tokenizer):
     input_ids_0, input_ids_1, labels = [], [], []
     for item in samples:
         encoded_q = tokenizer.encode(item['question'], add_special_tokens = True)
@@ -177,6 +196,27 @@ def encode_bert_ir(samples, tokenizer):
         attention_masks_1.append(att_mask)
         
     return input_ids_0, attention_masks_0, input_ids_1, attention_masks_1, labels
+
+def encoder_bert_instance(sample, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False)):
+    qtext, answers = sample['qtext'], sample['answers']
+    right_answer = sample['ra']
+    input_ids, labels = [], []
+    
+    for answer in answers:
+        aid, atext = answer['aid'], answer['atext']
+        sent = qtext + ' [SEP] ' + atext
+        encoded_sent = tokenizer.encode(sent, add_special_tokens=True)
+        padded_sent = pad_seq(encoded_sent, seq_len=30)
+        input_ids.append(padded_sent)
+        instance_y = 1 if right_answer == aid else 0
+        labels.append(instance_y)
+        
+    attention_masks = []
+    for sent in input_ids:  
+        att_mask = [int(token_id > 0) for token_id in sent]
+        attention_masks.append(att_mask)
+        
+    return torch.tensor(input_ids), torch.tensor(attention_masks), torch.tensor(labels)
 
 def encoder_bert_ir_instance(sample, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False)):    
     qtext, answers = sample['qtext'], sample['answers']    
@@ -219,22 +259,6 @@ def evaluator_bert_ir(model, instance, encoder):
     points = 3 if acc == 1 else -1
     return acc, points
 
-def encoder_bert(samples, tokenizer):
-    input_ids, labels = [], []
-    for item in samples:
-        sent = item['question'] +' [SEP] ' + item['answer'] 
-        encoded_sent = tokenizer.encode(sent, add_special_tokens = True)
-        padded_sent = pad_seq(encoded_sent, seq_len=30)
-        input_ids.append(padded_sent)
-        labels.append(item['label'])
-        
-    attention_masks = []
-    for sent in input_ids:  
-        att_mask = [int(token_id > 0) for token_id in sent]
-        attention_masks.append(att_mask)
-        
-    return input_ids, attention_masks, labels
-
 def evaluator_bert(model, instance, encoder):
     b_input_ids_0, b_input_mask_0, y = encoder(instance)
     y_ = model(b_input_ids_0, 
@@ -247,23 +271,3 @@ def evaluator_bert(model, instance, encoder):
     points = 3 if acc == 1 else -1
     return acc, points
 
-def encoder_bert_instance(sample, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False)):
-    qtext, answers = sample['qtext'], sample['answers']
-    right_answer = sample['ra']
-    input_ids, labels = [], []
-    
-    for answer in answers:
-        aid, atext = answer['aid'], answer['atext']
-        sent = qtext + ' [SEP] ' + atext
-        encoded_sent = tokenizer.encode(sent, add_special_tokens=True)
-        padded_sent = pad_seq(encoded_sent, seq_len=30)
-        input_ids.append(padded_sent)
-        instance_y = 1 if right_answer == aid else 0
-        labels.append(instance_y)
-        
-    attention_masks = []
-    for sent in input_ids:  
-        att_mask = [int(token_id > 0) for token_id in sent]
-        attention_masks.append(att_mask)
-        
-    return torch.tensor(input_ids), torch.tensor(attention_masks), torch.tensor(labels)
