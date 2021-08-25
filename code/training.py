@@ -161,7 +161,7 @@ def pad_seq(x, seq_len=110, right_padding = False):
         z[(seq_len - n):] = x[0:n]
     return z
 
-def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False):
+def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased'), do_lower_case=False):
     input_ids, labels = [], []
     for item in samples:
         sent = item['question'] +' [SEP] ' + item['answer'] 
@@ -177,7 +177,7 @@ def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/ber
         
     return input_ids, attention_masks, labels
 
-def encoder_bert_ir(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False):
+def encoder_bert_ir(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased'), do_lower_case=False):
     input_ids_0, input_ids_1, labels = [], [], []
     for item in samples:
         encoded_q = tokenizer.encode(item['question'], add_special_tokens = True)
