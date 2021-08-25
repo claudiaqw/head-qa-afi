@@ -365,12 +365,10 @@ def valid_model(model, validation_dataloader):
                       attention_mask_1=b_input_mask_1,
                       labels=b_labels)
         logits = out
-        #logits = logits.detach().cpu().numpy()
-        #label_ids = b_labels.to('cpu').numpy()
-        tmp_eval_accuracy = flat_accuracy(np.array(logit), np.array(b_labels))
+        tmp_eval_accuracy = flat_accuracy(np.array(logits), np.array(b_labels))
         eval_accuracy += tmp_eval_accuracy
         nb_eval_steps += 1
-        pred = torch.max(logits, dim=1)[1]
+        pred = torch.round(logits, dim=1)
         y_true.append(b_labels)
         y_pred.append(pred)        
     print("  Accuracy: {0:.2f}".format(eval_accuracy/nb_eval_steps))
