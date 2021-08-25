@@ -3,6 +3,8 @@ import torch.nn.functional as F
 from transformers import BertTokenizer
 
 import numpy as np
+import time
+import datetime
 
 def get_optimizer(model, lr=0.01, wd=0.0):
     return torch.optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
@@ -271,3 +273,106 @@ def evaluator_bert(model, instance, encoder):
     points = 3 if acc == 1 else -1
     return acc, points
 
+def flat_accuracy(preds, labels):
+    pred_flat = np.round(preds, axis=0)
+    labels_flat = labels
+    print(pred_flat, labels_flat)
+    return np.sum(pred_flat == labels_flat) / len(labels_flat)
+
+def format_time(elapsed):
+    '''
+    Takes a time in seconds and returns a string hh:mm:ss
+    '''
+    # Round to the nearest second.
+    elapsed_rounded = int(round((elapsed)))
+    
+    # Format as hh:mm:ss
+    return str(datetime.timedelta(seconds=elapsed_rounded))
+
+def train_model(model, train_dataloader, valid_dataloader, valid_model, epochs, scheduler, optimizer):
+    import random
+    seed_val = 42
+    random.seed(seed_val)
+    np.random.seed(seed_val)
+    torch.manual_seed(seed_val)
+    torch.cuda.manual_seed_all(seed_val)
+
+    # Store the average loss after each epoch so we can plot them.
+    loss_values = []
+    epochs_results = []
+
+    for epoch_i in range(0, epochs):
+        print("")
+        print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
+        print('Training...')
+
+        # Measure how long the training epoch takes.
+        t0 = time.time()
+        total_loss = 0
+        model.train()
+        for step, batch in enumerate(train_dataloader):
+            if step % 40 == 0 and not step == 0:
+                elapsed = format_time(time.time() - t0)
+                print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(train_dataloader), elapsed))
+            b_input_ids_0, b_input_mask_0 = batch[0].long(), batch[1]
+            b_input_ids_1, b_input_mask_1 = batch[2].long(), batch[3]
+            b_labels = batch[4]
+            model.zero_grad()
+            out = model(input_ids_0=b_input_ids_0, 
+                      attention_mask_0=b_input_mask_0, 
+                      input_ids_1=b_input_ids_1,
+                      attention_mask_1=b_input_mask_1,
+                      labels=b_labels)
+            b_labels = b_labels.unsqueeze(dim=1)
+            loss = F.binary_cross_entropy(out, b_labels.float())
+            total_loss += loss.item()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            optimizer.step()
+            scheduler.step()
+        avg_train_loss = total_loss / len(train_dataloader)  
+        loss_values.append(avg_train_loss)
+        valid_acc, y_real, y_pred = valid_model(model, valid_dataloader)
+        p, r, f1 = evaluate(y_real, y_pred)
+        epochs_results.append([avg_train_loss, valid_acc, p, r, f1])
+
+        print("")
+        print("  Average training loss: {0:.2f}".format(avg_train_loss))
+        print("  Training epoch took: {:}".format(format_time(time.time() - t0)))
+    print("")
+    print("Training complete!")
+    return epochs_results
+
+def valid_model(model, validation_dataloader):
+    print("Running Validation...")    
+    y_true = []
+    y_pred = []
+    
+    t0 = time.time()
+    model.eval()
+    
+    eval_loss, eval_accuracy = 0, 0
+    nb_eval_steps, nb_eval_examples = 0, 0
+    
+    for batch in validation_dataloader:
+        b_input_ids_0, b_input_mask_0 = batch[0].long(), batch[1]
+        b_input_ids_1, b_input_mask_1 = batch[2].long(), batch[3]
+        b_labels = batch[4]
+        with torch.no_grad(): 
+            out = model(input_ids_0=b_input_ids_0, 
+                      attention_mask_0=b_input_mask_0, 
+                      input_ids_1=b_input_ids_1,
+                      attention_mask_1=b_input_mask_1,
+                      labels=b_labels)
+        logits = out
+        #logits = logits.detach().cpu().numpy()
+        #label_ids = b_labels.to('cpu').numpy()
+        tmp_eval_accuracy = flat_accuracy(np.array(logit), np.array(b_labels))
+        eval_accuracy += tmp_eval_accuracy
+        nb_eval_steps += 1
+        pred = torch.max(logits, dim=1)[1]
+        y_true.append(b_labels)
+        y_pred.append(pred)        
+    print("  Accuracy: {0:.2f}".format(eval_accuracy/nb_eval_steps))
+    print("  Validation took: {:}".format(format_time(time.time() - t0)))
+    return eval_accuracy/nb_eval_steps, y_true, y_pred
