@@ -8,7 +8,7 @@ from transformers.optimization import AdamW
 from transformers import  BertTokenizer, BertModel
 
 
-class LSTM_QA(torch.nn.Module):
+class LSTM_QA(nn.Module):
     def __init__(self, vocab_size, hidden_size, x_size, n_classes, embedding_size=300,
                  padding_idx=0, pretrained_embeddings=None): 
         super(LSTM_QA, self).__init__()
@@ -41,10 +41,10 @@ class LSTM_QA(torch.nn.Module):
         x = self.cosine(out_0, out_1)
         x = self.linear(x)
         x = self.linear1(x)
-        x = F.softmax(x, dim=0)
+        x = F.sigmoid(x)
         return x
 
-class LSTM_CNN_QA(torch.nn.Module):
+class LSTM_CNN_QA(nn.Module):
     def __init__(self, vocab_size, hidden_size, x_size, n_classes, embedding_size=300,
                  padding_idx=0, pretrained_embeddings=None): 
         super(LSTM_CNN_QA, self).__init__()
@@ -82,10 +82,10 @@ class LSTM_CNN_QA(torch.nn.Module):
         x = self.cosine(out_0, out_1)
         x = self.linear(x)
         x = self.linear1(x)
-        x = F.softmax(x, dim=0)
+        x = F.sigmoid(x)
         return x
 
-class BERT_QA(torch.nn.Module):
+class BERT_QA(nn.Module):
     def __init__(self, num_labels=1, pretrained_model='bert-base-uncased', seq_length=30):
         super(BERT_QA, self).__init__()
         self.num_labels = num_labels

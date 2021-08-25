@@ -276,7 +276,6 @@ def evaluator_bert(model, instance, encoder):
 def flat_accuracy(preds, labels):
     pred_flat = np.round(preds)
     labels_flat = labels
-    print(pred_flat, labels_flat)
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
 def format_time(elapsed):

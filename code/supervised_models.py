@@ -15,7 +15,7 @@ class LogisticRegression(torch.nn.Module):
         
     def forward(self, x):
         x = self.linear(x.float())
-        x = F.softmax(x, dim=0)
+        x = F.sigmoid(x)
         return x
 
 class BasicLSTM(torch.nn.Module):
@@ -32,7 +32,7 @@ class BasicLSTM(torch.nn.Module):
         x = self.dropout(x)
         out, (ht, ct) = self.lstm(x)        
         x = self.linear(ht[-1])
-        return F.softmax(x, dim=0)
+        return F.sigmoid(x)
 
 class BiLSTM_model(nn.Module):
     def __init__(self, embedding_size, num_embeddings, num_classes, hidden_size=64,
@@ -65,5 +65,5 @@ class BiLSTM_model(nn.Module):
         attn_weights = F.softmax(torch.tanh(attn), dim=1)
         attn_applied = torch.bmm(attn_weights, out)
         attn_applied = attn_applied.flatten(1) 
-        return F.softmax(self.linear(attn_applied), dim = 0)
+        return F.sigmoid(self.linear(attn_applied))
 
