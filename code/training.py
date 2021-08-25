@@ -161,7 +161,7 @@ def pad_seq(x, seq_len=110, right_padding = False):
         z[(seq_len - n):] = x[0:n]
     return z
 
-def encoder_bert(samples, tokenizer):
+def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False):
     input_ids, labels = [], []
     for item in samples:
         sent = item['question'] +' [SEP] ' + item['answer'] 
@@ -177,7 +177,7 @@ def encoder_bert(samples, tokenizer):
         
     return input_ids, attention_masks, labels
 
-def encoder_bert_ir(samples, tokenizer):
+def encoder_bert_ir(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False):
     input_ids_0, input_ids_1, labels = [], [], []
     for item in samples:
         encoded_q = tokenizer.encode(item['question'], add_special_tokens = True)
@@ -274,7 +274,7 @@ def evaluator_bert(model, instance, encoder):
     return acc, points
 
 def flat_accuracy(preds, labels):
-    pred_flat = np.round(preds, axis=0)
+    pred_flat = np.round(preds)
     labels_flat = labels
     print(pred_flat, labels_flat)
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
@@ -333,8 +333,7 @@ def train_model(model, train_dataloader, valid_dataloader, valid_model, epochs, 
         avg_train_loss = total_loss / len(train_dataloader)  
         loss_values.append(avg_train_loss)
         valid_acc, y_real, y_pred = valid_model(model, valid_dataloader)
-        p, r, f1 = evaluate(y_real, y_pred)
-        epochs_results.append([avg_train_loss, valid_acc, p, r, f1])
+        epochs_results.append([avg_train_loss, valid_acc, y_real, y_pred])
 
         print("")
         print("  Average training loss: {0:.2f}".format(avg_train_loss))
@@ -368,7 +367,7 @@ def valid_model(model, validation_dataloader):
         tmp_eval_accuracy = flat_accuracy(np.array(logits), np.array(b_labels))
         eval_accuracy += tmp_eval_accuracy
         nb_eval_steps += 1
-        pred = torch.round(logits, dim=1)
+        pred = torch.round(logits)
         y_true.append(b_labels)
         y_pred.append(pred)        
     print("  Accuracy: {0:.2f}".format(eval_accuracy/nb_eval_steps))
