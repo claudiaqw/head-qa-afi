@@ -106,7 +106,7 @@ class BERT_QA(torch.nn.Module):
         x = self.classifier(s)
         x = self.dropout(x)
         x = self.classifier_1(x)
-        return F.softmax(x, dim=0)
+        return F.sigmoid(x)
 
     def freeze_bert_encoder(self):
         for param in self.bert.parameters():
