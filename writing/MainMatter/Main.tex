@@ -342,7 +342,14 @@ Los autores de BERT señalan como principal contribución la demostración de la
 
 El modelo que se presenta en esta sección comparte la esencia del modelo QA-LSTM, pero en lugar de utilizar un red de tipo BiLSTM en las capas bases, utiliza un modelo BERT pre-entrenado. Los autores de BERT en su trabajo \cite{2018-devlin-bert} afirman que el uso de BERT trae consigo una riqueza semántica mayor que los embeddings tradicionales. Aunque no fue probado formalmente que BERT tiene conocimiento del lenguaje humano, los resultados sugieren que este modelo posee una capacidad de entendimiento del lenguaje mayor que modelos vistos con anterioridad.
 
-Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema.El modelo BERT base que se utiliza fue entrenado sobre un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura ... se muestra gráficamente la arquitectura del modelo que se presenta.
+Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema.El modelo BERT base que se utiliza fue entrenado sobre un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura \ref{bert_qa} se muestra gráficamente la arquitectura del modelo que se presenta.
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/bert_qa.png}
+  \end{center}
+    \caption{Arquitectura del modelo BERT-QA}\label{bert_qa}
+\end{figure}
 
 \subsection{Especificidad del preprocesamiento}
 
@@ -368,6 +375,16 @@ Una limitante es que dado lo costosa de entrenar desde cero un modelo coomo BERT
 
 La arquitectura es muy sencilla ...
 
+
+La Figura \ref{bert_sim} ...
+
+
+\begin{figure}[!tb]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/bert_sim.png}
+  \end{center}
+    \caption{Arquitectura del modelo BERT-Sim}\label{bert_sim}
+\end{figure}
 
 
 
