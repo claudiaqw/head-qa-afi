@@ -14,6 +14,12 @@ Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$, donde $x^{(t)}$ representa el t-ési
   \overrightarrow{\tilde{c_{t}}} &= \tanh(\overrightarrow{W^{(c)}} x_{t} + \overrightarrow{U^{(c)}}\overrightarrow{h_{t-1}}) \label{bilstm:new_memory_cell}
 \end{align}
 
+El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector $x_{t} \in {\mathbb{R}} ^{d}$, donde $d$ es la dimensión de los \textit{embeddings} que constituye un hiperparámetro del modelo. Una segunda capa está conformada por una red \textit{Bi-LSTM}, las Ecuaciones \ref{bilstm:ig} - \ref{bilstm:hidden_state} representan la \textit{LSTM} orientada de izquierda a derecha, que comienza en el principio de la oración y concluye en el final, mientras que en las Ecuaciones \ref{bilstml:ig} - \ref{bilstml:hidden_state} representan la \textit{LSTM} orientada en sentido contrario, de derecha a izquierda. 
+
+Las ecuaciones serán aplicadas secuencialmente a cada uno de los \textit{tokens} $x^{(t)}$ que conforman una oración $S$. Se utilizan todos los estados intermedios $h_{t}$  $(t = 1, 2, ..., T)$. De manera que, por cada capa \textit{LSTM}, se obtiene un conjunto de estados $h_{1}, h_{2}, ..., h_{T}$. 
+
+En el caso de uns red \textit{BiLSTM} se obtienen dos conjuntos de estados. Se utiliza la notación $\overrightarrow{h_{t}}$ y $\overleftarrow{h_{t}}$ como referencia al t-ésimo estado de la red izquiera-derecha y derecha-izquierda respectivamente. Por lo que, los dos conjuntos de estados intermedios se representan como $\overrightarrow{h_{1}}, \overrightarrow{h_{2}}, ... \overrightarrow{h_{T}}$ y $\overleftarrow{h_{1}}, \overleftarrow{h_{2}}, ... \overleftarrow{h_{T}}$. En el resto del modelo, en función de ganar claridad en la escritura, se utilizará $\overrightarrow{h_{t}}$ y  $\overleftarrow{h_{t}}$ para denotar los estados intermedios de forma genérica.
+
 \begin{align}
   \overrightarrow{c_{t}} &= \overrightarrow{f_{t}}\overrightarrow{c_{t-1}} + \overrightarrow{i_{t}}\overrightarrow{\tilde{c_{t}}} \label{bilstm:cell_state} \\
   \overrightarrow{h_{t}} &= \overrightarrow{o_{t}}\tanh{\overrightarrow{c_{t}}} \label{bilstm:hidden_state}\\
@@ -32,5 +38,7 @@ Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$, donde $x^{(t)}$ representa el t-ési
   \hat{y} &= softmax(Uc + b) \label{bilstm:pred}
 \end{align}
 
-
 donde $h_{t} \in {\mathbb{R}} ^{2d}$ es el resultado de concatenar $\overrightarrow{h_{t}} \in {\mathbb{R}} ^{d}$ con $\overleftarrow{h_{t}} \in {\mathbb{R}} ^{d}$ y constituye el estado definitivo de la celda $t$, expresado en la Ecuación \ref{bilstm:concat}. La salida de la capa \textit{BiLSTM} constituye entonces, un conjunto de estados $I  = {[h_{1}, h_{2}, ..., h_{T}]}$ con $I \in {\mathbb{R}}^{(T \times 1)}$.
+
+
+El objetivo de incluir un mecanismo de atención es que el modelo dé mayor peso a aquellas palabras que tienen una mayor influencia en la predicción final. Intuitivamente, lo que se quiere es un vector de pesos con el mismo tamaño $T$ que la cantidad de palabras de la oración. Dicho vector debe poseer en cada componente un número positivo entre 0 y 1 que indique cuán relevante es esa palabra para la clasificación. Por esta razón, la Ecuación \ref{bilstm:dense} toma la salida de la red \textit{BiLSTM}, $I \in {\mathbb{R}}^{(T \times 1)}$, como entrada a una capa densa, donde $W_{a}$ es la matriz aprendida durante la etapa de entrenamiento, con función de activación tangente que obtiene como salida el vector de pesos no normalizado $W$. Con el objetivo de expresar los valores de $W$ en una escala entre 0 y 1 se aplica la función \textit{softmax}, como se muestra en la Ecuación \ref{bilstm:sig}, obteniendo un vector $A$ distribuido probabilísticamente cuyas componentes representan los pesos de atención. En la Ecuación \ref{bilstm:dot} se combina el vector de pesos de atención $A$ con la salida de la capa \textit{BiLSTM} dando como resultado un vector $c$, conocido como vector contexto, que constituye la representación final de la oración. Finalmente, una capa lineal utiliza la representación de la oración obtenida $c$ para predecir la relación $\hat{y}$ existente en la oración. Esta salida se convierte en una distribución de probabilidades empleando la función \textit{softmax}.

@@ -39,7 +39,6 @@ A continuación se describen brevemente las diferentes fases del proyecto, de ig
 
 En la Figura \ref{crisp} se pueden visualizar cada una de las fases de desarrollo del proyecto, incluyendo las actividades específicas que se desarrollaron en cada etapa y la cantidad de horas dedicadas. A las fases anteriormente señaladas se añade la escritura de la memoria, haciendo un total de 100 horas.
 
-
 \subsection{Descripción del conjunto de datos}
 
 El conjunto de datos Head-QA presentado por \cite{2019-head-qa} y orientado al dominio biomédico, es un conjunto de preguntas y respuestas de múltiples opciones. El conjunto se crea a partir de los exámenes confeccionados por el Ministerio de Sanidad, Consumo y Bienestar Social de España \footnote{https://www.mscbs.gob.es} y realizados cada año para acceder a distintas especialidades dentro del sistema de salud. Más información sobre la confección del \textit{dataset} puede ser encontrada en \cite{2019-head-qa}.
@@ -114,7 +113,6 @@ La siguiente imagen (Figura \ref{words}) muestra la frecuencia de las palabras m
     \caption{Palabras más frecuentes}\label{words}
 \end{figure}
 
-Aunque el conjunto de datos está balanceado en cuanto a la cantidad de instancias por categoría, sí existen diferencias entre las muestraas en las categorías como se muestra más adelante.
 
 La Figura \ref{category} muestra una nube de palabras por cada una de las categorías que definen el dominio de cada pregunta. La nube de palabras muestra las palabras más comunes en mayor tamaño.
 
@@ -148,18 +146,15 @@ La Tabla \ref{count} muestra la máxima y media cantidad de palabras que tienen 
 
 Este análisis denota que las preguntas suelen tener una longitud media mayor que las respuestas. La longitud media varía en dependencia de la categoría, siendo los textos de Medicina los de mayor tamaño. 
 
-
 \section{Preprocesamiento}
 
 Como se plantea en el capítulo anterior, una instancia del corpus en esencia está conformada por la oración correspondiente a la pregunta, las correspondientes a las posibles respuestas y la respuesta correcta. Con el propósito de utilizar el corpus antes descrito como entrada a los modelos matemáticos que se presentan es necesario transformar cada una de las instancias en un vector numérico. En este caso, es necesario transformar las oraciones en una secuencia de \textit{tokens}.
 
-En el idioma español, un \textit{token} constituye una cadena de caracteres consecutivos entre dos espacios, o entre un espacio y un signo de puntuación. Todos los signos constituyen \textit{tokens} excepto las comillas alrededor de una palabra, sin espacios intermedios, que simbolizan citas textuales.
+En el idioma español, un \textit{token} constituye una cadena de caracteres consecutivos entre dos espacios, o entre un espacio y un signo de puntuación. Todos los signos constituyen \textit{tokens} excepto las comillas alrededor de una palabra, sin espacios intermedios, que simbolizan citas textuales. El conjunto de los \textit{tokens} presentes en el corpus constituye el vocabulario de palabras, donde a cada \textit{token} del vocabulario se le hace corresponder un número entero único. De esta manera, cada \textit{token} es representado por el índice de la palabra en el vocabulario de palabras. En este caso, el vocabulario de palabras está compuesto por todas las palabras que aparecen en el conjunto de datos, tanto en preguntas como en respuestas, junto a un conjunto de \textit{tokens} especiales.
 
-Una oración se puede transformar en una secuencia de \textit{tokens}. El conjunto de los \textit{tokens} presentes en el corpus constituye el vocabulario de palabras, donde a cada \textit{token} del vocabulario se le hace corresponder un número entero único. De esta manera, cada \textit{token} es representado por el índice de la palabra en el vocabulario de palabras. En este caso, el vocabulario de palabras está compuesto por todas las palabras que aparecen en el corpus, tanto en preguntas como en respuestas, junto a un conjunto de \textit{tokens} especiales.
+Acorde con los modelos a desarrollar más adelante, se hace necesario emplear dos enfoques diferentes para vectorizar una instancia del conjunto de datos. El primero se ajusta a arquitecturas propias del aprendizaje supervisado, mientras que el segundo combina técnicas de recuperación de información en arquitecturas de aprendizaje supervisado. Cada uno de los enfoques requiere un preprocesamiento y representación de la información diferentes, los cuales se detallan a continuación.
 
-Acorde con los modelos a desarrollar más adelante, se hace necesario emplear dos enfoques diferentes para vectorizar una instancia del conjunto de datos. El primero se ajusta a arquitecturas propias del aprendizaje supervisado, mientras que el segundo combina técnicas de recuperación de información en arquitecturas de aprendizaje profundo. Cada uno de los enfoques requiere un preprocesamiento y representación de la información diferentes, los cuales se detallan a continuación.
-
-\subsection{Representación supervisada}
+\subsection{Representación supervisada clásica}
 
 Este enfoque consiste en que los modelos reciban un único vector numérico, por lo tanto el objetivo es representar en un mismo vector la pregunta y cada respuesta.
 
@@ -176,11 +171,11 @@ En la Figura \ref{vect_1} se muestra como una instancia del conjunto original es
 
 Con el objetivo de transformar una oración en una secuencia de \textit{tokens} es necesario utilizar un \textit{tokenizer}. Un \textit{tokenizer} no es más que un algoritmo cuyo objetivo es separar texto en bruto en una secuencia de \text{tokens}. En este caso, se utiliza el tokenizador de la librería Spacy\footnote{https://spacy.io/}, específicamente el modelo \texttt{es\_core\_news\_sm}. Este modelo es el más pequeño disponible en español, se selecciona el más pequeño porque la tarea de tokenizar no es muy complicada en términos linguísticos por lo que la autora considera que no es necesario utilizar otro modelo más grande y complejo solo para realizar esta tarea.
 
-\subsection{Representación RI}
+\subsection{Representación supervisada RI}
 
 El otro enfoque constituye una combinación entre el modelo vectorial clásico en el área de recuperación de información y un modelo de aprendizaje supervisado genérico.  En este caso, los modelos de este perfil en lugar de un único vector numérico que represente ambos textos, la pregunta y la respuesta, están preparados para recibir como entrada una representación vectorial de la pregunta y otra de la respuesta.
 
-La transformación es muy similar a la vista en la sección anterior, con la diferencia de que al admitir dos entradas no es necesario concatenar ambas representaciones. 
+La transformación es muy similar a la vista en la sección anterior, con la diferencia de que al admitir dos entradas no es necesario concatenar ambas representaciones y por tanto, tampoco es necesario el \textit{token} especial que actúa como separador.
 
 En la Figura \ref{vect_2} se muestra un ejemplo de cómo es transformada una instancia del conjunto original, en varias instancias vectorizadas. 
 
@@ -191,23 +186,24 @@ En la Figura \ref{vect_2} se muestra un ejemplo de cómo es transformada una ins
     \caption{Ejemplo de instancia vectorizada según el enfoque RI}\label{vect_2}
 \end{figure}
 
+Al igual que en la situación anterior es necesario transformar las oraciones en bruto en una secuencia de \textit{tokens} y se utiliza el mismo \textit{tokenizer}.
+Una vez transformado el texto en bruto en representaciones numéricas, los datos están preparados para ser tratados por los modelos matemáticos.   
+
 
 \chapter{Modelos propuestos}\label{chapter:models}
 
-En el presente capítulo se propone interpretar el problema de selección de respuestas como un problema de clasificación binaria, según el enfoque \textit{Pointwise}, explicado en el capítulo 2. En esta metodología cada par $<pregunta, respuesta>$ se convierte en una instancia y se clasifica en positiva o negativa dependiendo si la respuesta es correcta. Habiendo obtenido el corpus, el objetivo desde este punto es concebir modelos matemáticos-computacionales de aprendizaje profundo principalmente. En este capítulo se presentan diferentes propuestas de modelos para la selección automática de respuestas.
+En el presente capítulo se propone interpretar el problema de selección de respuestas como un problema de clasificación binaria, según el enfoque \textit{Pointwise}, explicado en el Capítulo 2. Se ha seleccionado este enfoque por ser el más sencillo de los tres, y se propone para trabajos futuros incursionar en los demás métodos mencionados. En esta metodología cada par $<pregunta, respuesta>$ se convierte en una instancia y se clasifica en positiva o negativa dependiendo si la respuesta es correcta. Habiendo obtenido el corpus, el objetivo desde este punto es concebir modelos matemáticos-computacionales de aprendizaje profundo principalmente. En este capítulo se presentan diferentes propuestas de modelos para la selección automática de respuestas. 
 
-\section{Regresión Logística}
+La decisión de implementar modelos de aprendizaje profundo, existiendo modelos supervisados más sencillos y explicables, se basa en que tras un estudio de los modelos del estado del arte, se puede concluir que la mayor parte con diferencia emplea este enfoque. La razón se debe a que estos conjuntos de datos son más complejos semánticamente por lo que requieren un mayor "entendimiento" del lenguaje humano y por lo tanto, modelos mucho más complejos. 
 
-El primer modelo a implementar es un regresor logístico. La simplicidad de este modelo lo hace un buen candidato para establecer un \textit{baseline} entre los modelos de aprendizaje supervisado.
-
-La vectorización utilizada para transformat el texto en vectores es \textit{one-hot encoding}, pues en esta propuesta se busca minimizar la complejidad del modelo con el fin de utilizarlo como base de comparación respecto a los modelos que serán presentados  más adelante.
+De hecho, el aprendizaje supervisado puede no ser un enfoque adecuado para este conjunto de datos, puesto que como se afirma en \ref{2020-multi-step} incluso un modelo tan poderoso como BERT puede funcionar de manera insatisfactoria en el conjunto de datos HeadQA. La principal razón es que la pregunta inicial no contiene suficientes pistas recuperables para encontrar la respuesta correcta que contiene la respuesta y además, aunque exista una similitud entre los exámenes anteriores, puede no ser suficiente para generar patrones por un modelo supervisado.
 
 
 \section{\textit{LSTM} Básico}\label{lstm_t}
 
-La segunda propuesta se puede considerar un modelo de aprendizaje profundo relativamente sencillo cuyo objetivo principal es verificar las ventajas que proporcionan las redes recurrentes en la resolución del problema de selección de respuestas. Por esta razón el modelo presentado aprovecha la arquitectura recurrente de la manera más simple posible.
+La primera propuesta se puede considerar un modelo de aprendizaje profundo relativamente sencillo cuyo objetivo principal es verificar las ventajas que proporcionan las redes recurrentes en la resolución del problema de selección de respuestas. Por esta razón, el modelo presentado aprovecha la arquitectura recurrente de la manera más simple posible.
 
-La primera propuesta consiste en una red neuronal recurrente de tipo \textit{LSTM}, la cual recibe como entrada una oración vectorizada. La arquitectura se divide en tres capas: representación de los \textit{tokens}, representación de la oración y predicción de la etiqueta (respuesta correcta). En la Figura \ref{lstm} se presenta la arquitectura de la red correspondiente al modelo matemático que se expone a continuación.
+La primera propuesta consiste en una red neuronal recurrente de tipo \textit{LSTM}, la cual recibe como entrada una oración vectorizada. La arquitectura se divide en tres capas: representación de los \textit{tokens}, representación de la oración y predicción de la etiqueta (respuesta correcta). En la Figura \ref{lstm} se presenta la arquitectura de la red correspondiente al modelo matemático que se expone a continuación. El modelo matemático solo se incluirá en este primer modelo, puesto que su sencillez lo permite y a la vez, permite familiarizarnos con las arquitecturas recurrentes. 
 
 \begin{figure}[!tb]
   \begin{center}    
@@ -281,13 +277,13 @@ La sencillez arquitectónica del modelo permite que se pueda utilizar como base 
 
 \section{\textit{BiLSTM+Att}}\label{bilstm_t}
 
-El tercer modelo propuesto tiene una arquitectura más compleja que el anterior consistiendo, esencialmente, en una red \textit{BiLSTM} integrada con un mecanismo de atención.
+El segundo modelo propuesto tiene una arquitectura más compleja que el anterior consistiendo, esencialmente, en una red \textit{BiLSTM} integrada con un mecanismo de atención.
 
 En este caso, se adiciona el uso de un modelo del lenguaje (en inglés, \textit{language model})  (\cite{mikolov-2016-fastext}) pre-entrenado en un conjunto de documentos en idioma español con el propósito de ganar riqueza semántica en la representación de la oración. Utilizar un modelo pre-entrenado ofrece la posibilidad de aprovechar el conocimiento del lenguaje contenido en la representación de las palabras (a través de los \textit{embeddings} pre-entrenados en una tarea auxiliar) en nuestra tarea específica que, en este caso, es la selección de respuestas. El modelo del lenguaje empleado es el presentado por \cite{mikolov-2016-fastext}, entrenado sobre un conjunto de artículos médicos de la biblioteca electrónica \textit{Scielo}\footnote{https://scielo.isciii.es/scielo.php} tomados de \cite{2019-medical-fastext}.
 
 Las redes recurrentes unidireccionales en general, en el análisis de una palabra, tienen en cuenta solo las palabras anteriores (o posteriores), sin embargo sería útil que al hallar la representación de una palabra se tuviera en cuenta tanto las palabras que aparecen antes como las que aparecen después en una oración. Por esta razón se decide utilizar una capa \textit{BiLSTM}, esto posibilita que en cada estado de una secuencia, la red tenga una visión completa y consecutiva de todos los estados anteriores y posteriores. Se propone la inclusión de una capa de atención pues podría ayudar al modelo a darle más peso a ciertas palabras en la oración que pueden ser determinantes en la predicción.
 
-En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo que se presenta en esta sección. En el Apéndice \ref{anex_1} se presenta una parte de la representación formal del modelo.
+En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo que se presenta en esta sección. En el Apéndice \ref{anex_1} se presenta la representación formal del modelo.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -296,42 +292,24 @@ En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al
     \caption{Arquitectura del modelo \textit{BiLSTM+Att}}\label{bilstm}
 \end{figure}
 
+El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector de dimensión establecida. La diferencia en esta primera capa con respecto al modelo anterior se  encuentra en que en el modelo \textit{LSTM} los pesos de la capa de \textit{embeddings} $E$ se aprenden durante la etapa de entrenamiento, mientras que, en este caso, los pesos que se utilizan pertenecen a \textit {embeddings} pre-entrenados tomados de \cite{2019-medical-fastext} que ya contienen un conocimiento del idioma español y del dominio médico específicamente, adquirido previamente.
 
-El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector $x_{t} \in {\mathbb{R}} ^{d}$, donde $d$ es la dimensión de los \textit{embeddings} que constituye un hiperparámetro del modelo. Es importante aclarar que la Ecuación \ref{bilstm:emb} luce exactamente como la Ecuación \ref{lstm:emb} correspondiente al modelo anterior, la diferencia se encuentra en que en el modelo \textit{LSTM} los pesos de la capa de \textit{embeddings} $E$ se aprenden durante la etapa de entrenamiento, mientras que, en este caso, los pesos que se utilizan pertenecen a \textit {embeddings} pre-entrenados tomados de \cite{2019-medical-fastext} que ya contienen un conocimiento del idioma español y del dominio médico específicamente, adquirido previamente.
+Una segunda capa está conformada por una red \textit{Bi-LSTM}, la cual permite tener en cuenta para el cómputo de un estado no solo las palabras anteriores sino también las siguientes. Posteriormente, se incliye la capa de atención. El objetivo de incluir un mecanismo de atención es que el modelo dé mayor peso a aquellas palabras que tienen una mayor influencia en la predicción final, de manera que su resultado es un vector de pesos, llamado vector de pesos de atención, que es combinado linealmente con la representación de las oraciones que se tenía en la capa anterior dando como resultado un nuevo vector, conocido como vector contexto, que constituye la representación final de la oración. Finalmente, una capa lineal utiliza la representación de la oración obtenida para predecir si la respuesta es correcta o no.
 
-Una segunda capa está conformada por una red \textit{Bi-LSTM}, la cual permite tener en cuenta para el cómputo de un estado no solo las palabras anteriores sino también las siguientes. Las Ecuaciones \ref{bilstm:ig} - \ref{bilstm:hidden_state} representan la \textit{LSTM} orientada de izquierda a derecha, que comienza en el principio de la oración y concluye en el final, mientras que en las Ecuaciones \ref{bilstml:ig} - \ref{bilstml:hidden_state} representan la \textit{LSTM} orientada en sentido contrario, de derecha a izquierda. La arquitectura de la red bidireccional es muy similar a la presentada en el modelo anterior, con la diferencia que se han incluido las flechas para indicar el sentido de la red.
+\section{QA-LSTM}
 
-Las ecuaciones serán aplicadas secuencialmente a cada uno de los \textit{tokens} $x^{(t)}$ que conforman una oración $S$. En este caso, a diferencia del modelo presentado anteriormente, en lugar de utilizar solo el último estado $h_{T}$ de la red, se utilizan todos los estados intermedios $h_{t}$  $(t = 1, 2, ..., T)$. De manera que, por cada capa \textit{LSTM}, se obtiene un conjunto de estados $h_{1}, h_{2}, ..., h_{T}$.
+Este modelo hace uso de las redes bidireccionales y emplea un enfoque clásico del área de recuperación de información y está inspirado en el introducido por \cite{2015-tan-qalstm}, aunque con algunas diferencias. En la Figura \ref{lstm_qa} se presenta la arquitectura del modelo. Es imporante destacar que mientras las arquitecturas presentadas anteriormente combinaban la pregunta y la respuesta en una misma entrada, los modelos que se presentan a partir de este momento utilizan una representación separada para pregunta y respuesta. Por esta razón, en la figura se presentan dos veces la misma arquitectura, cuyo objetivo es codificar el texto perteneciente a la pregunta y a la respuesta por separado, aunque en la práctica se utiliza la misma red para ambos textos.
 
-En el caso de la red \textit{BiLSTM} se obtienen dos conjuntos de estados. Se utiliza la notación $\overrightarrow{h_{t}}$ y $\overleftarrow{h_{t}}$ como referencia al t-ésimo estado de la red izquiera-derecha y derecha-izquierda respectivamente. Por lo que, los dos conjuntos de estados intermedios se representan como $\overrightarrow{h_{1}}, \overrightarrow{h_{2}}, ... \overrightarrow{h_{T}}$ y $\overleftarrow{h_{1}}, \overleftarrow{h_{2}}, ... \overleftarrow{h_{T}}$. En el resto del modelo, en función de ganar claridad en la escritura, se utilizará $\overrightarrow{h_{t}}$ y  $\overleftarrow{h_{t}}$ para denotar los estados intermedios de forma genérica.
-
-El objetivo de incluir un mecanismo de atención es que el modelo dé mayor peso a aquellas palabras que tienen una mayor influencia en la predicción final. Intuitivamente, lo que se quiere es un vector de pesos con el mismo tamaño $T$ que la cantidad de palabras de la oración. Dicho vector debe poseer en cada componente un número positivo entre 0 y 1 que indique cuán relevante es esa palabra para la clasificación. Por esta razón, la Ecuación \ref{bilstm:dense} toma la salida de la red \textit{BiLSTM}, $I \in {\mathbb{R}}^{(T \times 1)}$, como entrada a una capa densa, donde $W_{a}$ es la matriz aprendida durante la etapa de entrenamiento, con función de activación tangente que obtiene como salida el vector de pesos no normalizado $W$. Con el objetivo de expresar los valores de $W$ en una escala entre 0 y 1 se aplica la función \textit{softmax}, como se muestra en la Ecuación \ref{bilstm:sig}, obteniendo un vector $A$ distribuido probabilísticamente cuyas componentes representan los pesos de atención. En la Ecuación \ref{bilstm:dot} se combina el vector de pesos de atención $A$ con la salida de la capa \textit{BiLSTM} dando como resultado un vector $c$, conocido como vector contexto, que constituye la representación final de la oración. Finalmente, una capa lineal utiliza la representación de la oración obtenida $c$ para predecir la relación $\hat{y}$ existente en la oración. Esta salida se convierte en una distribución de probabilidades empleando la función \textit{softmax}.
-
-\section{\textit{Transfer Learning} basado en BERT}\label{bert_t}
-
-\cite{2018-devlin-bert} plantea que el uso de BERT en el enfoque \textit{fine tuning} obtiene nuevos resultados en el estado del arte en varias tareas de procesamiento del lenguaje natural, entre ellas, el reconocimiento de entidades nombradas y los sistemas pregunta/respuesta.
-
-La diferencia con otros modelos de representación del lenguaje, en cuanto a arquitectura, es que BERT está basado en un \textit{Transformer} bidireccional. En el artículo de \cite{2018-devlin-bert} no se detalla la arquitectura del modelo \textit{Transformer}. Otra diferencia es que modifica la tarea tradicional de \textit{language modeling} sobre la que se entrena introduciendo nuevas tareas. La primera tarea introducida recibe el nombre de \textit{masked language model} y consiste en ocultar palabras aleatorias en un texto y predecir, teniendo en cuenta el contexto, el \textit{token} que corresponde a la posición oculta, mientras que la segunda tarea consiste en, dada una oración en un texto, predecir la oración siguiente.
-
-Los autores de BERT señalan como principal contribución la demostración de la efectividad del pre-entrenamiento bidireccional en la representación del lenguaje sobre las arquitecturas unidireccionales utilizadas hasta ese momento y, además, plantean que con el uso de esta nueva representación se puede reducir la complejidad de la arquitectura del modelo y aún así, obtener mejores resultados.
-
-En esta tesis se propone un modelo que hace uso del modelo de lenguaje aprendido utilizando BERT e incorpora un modelo de predicción simple. La propuesta tiene como objetivo comprobar si los aportes de BERT se pueden extender al idioma español y, específicamente, a la tarea de extracción de relaciones semánticas entre entidades.
-
-\section{QA-BiLSTM}
-
-Este modelo hace uso de las redes bidireccionales y emplea un enfoque clásico del área de recuperación de información. Fue introducido por \cite{2015-tan-qalstm}. 
-En la Figura \ref{lstm_qa} se presenta la arquitectura del modelo. Es imporante destacar que mientras las arquitecturas presentadas anteriormente combinaban la pregunta y la respuesta en una misma entrada, los modelos que se presentan a partir de este momento utilizan una representación separada para pregunta y respuesta. Por esta razón, en la figura se presentan dos veces la misma arquitectura, cuyo objetivo es codificar el texto de una manera más rica semánticamente.
-
-Ambas arquitecturas, notables al principio de la red, comparten la misma arquitectura. Se ha visualizado de esta forma para lograr una mejor comprensión por parte del lector.
+Ambas arquitecturas, notables en la base de la red por capas, comparten la misma arquitectura. Se ha visualizado de esta forma para lograr una mejor comprensión por parte del lector.
 
 \begin{figure}[!tb]
   \begin{center}
     \includegraphics[angle=0, width=1\textwidth]{Graphics/lstm_qa.png}
   \end{center}
-    \caption{Arquitectura del modelo QA LSTM}\label{lstm_qa}
+    \caption{Arquitectura del modelo QA-LSTM}\label{lstm_qa}
 \end{figure}
 
-El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector de $d$ dimensiones. Al igual que en el modelo \textit{BiLSTM+Attn} se utilizan embeddings pre-entrenados, se toman como base para la capa de \textit{Embeddings} los vectores palabras orientados al dominio biomédico citados anteriormente y publicados por \cite{2019-medical-fastext}.
+El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector de una dimensión fija para cada palabra. Al igual que en el modelo \textit{BiLSTM+Attn} se utilizan embeddings pre-entrenados, se toman como base para la capa de \textit{Embeddings} los vectores palabras orientados al dominio biomédico citados anteriormente y publicados por \cite{2019-medical-fastext}.
 
 Estos embeddings se utilizan como entrada a una capa LSTM bidireccional. La red BiLSTM genera representaciones distribuidas tanto para la pregunta como para la respuesta de forma independiente, y luego utilizan la similitud del coseno para medir su distancia. 
 
@@ -347,26 +325,28 @@ En esta sección se expone el modelo QA-LSTM+CNN, el cual es muy similar al ante
   \begin{center}
     \includegraphics[angle=0, width=1\textwidth]{Graphics/lstm_cnn_qa.png}
   \end{center}
-    \caption{Arquitectura del modelo QA LSTM/CNN }\label{lstm_cnn_qa}
+    \caption{Arquitectura del modelo QA-LSTM/CNN }\label{lstm_cnn_qa}
 \end{figure}
 
-En la sección anterior, las representaciones de preguntas y respuestas se geenran solo por simple operaciones, en este caso, la concatenación. Este nuevo modelo recurre a una estructura de CNN construida sobre los resultados de BiLSTM, con el fin de ofrecer una representación más compuesta de las preguntas y las respuestas. A diferencia de la red neuronal tradicional, donde cada salida es interactiva con cada entrada, la estructura convolucional solo impone interacciones locales entre las entradas dentro de un tamaño de filtro m. Eesto quiere decir que la representación resultante tiene en cuenta la interacción de las palabras más cercanas, tanto a la derecha como a la izquierda.
+En la sección anterior, las representaciones de preguntas y respuestas se generan solo por simple operaciones, en este caso, la concatenación. Este nuevo modelo recurre a una estructura de CNN construida sobre los resultados de BiLSTM, con el fin de ofrecer una representación más compuesta de las preguntas y las respuestas. A diferencia de la red neuronal tradicional, donde cada salida es interactiva con cada entrada, la estructura convolucional solo impone interacciones locales entre las entradas dentro de un tamaño de filtro m. Eesto quiere decir que la representación resultante tiene en cuenta la interacción de las palabras más cercanas, tanto a la derecha como a la izquierda.
 
-Se decide incorporar esta arquitectura porque los autores de \cite{2015-tan-qalstm} alcanzan resultados superiores que con la arquitectura anterior. Sin embargo, aunque esto es una razón para incluirla en la experimentación no asegura el éxito dadas las diferencia de contextos, por ejemplo, el conjunto de datos utilizado.  
+Se decide incorporar esta arquitectura porque los autores de \cite{2015-tan-qalstm} alcanzan resultados superiores que con la arquitectura anterior. Sin embargo, aunque esto es una razón para incluirla en la experimentación no asegura el éxito dadas las diferencia de los contextos.  
 
-\section{QA-BERT}
+\section{QA-BERT: \textit{Transfer Learning}}\label{bert_t}
 
-El modelo que se presenta en esta sección comparte la esencia del modelo QABiLSTM, pero en lugar de utilizar un red de tipo BiLSTM en las capas bases, utiliza un modelo BERT pre-entrenado. 
+\cite{2018-devlin-bert} plantea que el uso de BERT en el enfoque \textit{fine tuning} obtiene nuevos resultados en el estado del arte en varias tareas de procesamiento del lenguaje natural, entre ellas, el reconocimiento de entidades nombradas y los sistemas pregunta/respuesta.
 
-Los autores de BERT en su trabajo \cite{2018-devlin-bert} afirman que el uso de BERT trae consigo una riqueza semántica mayor que los embeddings tradicionales. Lo cual demuestran al presentar cómo el uso de BERT en arquitecturas del momento logra vencer a varios modelos del estado del arte en diferentes tareas de procesamiento del lenguaje natural como la traducción, inferencia del lenguaje, incluso sistemas Q/A, entre otras. Aunque no fue probado formalmente que BERT tiene conocimiento del lenguaje humano, los resultados sugieren que este modelo posee una capacidad de entendimiento del lenguaje mayor que modelos vistos con anterioridad.
+La diferencia con otros modelos de representación del lenguaje, en cuanto a arquitectura, es que BERT está basado en un \textit{Transformer} bidireccional. En el artículo de \cite{2018-devlin-bert} no se detalla la arquitectura del modelo \textit{Transformer}. Otra diferencia es que modifica la tarea tradicional de \textit{language modeling} sobre la que se entrena introduciendo nuevas tareas. La primera tarea introducida recibe el nombre de \textit{masked language model} y consiste en ocultar palabras aleatorias en un texto y predecir, teniendo en cuenta el contexto, el \textit{token} que corresponde a la posición oculta, mientras que la segunda tarea consiste en, dada una oración en un texto, predecir la oración siguiente.
 
-Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema.
+Los autores de BERT señalan como principal contribución la demostración de la efectividad del pre-entrenamiento bidireccional en la representación del lenguaje sobre las arquitecturas unidireccionales utilizadas hasta ese momento y, además, plantean que con el uso de esta nueva representación se puede reducir la complejidad de la arquitectura del modelo y aún así, obtener mejores resultados.
 
-Se utiliza como base el modelo BERT entrenado con un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura ... se muestra gráficamente la arquitecturas del modelo que se presenta.
+El modelo que se presenta en esta sección comparte la esencia del modelo QA-LSTM, pero en lugar de utilizar un red de tipo BiLSTM en las capas bases, utiliza un modelo BERT pre-entrenado. Los autores de BERT en su trabajo \cite{2018-devlin-bert} afirman que el uso de BERT trae consigo una riqueza semántica mayor que los embeddings tradicionales. Aunque no fue probado formalmente que BERT tiene conocimiento del lenguaje humano, los resultados sugieren que este modelo posee una capacidad de entendimiento del lenguaje mayor que modelos vistos con anterioridad.
+
+Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema.El modelo BERT base que se utiliza fue entrenado sobre un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura ... se muestra gráficamente la arquitectura del modelo que se presenta.
 
 \subsection{Especificidad del preprocesamiento}
 
-Con el objetivo de transformar una oración en un vector computacionalmente interpretable, se propuso un preprocesamiento que fue aplicado a los modelos de aprendizaje presentados. Sin embargo, en el caso de BERT, las oraciones no pueden ser traducidas a vectores numéricos de la misma forma que se hizo en las propuestas anteriores, sino que BERT requiere un formato diferente. Con el fin de obtener los resultados esperados, el corpus original siempre debe ser modificado en función de las pautas planteadas por los autores en \cite{2018-devlin-bert}.
+Con el objetivo de transformar una oración en un vector computacionalmente interpretable, anteriormente se propuso un preprocesamiento que fue aplicado a los modelos de aprendizaje presentados. Sin embargo, en el caso de BERT, las oraciones no pueden ser traducidas a vectores numéricos de la misma forma que se hizo en las propuestas anteriores, sino que BERT requiere un formato diferente. Con el fin de obtener los resultados esperados, el corpus original siempre debe ser modificado en función de las pautas planteadas por los autores en \cite{2018-devlin-bert}. Asimismo, el \textit{tokenizer} empleado no puede ser el mismo que el utilizado para los modelos anteriores, puesto que BERT tiene un vocabulario de palabras diferentes.
 
 BERT define los siguientes \textit{tokens} especiales para la representación de una oración. Dichos \textit{tokens} reciben una interpretación diferente en la etapa de entrenamiento.
 \begin{itemize}
