@@ -41,19 +41,103 @@ La métrica estándar para calificar este tipo de exámenes consiste en sumar tr
 
 \section{Entrenamiento}
 
-Dado que una instancia del conjunto original se convierte en varios ejemplos diferentes, una por cada posible respuesta y que solo una de las respuestas es correcta, el conjunto de datos resultante del procesamiento de texto es un conjunto desbalanceado. De manera general, por una instancia positiva pueden aparecer al menos 3 instancias negativas.
+En esta sección se detalla el proceso de entrenamiento de los modelos propuestos anteriormente. 
 
-Se implementaron dos algoritmos de remuestreo.
+Dado que una instancia del conjunto original se convierte en varios ejemplos diferentes, una por cada posible respuesta y que solo una de las respuestas es correcta, el conjunto de datos resultante del procesamiento de texto es un conjunto desbalanceado. Por una instancia positiva pueden aparecer al menos 3 instancias negativas.
+
+Un conjunto de datos desequilibrado es el problema en el que los datos que pertenecen a una clase son significativamente más altos o más bajos que los que pertenecen a otras clases, como es el caso. La mayoría de los algoritmos de clasificación ML/DL no están equipados para manejar clases desequilibradas y tienden a inclinarse hacia las clases mayoritarias.
+
+Para enfrentar este problema se han implementado varias técnicas de remuestreo cuyo objetivo es equilibrar la cantidad de muestras en cada una de las clases. La idea más sencilla para balancear un conjunto de datos es añadiendo muestras de la clase minoritaria o eliminando de la clase mayoritaria, sin embargo, estás técnicas tienen riesgo de \textit{overfitting} y \textit{underfitting} respectivamente. En la práctica resultan más efectivas técnicas avanzadas como SMOTE (del inglés, \textit{Synthetic Minority Over-sampling Technique}) que crean datos sintéticos de la case minoritaria. Sin embargo, SMOTE no se dempeña bien en el ámbito de datos textuales por la alta dimensiónde de los vectores que se obtienen a partir de texto.
+
+Teniendo en cuenta esto, se han implementado las siguientes técnicas de remuestreo:
 
 \begin{itemize}
-  \item \textit{Random Undersampling}: Eliminar del conjunto de datos transformados instancias negativas de manera aleatoria  hasta igualar la cantidad de instancias positivas y negativas.
-  \item \textit{Random oversampling}: Proceso análogo al anterior pero adicionando instancias positivas al \textit{dataset} seleccionadas de manera aleatoria hasta igualar la cantidad de instancias de cada etiqueta.
+  \item \textit{Random Undersampling}: Este algoritmo consiste en eliminar del conjunto de datos transformados instancias negativas de manera aleatoria hasta igualar la cantidad de instancias positivas y negativas.
+  \item \textit{Random oversampling}: Este proceso es muy similar al anterior desde el punto de vista de la aleatoriedad pero adiciona instancias positivas al \textit{dataset} hasta igualar la cantidad de instancias de cada etiqueta.
+  \item \textit{Mixed oversampling}: El objetivo de esta técnica es reproducir el comportamiento de los algoritmos de generación sintética de datos. El concepto también es similar a \textit{Data Augmentation}, común en el procesamiento de imágenes, que implica la creación de nuevas instancias aplicando transformaciones (como rotar, trasladar, escalar, entre otras) las del conjunto de datos original. En este caso, para generar texto a partir de las oraciones originales se recurre a la traducción y al reemplazamiento por sinónimos. El algoritmo de traducción toma una oración y la traduce al idioma inglés, del inglés al alemán y luego, nuevamente al castellano. Se introduce un idioma intermedio para lograr una mayor diferencia entre la oración original y la resultante. Esto podría resultar contraproducente pues puede cambiar el sentido de la oración original, lo cual se verá en la evaluación de los modelos. Por otra parte, la otra técnica consiste en a partir de una oración obtener otra compuesta por las palabras más parecidas a cada una de las palabras de la oración original. Las palabras más similares a un témino dado se han determinado a partir del uso de sus \textit{word embeddings}. En este caso, se han utilizado \textit{embeddings} obtenidos aplicando el algoritmo Fasttext sobre el \textit{Spanish Billion Word Corpus}\footnote{http://crscardellino.github.io/SBWCE/} descargado de \cite{spanish-word-embeddings}. 
 \end{itemize}
 
+En las secciones posteriores se muestran los resultados de los modelos propuestos utilizando como entrenamiento las diferentes técnicas de remuestreo.
 
 \section{Evaluación de los modelos}
 
-Se implementa un modelo de regresión logística, por su simplicidad se puede utilizar como \textit{baseline} supervisado 
+Como se mencionó anteriormente, las preguntas del conjuntos de datos están separadas por categorías. El análisis descriptivo inicial arrojó que el vocabulario más frecuente variaba de acuerdo a la categoría. Por esta razón los modelos serán entrenados y evaludas tanto en el conjunto de datos completo, como en cada una de las categorías.
+
+Además de los modelos de aprendizaje profundo detallados en el capítulo anterior, se implementa un modelo de regresión logística, por su simplicidad se puede utilizar como \textit{baseline} supervisado. 
+
+
+
+\subsection{Evaluación general}
+
+El conjunto de validación está compuesto solamente por 6 exámenes, uno de cada categoría, mientras que el conjunto de evaluación está confomado por 12, 2 de cada rama.
+
+
+\begin{table}[!tb]
+  \begin{center}
+    \caption{Comparación general por cantidad de puntos TEST}
+    \begin{tabular}{l|c|c|c}
+      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{Media Puntos} & \textbf{Max Puntos}\\
+      \hline
+      Regresión Logística & Desbalanceado & - & - \\
+      LSTM & Desbalanceado & 1 & 37 \\
+      BiLSTM+Attn & Desbalanceado & 15 & 93 \\
+      QA-LSTM & Desbalanceado & 15 & 74 \\
+      QA-LSTM/CNN & Desbalanceado & 11 & 36 \\
+
+      Regresión Logística & \textit{Oversampled} & -5 & 37 \\
+      LSTM & \textit{Oversampled} & 2 & 56 \\
+      BiLSTM+Attn & \textit{Oversampled} & -2 & 21 \\
+      QA-LSTM & \textit{Oversampled} & 9 & 45 \\
+      QA-LSTM/CNN & \textit{Oversampled} & 7 & 61 \\
+
+      Regresión Logística & \textit{Mixed} & -9 & 21 \\
+      LSTM & \textit{Mixed} & 11 & 39 \\
+      BiLSTM+Attn & \textit{Mixed} & -3 & 40 \\
+      QA-LSTM & \textit{Mixed} & 23 & 101 \\
+      QA-LSTM/CNN & \textit{Mixed} & 4 & 49 \\
+
+      QA-BERT & \textit{Undersampled} & 3 & 41 \\
+      Sim-BERT & \textit{No} & -13 & 29 \\
+    \end{tabular}
+  \end{center}
+  \label{comparison_points_general}
+\end{table}
+
+
+\begin{table}[!tb]
+  \begin{center}
+    \caption{Comparación general por cantidad de puntos TEST}
+    \begin{tabular}{l|c|c|c}
+      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{Media Exactitud} & \textbf{Max Exactitud}\\
+      \hline
+      Regresión Logística & Desbalanceado & - & - \\
+      LSTM & Desbalanceado & 0,25 & 0,29 \\
+      BiLSTM+Attn & Desbalanceado & 0,27 & 0,35 \\
+      QA-LSTM & Desbalanceado & 0,26 & 0,33 \\
+      QA-LSTM/CNN & Desbalanceado & 0,26 & 0,29 \\
+
+      Regresión Logística & \textit{Oversampled} & 0.24 & 0,29 \\
+      LSTM & \textit{Oversampled} & 0,25 & 0,31 \\
+      BiLSTM+Attn & \textit{Oversampled} & 0,25 & 0,27 \\
+      QA-LSTM & \textit{Oversampled} & 0,26 & 0,30 \\
+      QA-LSTM/CNN & \textit{Oversampled} & 0,26 & 0,32 \\
+
+      Regresión Logística & \textit{Mixed} & 0,24 & 0,27 \\
+      LSTM & \textit{Mixed} & 0,26 & 0,29 \\
+      BiLSTM+Attn & \textit{Mixed} & 0,25 & 0,29 \\
+      QA-LSTM & \textit{Mixed} & 0,27 & 0,36 \\
+      QA-LSTM/CNN & \textit{Mixed} & 0,25 & 0,30 \\
+
+      QA-BERT & \textit{Undersampled} & 0,25 & 0,30 \\
+      Sim-BERT & \textit{No} & 0,23 & 0,28 \\
+    \end{tabular}
+  \end{center}
+  \label{comparison_acc_general}
+\end{table}
+
+
+\subsection{Evaluación por categorías}
+
 
 
 
@@ -89,27 +173,12 @@ Se implementa un modelo de regresión logística, por su simplicidad se puede ut
       QA-BERT & 1.142 & 456 & 228 & 458 & 228 & 458 \\ 
     \end{tabular}
   \end{center}
-  \label{comparison_acuracy}
+  \label{comparison_accuracy}
 \end{table}
 
 
+Al filtrar el conjunto de datos original por categorías, la cantidad de muestras que 
 
-\begin{table}[!tb]
-  \begin{center}
-    \caption{Exactitud y Puntos}
-    \begin{tabular}{l|c|c}
-      \textbf{Modelo} & \textbf{Exactitud Test} & \textbf{Puntos Test} \\
-      \hline
-      Regresión Logística & 1.132 & 452\\
-      LSTM & 230 & 455 \\
-      BiLSTM+Attn  & 225 & 457 \\
-      QA-LSTM & 231 & 463 \\
-      QA-LSTM/CNN & 226 & 455 \\
-      QA-BERT & 228 & 458 \\ 
-    \end{tabular}
-  \end{center}
-  \label{results_all}
-\end{table}
 
 
 \section{Análisis de los resultados}
@@ -120,9 +189,8 @@ Los algoritmos de clasificación, a diferencia de los algoritmos de regresión, 
 Varias cosas que mejorar para la próxima:
 
 - Otro enfoque
-- Implementar otro método de remuestreo que utilice herramientas linguísticas externas y permita generar oraciones equivalentes
 - Utilizar una función de pérdida que maximice la importancia de una respuesta correcta y penalice una incorrecta. Teniendo en cuenta ambos 
--
+- Diseñar algoritmos híbridos que combinen las técnicas anteriormente empleadas bajo el enfoque de recuperación de información no supervisada o supervisada a distancia, con modelos del aprendizaje supervisado.
 
 
 
