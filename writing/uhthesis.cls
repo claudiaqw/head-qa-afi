@@ -162,7 +162,7 @@
     \vfill
     {\large Memoria escrita \\presentada en opción al título de \\ \@degree} \\
     \vskip 0.25cm
-    \includegraphics[width=2.5cm]{Graphics/qrcode}
+    \includegraphics[width=2.5cm]{Graphics/qrcode.png}
     \vskip 0.25cm
     \@date
   \end{center}
