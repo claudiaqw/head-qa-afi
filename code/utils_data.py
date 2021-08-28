@@ -2,13 +2,16 @@ import pickle
 import numpy as np
 import pandas as pd
 import random as rnd
-from datasets import load_dataset
 
 import torch
 from torch.utils.data import Dataset
 
+from gensim.models import KeyedVectors
+
 import spacy
+
 nlp = spacy.load("es_core_news_sm")
+stop = nlp.Defaults.stop_words.union({'a', 'e', 'y', 'o', 'u', '[SEP]'})
 
 class Vocabulary(object):
     def __init__(self, vocab2index={}, add_unk={}, unk_token='UNK'):
@@ -220,6 +223,128 @@ class HeadQA_IR(Dataset):
         return x_0, x_1, y
 
 
+## RESAMPLING ##
+
+def translate(sentence):
+    from deep_translator import GoogleTranslator
+    translated = GoogleTranslator(source='es', target='en').translate(sentence)    
+    translated = GoogleTranslator(source='en', target='de').translate(translated)
+    return GoogleTranslator(source='de', target='es').translate(translated)
+
+def random_undersampling(instances):
+    positive_instances = [item for item in instances if item['label'] == 1]
+    negative_instances = [item for item in instances if item['label'] == 0]
+
+    randomlist = [rnd.randint(0, len(negative_instances) - 1)
+                  for i in range(len(positive_instances))]
+
+    undersampled_dataset = positive_instances.copy()
+    for i in randomlist:
+        undersampled_dataset.append(negative_instances[i])
+    return undersampled_dataset
+
+def random_oversamplig(instances):
+    positive_instances = [item for item in instances if item['label'] == 1]
+    diff = len(instances) - 2 * len(positive_instances) # how many will be added
+    randomlist = [rnd.randint(0, len(positive_instances) - 1)
+                  for i in range(diff)]
+
+    ovsersampled_dataset = instances.copy()
+    for i in randomlist:
+        ovsersampled_dataset.append(positive_instances[i])
+    return ovsersampled_dataset
+
+def mixed_oversampling(instances, generator_1, generator_2):
+    wv = KeyedVectors.load_word2vec_format('trained_models/embeddings/fasttext-sbwc.3.6.e20.vec')
+    oversampled_dataset = instances.copy()    
+    positive_instances = [item for item in instances if item['label'] == 1]
+    
+    for i, item in enumerate(positive_instances):
+        print(f'{i}/{len(positive_instances)}')
+        new_1 = generator_1(item)
+        new_2 = generator_2(item, wv)
+        oversampled_dataset.append(new_1)
+        oversampled_dataset.append(new_2)
+    return oversampled_dataset
+
+def similarity_instance(instance, wv):
+    new_instance = instance.copy()
+    new_tokens = []
+    for token in instance['sample_tok']:
+        if token not in stop:
+            try: 
+                similar = wv.most_similar(token)[-5][0]
+            except:
+                similar = token
+        else:
+            similar = token
+        new_tokens.append(similar)
+    new_instance['sample_tok'] = new_tokens
+    return new_instance
+
+def translate_instance(instance):
+    new_instance = instance.copy()
+    
+    trans_question = translate(instance['question'])
+    trans_answer = translate(instance['answer'])
+    
+    q, a = nlp(trans_question), nlp(trans_answer)
+    tok_qtext = [token.text for token in q]
+    tok_atext = [token.text for token in a] 
+    
+    new_instance['question'] = trans_question
+    new_instance['answer'] = trans_answer
+    new_instance['sample_tok'] = tok_qtext + ['[SEP]'] + tok_atext
+    return new_instance
+
+def translate_instance_ir(instance):
+    new_instance = instance.copy()
+    
+    trans_question = translate(instance['question'])
+    trans_answer = translate(instance['answer'])
+    
+    q, a = nlp(trans_question), nlp(trans_answer)
+    tok_qtext = [token.text for token in q]
+    tok_atext = [token.text for token in a]
+    
+    new_instance['question'] = trans_question
+    new_instance['answer'] = trans_answer
+    
+    new_instance['tok_qtext'] = tok_qtext
+    new_instance['tok_atext'] = tok_atext
+    
+    return new_instance
+
+def similarity_instance_ir(instance, wv):
+    new_instance = instance.copy()
+    q_tokens, a_tokens = [], []
+    
+    for token in instance['tok_qtext']:
+        if token not in stop:
+            try: 
+                similar = wv.most_similar(token)[-5][0]
+            except:
+                similar = token
+        else:
+            similar = token
+        q_tokens.append(similar)
+        
+    for token in instance['tok_atext']:
+        if token not in stop:
+            try: 
+                similar = wv.most_similar(token)[-5][0]
+            except:
+                similar = token
+        else:
+            similar = token
+        a_tokens.append(similar)
+    new_instance['tok_qtext'] = q_tokens
+    new_instance['tok_atext'] = a_tokens
+    return new_instance
+
+
+## DATA ##
+
 def clean_words(input_str):
     punctuation = '.,;:"!?”“_-'
     word_list = input_str.lower().replace('\n',' ').split()
@@ -247,29 +372,6 @@ def parse_dataset(dataset):
             training_sample['category'] = sample['category']
             train.append(training_sample)
     return train
-
-def random_oversamplig(instances):
-    positive_instances = [item for item in instances if item['label'] == 1]
-    diff = len(instances) - 2 * len(positive_instances) # how many will be added
-    randomlist = [rnd.randint(0, len(positive_instances) - 1)
-                  for i in range(diff)]
-
-    ovsersampled_dataset = instances.copy()
-    for i in randomlist:
-        ovsersampled_dataset.append(positive_instances[i])
-    return ovsersampled_dataset
-
-def random_undersampling(instances):
-    positive_instances = [item for item in instances if item['label'] == 1]
-    negative_instances = [item for item in instances if item['label'] == 0]
-
-    randomlist = [rnd.randint(0, len(negative_instances) - 1)
-                  for i in range(len(positive_instances))]
-
-    undersampled_dataset = positive_instances.copy()
-    for i in randomlist:
-        undersampled_dataset.append(negative_instances[i])
-    return undersampled_dataset
 
 def parse_ir_dataset(dataset):
     data = []
@@ -300,6 +402,19 @@ def filter_by_category(dataset, category):
         if categ == category:
             filtered_dataset.append(instance)
     return filtered_dataset
+
+def extract_exams(dataset):
+    exams = {}
+    for instance in dataset:
+        cuaderno = instance['name']
+        if cuaderno in exams:
+            exams[cuaderno].append(instance)
+        else:
+            exams[cuaderno] = [instance]
+    return exams
+
+
+## IO ##
 
 def save_dataset_to_pickle(filename, dataset):
     with open(filename, 'wb') as handle:

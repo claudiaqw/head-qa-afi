@@ -6,6 +6,8 @@ import numpy as np
 import time
 import datetime
 
+## TRAINING ##
+
 def get_optimizer(model, lr=0.01, wd=0.0):
     return torch.optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
 
@@ -58,6 +60,9 @@ def train_ir(model, optimizer, train_dl, test_dl, validate, epochs=50):
         print("Epoch %s train loss  %.4f valid loss %.3f and accuracy %.4f" %
               (i, train_loss, valid_loss, valid_acc))
     return epochs_results
+
+
+## EVALUATION ##
 
 def validate(model, dataloader):
     model.eval()
@@ -119,7 +124,44 @@ def evaluate(model, dataloader, encoder, evaluator, pytorch_model=True):
         acc, point = evaluator(model, instance, encoder)
         right += acc
         score += point
+
     return right/len(dataloader), score
+
+def score_exam(model, exam, encoder, evaluator):    
+    right, score = 0, 0
+    for question in exam:
+        acc, point = evaluator(model, question, encoder)
+        right += acc
+        score += point
+    return right/len(exam), score
+
+def extract_exams(dataset):
+    exams = {}
+    for instance in dataset:
+        cuaderno = instance['name']
+        if cuaderno in exams:
+            exams[cuaderno].append(instance)
+        else:
+            exams[cuaderno] = [instance]
+    return exams
+
+def evaluate_better(model, dataloader, encoder, evaluator, pytorch_model=True, bert=False):
+    if pytorch_model:
+        model.eval()
+
+    exams_dict = extract_exams(dataloader)
+    accuracy, points = [], []
+    for _, exam in exams_dict.items():
+        acc, point = score_exam(model, exam, encoder, evaluator)
+        if bert:
+            accuracy.append(acc)            
+        else:
+            accuracy.append(acc[0])
+        points.append(point)
+    return np.mean(accuracy), np.mean(points), accuracy, points
+
+
+## EMBEDDINGS ##
 
 def load_embeddings_from_file(filepath):
     word_to_index, embeddings = {}, []
@@ -151,7 +193,8 @@ def make_embedding_matrix(filepath, words, word_to_idx=None, glove_embeddings=No
             final_embeddings[i,:] = embedding_i
     return final_embeddings
 
-# BERT tools
+## BERT ## 
+
 def pad_seq(x, seq_len=110, right_padding = False):
     z = np.zeros(seq_len, dtype=np.int32)
     n = min(seq_len, len(x))
@@ -161,7 +204,7 @@ def pad_seq(x, seq_len=110, right_padding = False):
         z[(seq_len - n):] = x[0:n]
     return z
 
-def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased'), do_lower_case=False):
+def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False)):
     input_ids, labels = [], []
     for item in samples:
         sent = item['question'] +' [SEP] ' + item['answer'] 
@@ -177,7 +220,7 @@ def encoder_bert(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/ber
         
     return input_ids, attention_masks, labels
 
-def encoder_bert_ir(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased'), do_lower_case=False):
+def encoder_bert_ir(samples, tokenizer=BertTokenizer.from_pretrained('dccuchile/bert-base-spanish-wwm-cased', do_lower_case=False)):
     input_ids_0, input_ids_1, labels = [], [], []
     for item in samples:
         encoded_q = tokenizer.encode(item['question'], add_special_tokens = True)
