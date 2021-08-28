@@ -60,16 +60,15 @@ Se implementa un modelo de regresión logística, por su simplicidad se puede ut
 \begin{table}[!tb]
   \begin{center}
     \caption{Comparación de los modelos por categorías por Puntos}
-    \begin{tabular}{l|c|c|c|c|c}
+    \begin{tabular}{l|c|c|c|c|c|c}
       \textbf{Modelo} & \textbf{Biología} & \textbf{Enfermería} & \textbf{Farmacología} & \textbf{Medicina} & \textbf{Psicología} & \textbf{Química}\\
       \hline
-      Regresión Logística & 1.132 & 452 & 1.132 & 452 & 452 & 1.132 & 452\\
+      Regresión Logística & 1.132 & 452 & 1.132 & 452 & 452 & 1.132\\
       LSTM & 1.069 & 384 & 230 & 455 & 1.132 & 452 \\
       BiLSTM+Attn & 1.139 & 457 & 225 & 457 & 452 & 1.132 \\
       QA-LSTM & 1.149 & 455 & 231 & 463 & 231 & 463 \\
       QA-LSTM/CNN & 1.134 & 453 & 226 & 455 & 226 & 455 \\
-      QA-BERT & 1.142 & 456 & 228 & 458 & 228 & 458 \\ 
-      \textbf{Total} & \textbf{6.765} & \textbf{2.657} & \textbf{1.366} & \textbf{2.742}\\
+      QA-BERT & 1.142 & 456 & 228 & 458 & 228 & 458 
     \end{tabular}
   \end{center}
   \label{comparison_points}
@@ -79,16 +78,15 @@ Se implementa un modelo de regresión logística, por su simplicidad se puede ut
 \begin{table}[!tb]
   \begin{center}
     \caption{Comparación de los modelos por categorías por Exactitud}
-    \begin{tabular}{l|c|c|c|c|c}
+    \begin{tabular}{l|c|c|c|c|c|c}
       \textbf{Modelo} & \textbf{Biología} & \textbf{Enfermería} & \textbf{Farmacología} & \textbf{Medicina} & \textbf{Psicología} & \textbf{Química}\\
       \hline
-      Regresión Logística & 1.132 & 452 & 1.132 & 452 & 452 & 1.132 & 452\\
+      Regresión Logística & 1.132 & 452 & 1.132 & 452 & 452 & 1.132\\
       LSTM & 1.069 & 384 & 230 & 455 & 1.132 & 452 \\
       BiLSTM+Attn & 1.139 & 457 & 225 & 457 & 452 & 1.132 \\
       QA-LSTM & 1.149 & 455 & 231 & 463 & 231 & 463 \\
       QA-LSTM/CNN & 1.134 & 453 & 226 & 455 & 226 & 455 \\
       QA-BERT & 1.142 & 456 & 228 & 458 & 228 & 458 \\ 
-      \textbf{Total} & \textbf{6.765} & \textbf{2.657} & \textbf{1.366} & \textbf{2.742}\\
     \end{tabular}
   \end{center}
   \label{comparison_acuracy}
@@ -99,16 +97,15 @@ Se implementa un modelo de regresión logística, por su simplicidad se puede ut
 \begin{table}[!tb]
   \begin{center}
     \caption{Exactitud y Puntos}
-    \begin{tabular}{l|c|c|c|c|c}
-      \textbf{Modelo} & \textbf{Exactitud Dev} & \textbf{Puntos Dev} & \textbf{Exactitud Test} & \textbf{Puntos Test} \\
+    \begin{tabular}{l|c|c}
+      \textbf{Modelo} & \textbf{Exactitud Test} & \textbf{Puntos Test} \\
       \hline
-      Regresión Logística & 1.132 & 452 & 1.132 & 452\\
-      LSTM & 1.069 & 384 & 230 & 455 \\
-      BiLSTM+Attn & 1.139 & 457 & 225 & 457 \\
-      QA-LSTM & 1.149 & 455 & 231 & 463 \\
-      QA-LSTM/CNN & 1.134 & 453 & 226 & 455 \\
-      QA-BERT & 1.142 & 456 & 228 & 458 \\ 
-      \textbf{Total} & \textbf{6.765} & \textbf{2.657} & \textbf{1.366} & \textbf{2.742}\\
+      Regresión Logística & 1.132 & 452\\
+      LSTM & 230 & 455 \\
+      BiLSTM+Attn  & 225 & 457 \\
+      QA-LSTM & 231 & 463 \\
+      QA-LSTM/CNN & 226 & 455 \\
+      QA-BERT & 228 & 458 \\ 
     \end{tabular}
   \end{center}
   \label{results_all}
