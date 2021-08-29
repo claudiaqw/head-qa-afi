@@ -113,7 +113,6 @@ La siguiente imagen (Figura \ref{words}) muestra la frecuencia de las palabras m
     \caption{Palabras más frecuentes}\label{words}
 \end{figure}
 
-
 La Figura \ref{category} muestra una nube de palabras por cada una de las categorías que definen el dominio de cada pregunta. La nube de palabras muestra las palabras más comunes en mayor tamaño.
 
 \begin{figure}[!tb]
@@ -283,7 +282,7 @@ En este caso, se adiciona el uso de un modelo del lenguaje (en inglés, \textit{
 
 Las redes recurrentes unidireccionales en general, en el análisis de una palabra, tienen en cuenta solo las palabras anteriores (o posteriores), sin embargo sería útil que al hallar la representación de una palabra se tuviera en cuenta tanto las palabras que aparecen antes como las que aparecen después en una oración. Por esta razón se decide utilizar una capa \textit{BiLSTM}, esto posibilita que en cada estado de una secuencia, la red tenga una visión completa y consecutiva de todos los estados anteriores y posteriores. Se propone la inclusión de una capa de atención pues podría ayudar al modelo a darle más peso a ciertas palabras en la oración que pueden ser determinantes en la predicción.
 
-En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo que se presenta en esta sección. En el Apéndice \ref{anex_1} se presenta la representación formal del modelo.
+En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al modelo que se presenta en esta sección. 
 
 \begin{figure}[!tb]
   \begin{center}
@@ -387,7 +386,7 @@ La idea es utilizar BERT como codificador de las oraciones de entrada, tanto la 
 
 El objetivo de este modelo tan sencillo es comprobar si un modelo tan poderoso como BERT puede a través de la representacíón contextual de las palabras que obtiene ser aplicado eficazmente a la selección de respuestas.
 
-\section{Comentarios de Implementación}\label{section:implementation}
+\section{Implementación}\label{section:implementation}
 
 En esta sección, se abordan los elementos esenciales para la programación y ejecución de los modelos propuestos y se describen de manera breve las herramientas utilizadas en el proceso de implementación.
 
