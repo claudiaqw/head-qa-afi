@@ -1,12 +1,12 @@
 \chapter{Análisis y preprocesamiento}\label{chapter:methods}
 
-Este capítulo consta de dos partes principales. La primera sección está dedicada a la planificación del proyecto presentando un esquema de pasos y tareas que fueron llevados a cabo en la realización de este proyecto, desde el análisis del problema inicial hasta la presentación de los resultados. 
+Este capítulo está dedicada a detallar el análisis exploratorio sobre el conjunto de datos HeadQA y el preprocesamiento requerido. El capítulo está organizado en dos partes principales. La primera sección está dedicada a la planificación del proyecto presentando un esquema de pasos y tareas que fueron llevados a cabo en la realización de este trabajo, y que engloba desde el análisis del problema inicial hasta la presentación de los resultados. 
 
-Las siguientes secciones están dedicadas al análisis descriptivo, transformación y modelización de los datos a utilizar con el objetivo de prepararlos para que sean una entrada válida a los modelos de aprendizaje que se presen´tan más adelante.
+Las siguientes secciones están dedicadas al análisis descriptivo, transformación y modelización de los datos a utilizar con el objetivo de prepararlos para que sean una entrada válida a los modelos de aprendizaje que se presentan más adelante.
 
 \section{Descripción CRISP-DM}
 
-Esta sección está dedicada a la presentación de las diferentes fases del proyecto. Para la organizaciónde este trabajo se sigue la metodolodía CRISP-DM (del inglés, \textit{Cross Industry Standard Process for Data Mining}), seguida con el objetivo de organizar el proceso de desarrollo. A continuación, se detalla a grandes rasgos el ciclo de vida del proyecto y las diferentes fases. 
+Esta sección está dedicada a la presentación de las diferentes fases del proyecto. Para la organización de este trabajo se sigue la metodología CRISP-DM (del inglés, \textit{Cross Industry Standard Process for Data Mining}), seguida con el objetivo de organizar el proceso de desarrollo. A continuación, se detalla a grandes rasgos el ciclo de vida del proyecto y las diferentes fases. 
 
 El proyecto consta de las siguientes fases:
 
@@ -18,13 +18,13 @@ El proyecto consta de las siguientes fases:
   \item Evaluación
 \end{itemize}
 
-A continuación se describen brevemente las diferentes fases del proyecto, de igualmanera en la Figura \ref{crisp} se muestran los pasos de manera gráfica y se detallan las actividades desarrolladas en cada caso.\\
+A continuación se describen brevemente las diferentes fases del proyecto, de igual manera en la Figura \ref{crisp} se muestran los pasos de manera gráfica y se detallan las actividades desarrolladas en cada caso.\\
 
-\textbf{Comprensión del Negocio}: En esta fase inicial se define y entiende el problema en cuestión, planteado en la Introducción del trabajo. Asimismo, se trazan el objetivo general y los objetivos específicos para dar respuesta a la pregunta científica. Se realiza un estudio minucioso del estado del arte de los sistemas Q/A que permite no sola la comprensión del problema sino las principales formas de solución.
+\textbf{Comprensión del Negocio}: En esta fase inicial se define y entiende el problema en cuestión, planteado en la Introducción del trabajo. Asimismo, se trazan el objetivo general y los objetivos específicos para dar respuesta a la pregunta científica. Se realiza un estudio minucioso del estado del arte de los sistemas Q/A que permite no solo la comprensión del problema sino las principales formas de solución.
 
 \textbf{Comprensión de los Datos}: La fase de entendimiento de datos comienza con la colección de datos inicial y continúa con las actividades que permiten familiarizarse con los datos, identificar los problemas de calidad y descubrir conocimiento preliminar sobre los datos a través de un análisis descriptivo.
 
-\textbf{Preparación de los Datos}: La fase de preparación de datos cubre todas las actividades necesarias para construir el conjunto final de datos a partir de los datos en bruto iniciales. Las tareas incluyen la transformación, la limpieza y la vectorización de datos para la modelación.
+\textbf{Preparación de los Datos}: La fase de preparación de datos cubre todas las actividades necesarias para construir el conjunto final a partir de los datos en bruto iniciales. Las tareas incluyen la transformación, la limpieza y la vectorización de datos para la modelación.
 
 \textbf{Modelado}: En esta fase, se seleccionan y aplican las técnicas de modelado que sean pertinentes al problema en cuestión. Se diseñan e implementan las diferentes arquitecturas de red y algoritmos de aprendizaje automático.
 
@@ -34,7 +34,7 @@ A continuación se describen brevemente las diferentes fases del proyecto, de ig
   \begin{center}
     \includegraphics[angle=0, width=1\textwidth]{Graphics/crisp.png}
   \end{center}
-    \caption{Etapas y tiempos de desaroollo del proyecto}\label{crisp}
+    \caption{Etapas y tiempos de desarrollo del proyecto}\label{crisp}
 \end{figure}
 
 En la Figura \ref{crisp} se pueden visualizar cada una de las fases de desarrollo del proyecto, incluyendo las actividades específicas que se desarrollaron en cada etapa y la cantidad de horas dedicadas. A las fases anteriormente señaladas se añade la escritura de la memoria, haciendo un total de 100 horas.
@@ -43,7 +43,7 @@ En la Figura \ref{crisp} se pueden visualizar cada una de las fases de desarroll
 
 El conjunto de datos Head-QA presentado por \cite{2019-head-qa} y orientado al dominio biomédico, es un conjunto de preguntas y respuestas de múltiples opciones. El conjunto se crea a partir de los exámenes confeccionados por el Ministerio de Sanidad, Consumo y Bienestar Social de España \footnote{https://www.mscbs.gob.es} y realizados cada año para acceder a distintas especialidades dentro del sistema de salud. Más información sobre la confección del \textit{dataset} puede ser encontrada en \cite{2019-head-qa}.
 
-Cada instancia del conjunto de datos está compuesta en esencia por una pregunta y las posibles respuestas, de las cuales solo una es correcta. Las preguntas y respuestas están organizadas en las categorías: Medicina, Enfermería, Bilogía, Química, Psicología, y Farmacología, correspondientes a los diferentes exámenes que se realizan. Aunque todas las propuestas publicadas hasta el momento se han construido sobre el paradigma no supervisado, el conjunto de datos está dividido en \textit{train}, \textit{development} y \textit{test}.
+Cada instancia del conjunto de datos está compuesta en esencia por una pregunta y las posibles respuestas, de las cuales solo una es correcta. Las preguntas y respuestas están organizadas en las categorías: Medicina, Enfermería, Biología, Química, Psicología, y Farmacología, correspondientes a los diferentes exámenes que se realizan. Aunque todas las propuestas publicadas hasta el momento se han construido sobre el paradigma no supervisado, el conjunto de datos está dividido en \textit{train}, \textit{development} y \textit{test}.
 
 En la Figura \ref{sample} se muestra un ejemplo de pregunta/respuesta del \text{dataset}. 
 
@@ -67,17 +67,17 @@ Cada instancia del conjunto está en formato JSON y contiene los siguientes atri
   \item image: camino a la imagen si lo hay
 \end{itemize}
 
-Aunque en el idioma inglés se han realizado avances en la selección de respuestas y existen varios conjuntos de datos que permiten la evaluación de los modelos propuestos, incluso en ese idioma, los \textit{datasets} de dominios específicos y tan complejos, como el actual, son escasos. 
+Aunque en el idioma inglés se han realizado avances en la selección de respuestas y existen varios conjuntos de datos que permiten la evaluación de los modelos propuestos, incluso en ese idioma, los \textit{datasets} de dominios específicos y tan complejos como el actual son escasos. 
 
 \section{Análisis descriptivo}
 
 En esta sección se presenta un análisis exploratorio sobre el conjunto de dato sobre el cual se construirán los modelos. Aunque los algoritmos diseñados sobre estos datos hasta el momento han seguido el enfoque no supervisado y/o supervisado a distancia, los autores han presentado una partición con el fin de que pueda ser utilizado por algoritmos supervisados.
 
-En total, Head-QA cuenta con 6.765 preguntas con sus respuestas posibles, organizadas en 6 categorías según la temática. La siguiente Tabla \ref{size} muestra la distribución de las instancias teniendo en cuenta las categorías y las particiones.
+En total, Head-QA cuenta con 6.765 preguntas con sus respuestas posibles, organizadas en 6 categorías según la temática. La Tabla \ref{size} muestra la distribución de las instancias teniendo en cuenta las categorías y los subconjuntos de datos.
 
 \begin{table}[!tb]
   \begin{center}
-    \caption{Distribución de las preguntas en Head-QA}
+    \caption{Distribución de las preguntas en HeadQA}
     \begin{tabular}{l|c|c|c|c|c}
       \textbf{Categoría} & \textbf{Distribución total} & \textbf{Train} & \textbf{Dev} & \textbf{Test} \\
       \hline
@@ -95,16 +95,14 @@ En total, Head-QA cuenta con 6.765 preguntas con sus respuestas posibles, organi
 
 Asimismo, la Figura \ref{train_dev_test} muestra la distribución de preguntas por categorías en los subconjuntos \textit{train}, \textit{dev} y \textit{test} de manera gráfica.
 
-\begin{figure}[!tb]
+\begin{figure}[!b]
   \begin{center}
     \includegraphics[angle=0, width=1\textwidth]{Graphics/train_dev_test.png}
   \end{center}
     \caption{Distribución de instancias por categoría}\label{train_dev_test}
 \end{figure}
 
-Se puede apreciar que las instancias están distribuidas de manera uniforme entre todas las categorías. Aunque el conjunto de datos está balanceado en cuanto a la cantidad de instancias por categoría, sí existen diferencias entre las muestraas en las categorías como se muestra más adelante.
-
-La siguiente imagen (Figura \ref{words}) muestra la frecuencia de las palabras más frecuentes en el conjunto de entrenamiento.
+Se puede apreciar que las instancias están distribuidas de manera uniforme entre todas las categorías. Aunque el conjunto de datos está balanceado en cuanto a la cantidad de instancias por categoría, existen diferencias entre las muestras en las categorías como se muestra más adelante en cuanto a las palabras más comunes empleadas en los diferentes dominios del conocimiento.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -113,7 +111,9 @@ La siguiente imagen (Figura \ref{words}) muestra la frecuencia de las palabras m
     \caption{Palabras más frecuentes}\label{words}
 \end{figure}
 
-La Figura \ref{category} muestra una nube de palabras por cada una de las categorías que definen el dominio de cada pregunta. La nube de palabras muestra las palabras más comunes en mayor tamaño.
+La Figura \ref{words} muestra la frecuencia de las palabras más comunes en el conjunto de entrenamiento. Mientras que que la Figura \ref{category} muestra la misma información mediante una nube de palabras por cada una de las categorías que definen el dominio de cada pregunta. 
+
+La nube de palabras es un tipo de representación comúnmente utilizada cuando los datos son textuales y muestra las palabras que más se repiten en el dataset en mayor tamaño. De manera, que las palabras que destacan pueden ser interpretadas como las más importantes del dataset. Es importante destacar que para este análisis se eliminaron los \textit{stopwords} con el objetivo de centrarnos en las palabras propias del contexto.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -122,7 +122,7 @@ La Figura \ref{category} muestra una nube de palabras por cada una de las catego
     \caption{Nube de palabras por categoría}\label{category}
 \end{figure}
 
-Como se puede observar, las palabras más comunes difieren en gran medida de categoría a categoría. Esto sugiere que puede ser recomendable construir modelos independientes para cada uno de los dominios. 
+Como se puede observar, las palabras más comunes difieren en gran medida de categoría a categoría. Esto sugiere que puede ser recomendable construir modelos independientes para cada uno de los dominios. Además, tras analizar la frecuencia de las palabras en el conjunto general se puede notar que existe una gran coincidencia entre las palabras más comunes en todo el conjunto de datos con las palabras de mayor mención en el subconjunto correspondiente a la temática Medicina, lo que sugiere que las preguntas de Medicina utilizan un vocabulario muy repetitivo o que estos términos son también empleados en las preguntas del resto de materias. 
 
 La Tabla \ref{count} muestra la máxima y media cantidad de palabras que tienen las preguntas y las respuestas respectivamente.
 
@@ -143,7 +143,9 @@ La Tabla \ref{count} muestra la máxima y media cantidad de palabras que tienen 
   \label{count}
 \end{table}
 
-Este análisis denota que las preguntas suelen tener una longitud media mayor que las respuestas. La longitud media varía en dependencia de la categoría, siendo los textos de Medicina los de mayor tamaño. 
+Este análisis denota que las preguntas suelen tener una longitud media mayor que las respuestas. La longitud media varía en dependencia de la categoría, siendo los textos de Medicina los de mayor tamaño. Este hecho puede ser aprovechado en la construcción de los modelos independientes.
+
+Tras un análisis exploratorio sobre el conjunto de datos es pertinente recurrir al procesamiento con el fin de convertir los datos textuales en entradas válidas y comprensibles para los modelos que se presentarán en el capítulo siguiente. 
 
 \section{Preprocesamiento}
 
@@ -153,22 +155,31 @@ En el idioma español, un \textit{token} constituye una cadena de caracteres con
 
 Acorde con los modelos a desarrollar más adelante, se hace necesario emplear dos enfoques diferentes para vectorizar una instancia del conjunto de datos. El primero se ajusta a arquitecturas propias del aprendizaje supervisado, mientras que el segundo combina técnicas de recuperación de información en arquitecturas de aprendizaje supervisado. Cada uno de los enfoques requiere un preprocesamiento y representación de la información diferentes, los cuales se detallan a continuación.
 
+\begin{figure}[!t]
+  \begin{center}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/vect_1.png}
+  \end{center}
+    \caption{Ejemplo de instancia vectorizada según el enfoque supervisado clásico}\label{vect_1}
+\end{figure}
+
 \subsection{Representación supervisada clásica}
 
 Este enfoque consiste en que los modelos reciban un único vector numérico, por lo tanto el objetivo es representar en un mismo vector la pregunta y cada respuesta.
 
-Siguiendo los métodos \textit{Pointwise} donde el problema de selección de respuestas se transforma en un problema de clasificación binario, a partir de una instancia del conjunto de datos original se construyen varios ejemplos vectorizados. Cada instancia original se transforma en tantos vectores como respuestas posibles haya (pueden ser 4 o 5, dependiendo del examen). De manera que cada nuevo ejemplo vectorizado está formado por el texto de la pregunta y el texto de la respuesta separados por un carácter especial, introducido en el vocabulario de palabras con ese objetivo. Se le asigna 1 como etiqueta si el par (pregunta, respuesta) es verdadero, en caso contrario, se le asigna la etiqueta negativa.
+Siguiendo los métodos \textit{Pointwise} donde el problema de selección de respuestas se transforma en un problema de clasificación binario, a partir de una instancia del conjunto de datos original se construyen varios ejemplos vectorizados (ver Figura \ref{vect_1}). 
+
+Cada instancia original se transforma en tantos vectores como respuestas posibles haya (pueden ser 4 o 5, dependiendo del examen). De manera que cada nuevo ejemplo vectorizado está formado por el texto de la pregunta y el texto de la respuesta separados por un carácter especial, introducido en el vocabulario de palabras con ese objetivo. Se le asigna 1 como etiqueta si el par $(pregunta, respuesta)$ es verdadero, en caso contrario, se le asigna la etiqueta negativa.
 
 En la Figura \ref{vect_1} se muestra como una instancia del conjunto original es transformada en vectores numéricos, teniendo en cuenta la pregunta y si la respuesta es correcta o no.
 
+Con el objetivo de transformar una oración en una secuencia de \textit{tokens} es necesario utilizar un \textit{tokenizer}. Un \textit{tokenizer} no es más que un algoritmo cuyo objetivo es separar texto en bruto en una secuencia de \text{tokens}. En este caso, se utiliza el tokenizador de la librería Spacy\footnote{https://spacy.io/}, específicamente el modelo \texttt{es\_core\_news\_sm}. Este modelo es el más pequeño disponible en español, se selecciona el más pequeño porque la tarea de tokenizar no es muy complicada en términos lingüísticos por lo que la autora considera que no es necesario utilizar otro modelo más grande y complejo solo para realizar esta tarea.
+
 \begin{figure}[!tb]
   \begin{center}
-    \includegraphics[angle=0, width=1\textwidth]{Graphics/vect_1.png}
+    \includegraphics[angle=0, width=1\textwidth]{Graphics/vect_2.png}
   \end{center}
-    \caption{Ejemplo de instancia vectorizada según el enfoque supervisado puro}\label{vect_1}
+    \caption{Ejemplo de instancia vectorizada según el enfoque RI}\label{vect_2}
 \end{figure}
-
-Con el objetivo de transformar una oración en una secuencia de \textit{tokens} es necesario utilizar un \textit{tokenizer}. Un \textit{tokenizer} no es más que un algoritmo cuyo objetivo es separar texto en bruto en una secuencia de \text{tokens}. En este caso, se utiliza el tokenizador de la librería Spacy\footnote{https://spacy.io/}, específicamente el modelo \texttt{es\_core\_news\_sm}. Este modelo es el más pequeño disponible en español, se selecciona el más pequeño porque la tarea de tokenizar no es muy complicada en términos linguísticos por lo que la autora considera que no es necesario utilizar otro modelo más grande y complejo solo para realizar esta tarea.
 
 \subsection{Representación supervisada RI}
 
@@ -178,22 +189,18 @@ La transformación es muy similar a la vista en la sección anterior, con la dif
 
 En la Figura \ref{vect_2} se muestra un ejemplo de cómo es transformada una instancia del conjunto original, en varias instancias vectorizadas. 
 
-\begin{figure}[!tb]
-  \begin{center}
-    \includegraphics[angle=0, width=1\textwidth]{Graphics/vect_2.png}
-  \end{center}
-    \caption{Ejemplo de instancia vectorizada según el enfoque RI}\label{vect_2}
-\end{figure}
-
 Al igual que en la situación anterior es necesario transformar las oraciones en bruto en una secuencia de \textit{tokens} y se utiliza el mismo \textit{tokenizer}.
 Una vez transformado el texto en bruto en representaciones numéricas, los datos están preparados para ser tratados por los modelos matemáticos.   
+
+
+Después del análisis, preprocesamiento y transformación del conjunto de datos original, los datos están listos para ser utilizados como entrada a los modelos. En el próximo capítulo se presentan varios modelos de aprendizaje supervisado, específicamente bajo el paradigma de aprendizaje profundo, los cuales constituyen propuestas de solución para resolver el problema de selección de respuestas en el idioma español sobre la base del corpus HeadQA detallado en el presente capítulo.
 
 
 \chapter{Modelos propuestos}\label{chapter:models}
 
 En el presente capítulo se propone interpretar el problema de selección de respuestas como un problema de clasificación binaria, según el enfoque \textit{Pointwise}, explicado en el Capítulo 2. Se ha seleccionado este enfoque por ser el más sencillo de los tres, y se propone para trabajos futuros incursionar en los demás métodos mencionados. En esta metodología cada par $<pregunta, respuesta>$ se convierte en una instancia y se clasifica en positiva o negativa dependiendo si la respuesta es correcta. Habiendo obtenido el corpus, el objetivo desde este punto es concebir modelos matemáticos-computacionales de aprendizaje profundo principalmente. En este capítulo se presentan diferentes propuestas de modelos para la selección automática de respuestas. 
 
-La decisión de implementar modelos de aprendizaje profundo, existiendo modelos supervisados más sencillos y explicables, se basa en que tras un estudio de los modelos del estado del arte, se puede concluir que la mayor parte con diferencia emplea este enfoque. La razón se debe a que estos conjuntos de datos son más complejos semánticamente por lo que requieren un mayor "entendimiento" del lenguaje humano y por lo tanto, modelos mucho más complejos. 
+La decisión de implementar modelos de aprendizaje profundo, existiendo modelos supervisados más sencillos y explicables, se basa en que tras un estudio de los modelos del estado del arte, se puede concluir que la mayor parte con diferencia emplea este enfoque. La razón se debe a que estos conjuntos de datos son más complejos semánticamente por lo que requieren un mayor entendimiento del lenguaje humano y por lo tanto, modelos mucho más complejos. 
 
 De hecho, el aprendizaje supervisado puede no ser un enfoque adecuado para este conjunto de datos, puesto que como se afirma en \cite{2020-multi-step} incluso un modelo tan poderoso como BERT puede funcionar de manera insatisfactoria en el conjunto de datos HeadQA. La principal razón es que la pregunta inicial no contiene suficientes pistas recuperables para encontrar la respuesta correcta que contiene la respuesta y además, aunque exista una similitud entre los exámenes anteriores, puede no ser suficiente para generar patrones por un modelo supervisado.
 
@@ -223,7 +230,7 @@ Sea $S = [x^{(1)}, x^{(2)}, ..., x^{(T)}]$ la representación vectorial de una o
   c_{t} &= f_{t}c_{t-1} + i_{t}\tilde{c_{t}} \label{lstm:cell_state} \\
   h_{t} &= o_{t}\tanh{c_{t}} \label{lstm:hidden_state} \\
   \nonumber \\
-  \hat{y} &= softmax(Uh_{T} + b) \label{lstm:pred}
+  \hat{y} &= sigmoid(Uh_{T} + b) \label{lstm:pred}
 \end{align}
 
 En una primera etapa (Ecuación \ref{lstm:emb}), el modelo obtiene una representación más rica semánticamente de cada uno de los \textit{tokens} que conforman una oración. Esto se logra a través de una capa de \textit{embeddings} $E$ que transforma cada \textit{token} $x^{(t)}$ en un vector $x_{t}$ $\in$ ${\mathbb{R}} ^{d}$, donde $d$ es la dimensión de los \textit{embeddings} que constituye un hiperparámetro del modelo.
@@ -270,7 +277,7 @@ En la Ecuación \ref{lstm:cell_state} se calcula el estado de la celda actual $c
 
 Es importante destacar que los parámetros $E$, $W^{(i)}$, $W^{(f)}$, $W^{(o)}$, $W^{(c)}$, $U^{(i)}$, $U^{(f)}$, $U^{(o)}$, $U^{(c)}$ y $U$ son aprendidos durante la etapa de entrenamiento en el proceso de \textit{backpropagation}.
 
-Las operaciones presentadas en las ecuaciones \ref{lstm:ig} - \ref{lstm:hidden_state} son ejecutadas $T$ veces, por cada uno de los \textit{tokens} que conforman una oración. Tras el análisis del último \textit{token} $T$, el estado final $h_{T}$ constituye una representación de la oración $S$. Finalmente, una capa lineal (Ecuación \ref{lstm:pred}) utiliza la representación de la oración obtenida $h_{T}$ para predecir la relación $\hat{y}$ existente en la oración. Esta salida se convierte en una distribución de probabilidades empleando la función \textit{softmax}. Esta operación, a diferencia de las ecuaciones anteriores, solo se aplica una vez al estado final $h_{T}$ de la capa \textit{LSTM}.
+Las operaciones presentadas en las ecuaciones \ref{lstm:ig} - \ref{lstm:hidden_state} son ejecutadas $T$ veces, por cada uno de los \textit{tokens} que conforman una oración. Tras el análisis del último \textit{token} $T$, el estado final $h_{T}$ constituye una representación de la oración $S$. Finalmente, una capa lineal (Ecuación \ref{lstm:pred}) utiliza la representación de la oración obtenida $h_{T}$ para predecir la relación $\hat{y}$ existente en la oración. Esta salida se convierte en una robabilidad empleando la función \textit{sigmoid}. Esta operación, a diferencia de las ecuaciones anteriores, solo se aplica una vez al estado final $h_{T}$ de la capa \textit{LSTM}.
 
 La sencillez arquitectónica del modelo permite que se pueda utilizar como base para la comparación con otros modelos más complejos que serán abordados a continuación.
 
@@ -293,7 +300,7 @@ En la Figura \ref{bilstm} se expone la arquitectura de la red correspondiente al
 
 El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que transforma el \textit{word index} en una representación más rica semánticamente representada como un vector de dimensión establecida. La diferencia en esta primera capa con respecto al modelo anterior se  encuentra en que en el modelo \textit{LSTM} los pesos de la capa de \textit{embeddings} $E$ se aprenden durante la etapa de entrenamiento, mientras que, en este caso, los pesos que se utilizan pertenecen a \textit {embeddings} pre-entrenados tomados de \cite{2019-medical-fastext} que ya contienen un conocimiento del idioma español y del dominio médico específicamente, adquirido previamente.
 
-Una segunda capa está conformada por una red \textit{Bi-LSTM}, la cual permite tener en cuenta para el cómputo de un estado no solo las palabras anteriores sino también las siguientes. Posteriormente, se incliye la capa de atención. El objetivo de incluir un mecanismo de atención es que el modelo dé mayor peso a aquellas palabras que tienen una mayor influencia en la predicción final, de manera que su resultado es un vector de pesos, llamado vector de pesos de atención, que es combinado linealmente con la representación de las oraciones que se tenía en la capa anterior dando como resultado un nuevo vector, conocido como vector contexto, que constituye la representación final de la oración. Finalmente, una capa lineal utiliza la representación de la oración obtenida para predecir si la respuesta es correcta o no.
+Una segunda capa está conformada por una red \textit{Bi-LSTM}, la cual permite tener en cuenta para el cómputo de un estado no solo las palabras anteriores sino también las siguientes. Posteriormente, se incluye la capa de atención. El objetivo de incluir un mecanismo de atención es que el modelo dé mayor peso a aquellas palabras que tienen una mayor influencia en la predicción final, de manera que su resultado es un vector de pesos, llamado vector de pesos de atención, que es combinado linealmente con la representación de las oraciones que se tenía en la capa anterior dando como resultado un nuevo vector, conocido como vector contexto, que constituye la representación final de la oración. Finalmente, una capa lineal utiliza la representación de la oración obtenida para predecir si la respuesta es correcta o no.
 
 \section{QA-LSTM}
 
@@ -312,9 +319,9 @@ El modelo contiene una primera capa de \textit{embeddings} pre-entrenada que tra
 
 Estos embeddings se utilizan como entrada a una capa LSTM bidireccional. La red BiLSTM genera representaciones distribuidas tanto para la pregunta como para la respuesta de forma independiente, y luego utilizan la similitud del coseno para medir su distancia. 
 
-Como se muestra en la figura y se explicó anteriormente en la introducción de las redes recurrentes de tipo LSTM, al aplicar este tipo de redes es posible obtener una representacíón de cada palabra a través de los estados intermedios y que brindan el atributo de recurrencia. De esta manera, en cada palabra tenemos un vector resultado de analizar las palabras anteriores y que se puede interpretar como una representación de dicha palabra en el contexto de sus antecesoras. Como estamos en presencia de una red recurrente bidireccional, en cada momento se cuenta con dos vectores, uno que constituye la representación de esa palabra a partir de sus anteriores y otros, a partir de sus posteriores. 
+Como se muestra en la figura y se explicó anteriormente en la introducción de las redes recurrentes de tipo LSTM, al aplicar este tipo de redes es posible obtener una representación de cada palabra a través de los estados intermedios y que brindan el atributo de recurrencia. De esta manera, en cada palabra tenemos un vector resultado de analizar las palabras anteriores y que se puede interpretar como una representación de dicha palabra en el contexto de sus antecesoras. Como estamos en presencia de una red recurrente bidireccional, en cada momento se cuenta con dos vectores, uno que constituye la representación de esa palabra a partir de sus anteriores y otros, a partir de sus posteriores. 
 
-En el modelo que se expone se utilizan todos los estados intermedios de la red para representar cada oración. Esto implica que tenemos dos vectores para la pregunta y dos para la respuesta, la representación final de cada una de las oraciones se obtiene concatenando los pares con que se contaba. A partir de estas representaciones de calcula la similitud del coseno resultando igualmente en un vector. Por último, este vector es conectado con una capa de regresión linear que utiliza \textit{Softmax} como función de activación, de manera que la salida en un número entre 0 y 1. Esta salida puede ser interpretada como el nivel de relevancia de la respuesta con la pregunta, y es necesario establecer un punto de corte para determinar si la instancia es positiva o negativa.
+En el modelo que se expone se utilizan todos los estados intermedios de la red para representar cada oración. Esto implica que tenemos dos vectores para la pregunta y dos para la respuesta, la representación final de cada una de las oraciones se obtiene concatenando los pares con que se contaba. A partir de estas representaciones de calcula la similitud del coseno resultando igualmente en un vector. Por último, este vector es conectado con una capa de regresión linear que utiliza \textit{sigmoid} como función de activación, de manera que la salida en un número entre 0 y 1. Esta salida puede ser interpretada como el nivel de relevancia de la respuesta con la pregunta, y es necesario establecer un punto de corte para determinar si la instancia es positiva o negativa.
 
 \section{QA-LSTM/CNN}
 
@@ -350,6 +357,11 @@ Bajo esta suposición, se considera que la representación que se puede lograr c
     \caption{Arquitectura del modelo BERT-QA}\label{bert_qa}
 \end{figure}
 
+BERT es básicamente una pila de codificadores de arquitectura \textit{Transformer}, como se muestra en la base de la imagen. Una arquitectura \textit{Transformer} es una red de codificador-decodificador basadas en diferentes mecanismos de atención. BERT BASE, la versión más ligera, tiene 12 capas en la pila del codificador, mientras que BERT LARGE tiene 24 capas en la pila del codificador. \cite{2020-spanish-bert}, modelo que se utiliza en esta propuesta, utiliza la arquitectura BERT BASE.
+
+En esta arquitectura se propone utilizar la salida de la última capa de BERT como representación tanto de la pregunta como la respuesta y sobre estas representaciones aplicar las mismas operaciones que en el caso de LSTM-QA. Luego de obtener las representaciones contextuales se aplica una medida de similitud, obteniendo un vector que es utilizado para dar la predicción final de la instancia, a través de una capa \textit{fully connected} con función de activación sigmoidal, cuya salida puede interpretarse nuevamente como la relevancia de la posible respuesta a la pregunta.
+
+
 \subsection{Especificidad del preprocesamiento}
 
 Con el objetivo de transformar una oración en un vector computacionalmente interpretable, anteriormente se propuso un preprocesamiento que fue aplicado a los modelos de aprendizaje presentados. Sin embargo, en el caso de BERT, las oraciones no pueden ser traducidas a vectores numéricos de la misma forma que se hizo en las propuestas anteriores, sino que BERT requiere un formato diferente. Con el fin de obtener los resultados esperados, el corpus original siempre debe ser modificado en función de las pautas planteadas por los autores en \cite{2018-devlin-bert}. Asimismo, el \textit{tokenizer} empleado no puede ser el mismo que el utilizado para los modelos anteriores, puesto que BERT tiene un vocabulario de palabras diferentes.
@@ -380,11 +392,12 @@ En la Figura \ref{bert_sim} se presenta la arquitectura del modelo en cuestión.
     \caption{Arquitectura del modelo BERT-Sim}\label{bert_sim}
 \end{figure}
 
-BERT es básicamente una pila de codificadores de arquitectura \textit{Transformer}, como se muestra en la base de la imagen. Una arquitectura \textit{Transformer} es una red de codificador-decodificador basadas en diferentes mecanismos de atención. BERT BASE, la versión más ligera, tiene 12 capas en la pila del codificador, mientras que BERT LARGE tiene 24 capas en la pila del codificador. \cite{2020-spanish-bert}, modelo que se utiliza en esta propuesta, utiliza la arquitectura BERT BASE.
+La idea es utilizar BERT como codificador de las oraciones de entrada, tanto la pregunta como la respuesta, y posteriormente, aplicar un modelo vectorial clásico. Como se mencionó anteriormente 
+BERT es básicamente una pila de codificadores de arquitectura \textit{Transformer}, como se muestra en la base de la imagen, cuya versión más ligera y la utilizada en este caso (publicada en \cite{2020-spanish-bert}), tiene 12 capas en la pila del codificador. 
 
-La idea es utilizar BERT como codificador de las oraciones de entrada, tanto la pregunta como la respuesta, y posteriormente, aplicar un modelo vectorial clásico. El modelo que se propone codifica la pregunta y la respuesta por separado utilizando la salida de las últimas cuatro capas de BERT. Los vectores salida se concatenan de manera que se obtiene un vector de gran tamaño para cada oración. A partir de estos vectores se aplica el coseno del ángulo como medida de similitud, cuyo resultado es la salida del modelo y puede ser interpretado como el nivel de correspondencia entre la pregunta y la respuesta.
+El modelo que se propone codifica la pregunta y la respuesta por separado utilizando la salida de las últimas cuatro capas de BERT. Los vectores salida se concatenan de manera que se obtiene un vector de gran tamaño para cada oración. A partir de estos vectores se aplica el coseno del ángulo como medida de similitud, cuyo resultado es la salida del modelo y puede ser interpretado como el nivel de correspondencia entre la pregunta y la respuesta.
 
-El objetivo de este modelo tan sencillo es comprobar si un modelo tan poderoso como BERT puede a través de la representacíón contextual de las palabras que obtiene ser aplicado eficazmente a la selección de respuestas.
+El objetivo de este modelo tan sencillo es comprobar si un modelo tan poderoso como BERT puede a través de la representación contextual de las palabras que obtiene ser aplicado eficazmente a la selección de respuestas.
 
 \section{Implementación}\label{section:implementation}
 
@@ -394,7 +407,7 @@ En toda la solución se utilizó Python\footnote{http://www.python.org} como len
 
 Asimismo, Python contiene varias alternativas en cuanto a bibliotecas de aprendizaje profundo y ofrece opciones para la visualización y comparación de resultados. Keras\footnote{https://keras.io/}, TensorFlow\footnote{https://www.tensorflow.org/} y PyTorch\footnote{https://pytorch.org/} se encuentran entre los tres marcos principales preferidos por los científicos de datos y los principiantes en el campo del aprendizaje profundo. En este caso, se utiliza PyTorch para implementar los modelos de aprendizaje pues es una herramienta de más bajo nivel que posibilita el trabajo con tensores, facilitando la manipulación interna de las arquitecturas neuronales, a diferencia de Keras y TensorFlow, que ofrecen APIs más generales.
 
-En el capítulo \ref{chapter:models} se presentó el proceso de concepción, modelación y diseño de los modelos a aplicar al problema de selección de respuestas como un problema de clasificación multiclase. Asimismo, se abordaron los detalles del proceso de implementación de los modelos expuestos. El próximo capítulo está dedicado a evaluar y comparar los modelos implementados en términos de métricas estándares para la evaluación de tareas de procesamiento del lenguaje natural.
+En el capítulo \ref{chapter:models} se presentó el proceso de concepción, modelación y diseño de los modelos a aplicar al problema de selección de respuestas como un problema de clasificación binario. Asimismo, se abordaron los detalles del proceso de implementación de los modelos expuestos. El próximo capítulo está dedicado a evaluar y comparar los modelos implementados en términos de métricas estándares para la evaluación de tareas de procesamiento del lenguaje natural.
 
 
 
