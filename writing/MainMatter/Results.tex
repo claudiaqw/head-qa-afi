@@ -61,22 +61,108 @@ En las secciones posteriores se muestran los resultados de los modelos propuesto
 
 \section{Evaluación de los modelos}
 
-Como se mencionó anteriormente, las preguntas del conjuntos de datos están separadas por categorías. El análisis descriptivo inicial arrojó que el vocabulario más frecuente variaba de acuerdo a la categoría. Por esta razón los modelos serán entrenados y evaludas tanto en el conjunto de datos completo, como en cada una de las categorías.
+Como se mencionó anteriormente, las preguntas del conjuntos de datos están separadas por categorías. Tras el análisis descriptivo inicial, se pudo notar que las palabrás más comunes al separar los datos diferían según la temática, o sea, el vocabulario varía de acuerdo al dominio. Por esta razón, se decide entrenar y evaluar los modelos tanto en el conjunto de datos completo, como en los subconjuntos resultantes de filtrar por materia.
 
-Además de los modelos de aprendizaje profundo detallados en el capítulo anterior, se implementa un modelo de regresión logística, por su simplicidad se puede utilizar como \textit{baseline} supervisado. 
+Además de los modelos de aprendizaje profundo detallados en el capítulo anterior, se implementa un modelo de regresión logística, que por su simplicidad es utilizado como \textit{baseline} supervisado, al no existir soluciones anteriores que utilicen este tipo de aprendizaje.
 
+La métrica utilizada por los autores del \textit{dataset} es la \textit{Exactitud} y la cantidad de puntos, ambos a nivel de examen. Lo que quiere decir que, aunque los enfoques supervisados implementados interpretan el problema como una tarea de clasificación binaria y se puede calcular la exactitud sobre el conjunto de datos transformado, no se utilizará esta forma en aras de poder comparar los resultados con los ya existentes en la literatura. 
+
+De manera que, la métrica \textbf{Exactitud} no se computará sobre el conjunto transformado a binario, sino sobre los exámenes originales. Por lo tanto, una instancia se considera correcta si la pregunta como un todo fue respondida correctamente y no si cada una de las respuestas fueron clasificadas en positivo o negativo correctamente. La \textbf{Exactitud}, además, se considera adecuada ya que las clases en el problema actual (pregunta respondida correctamente o incorrectamente) tienen el mismo pero.
+
+Dado que los modelos supervisados anteriores en su mayoría aplican la función sigmoide en la última capa, devuelven un número entre 0 y 1, que indica cuán relevante es la posible respuesta a la pregunta. Dada una pregunta del conjunto de datos original con sus posibles respuestas, cada par se transforma en una instancia vectorizada y se da como entrada al modelo de aprendizaje. La salida del modelo para cada una de las posibles respuestas es organizada y se elige como respuesta correcta la de mayor relevancia.
+
+A continuación, se presentan los resultados alcanzados en este trabajo. Inicialmente se presentan los resultados alcanzados por categorías y posteriormente en el conjunto de datos general.
+
+\subsection{Evaluación por categorías}
+
+En esta sección, se analizan los resultados de aplicar las métricas antes mencionadas sobre el conjunto de evaluación obteniendo un conjunto de valores finales y concluyentes para cada modelo, de manera que se puedan comparar con los resultados actuales. 
+
+En la Tabla \ref{comparison_points_general} se presentan los resultados obtenidos en función de la cantidad de puntos por todos los modelos implementados. Adicionalmente, en las líneas inferiores se incluyen las métricas reportadas en \cite{2019-head-qa} sobre el conjunto de datos en español. 
+
+Las columnas de la tabla corresponden al nombre del modelo, el método de remuestreo aplicado sobre el conjunto de entrenamiento y los nombre de los exámenes de acuerdo a la categoría: Biología (MIR), Enfermería (EIR), Farmacología (FIR), Medicina (MIR), Psicología (PIR) y Química (QIR). 
+
+\begin{table}[!tb]
+  \begin{center}
+    \caption{Comparación de los modelos por categorías por Puntos}
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{BIR} & \textbf{EIR} & \textbf{FIR} & \textbf{MIR} & \textbf{PIR} & \textbf{QIR}\\
+      \hline
+      Regresión Logística & \textit{Oversampled} & -3 & 7 & -9 & \textcolor{red}{469} & -8 & -7 \\
+      LSTM & \textit{Oversampled} & \textbf{43} & 23 & -17 & \textcolor{red}{320} & 9 & 51\\
+      BiLSTM+Attn & \textit{Oversampled} & -22 & -6 & -37 & \textcolor{red}{342} & -8 & -9\\
+      QA-LSTM & \textit{Oversampled} & 41 & 17 & -3 & -4 & 13 & -5\\
+      QA-LSTM/CNN & \textit{Oversampled} & -2 & -16 & -1 & -18 & 17 & 21\\
+
+      Regresión Logística & \textit{Mixed} & 3 & -6 & -9 & \textcolor{red}{461} & -8 & -13\\
+      LSTM & \textit{Mixed} & 27 & 19 & \textbf{24} & \textcolor{red}{327} & -2 & -65\\
+      BiLSTM+Attn & \textit{Mixed} & -3 & -6 & -13 & \textcolor{red}{323} & -8 & -9 \\
+      QA-LSTM & \textit{Mixed} & 7 & 7 & -11 & 47 & -2 & -45 \\
+      QA-LSTM/CNN & \textit{Mixed} & -15 & 1 & 6 & 35 & 29 & \textbf{51} \\
+
+      QA-BERT & \textit{Undersampled} & 38 & \textbf{25} & 3 & 41 & \textbf{49} & -26 \\
+      Sim-BERT & \textit{No} & -33 & -4 & -40 & 17 & -26 & 7 \\
+      \hline
+      RANDOM & - & -7 & 2.5 & -10,5 & -17,5 & 26,5 & 25 \\
+      $BLIND_3$ & - & 9 & 44.5 & 19,5 & 22,5 & -1,5 & 25 \\
+      $LENGTH$ & - & 67 & 70,5 & 47,5 & 18,5 & 50,5 & 47 \\
+      $IR$ & - & 105 & 100,5 & 139,5 & 12,5 & 98,5 & 103,5 \\
+    \end{tabular}
+  \end{center}
+  \label{comparison_points}
+\end{table}
+
+Al observar los resultados no se puede afirmar que un único modelo ha prevalecido sobre los otros o viceversa, puesto que ninguno de los modelos ha mostrado un desempeño notablemente superior ni inferior. Primeramente, es necesario notar que la mayor parte de los modelos tienen un comportamiento muy cercano al modelo aleatorio, por lo que de manera general, los modelos supervisados no han mostrado un buen desempeño en esta tarea.
+
+Se puede notar que uno de los modelos que menos puntuación alcanzó fue el no supervisado basado en BERT, lo que sugiere que el conocimiento ganado por BERT sobre el significado de las palabras no es suficiente para resolver este problema. Esto reafirma la opinión de los autores cuando expresan que para resolver este problema no basta un \textit{matching} de palabras sino que es necesario un razonamiento.
+
+
+\begin{table}[!tb]
+  \begin{center}
+    \caption{Comparación de los modelos por categorías por Exactitud}
+    \begin{tabular}{l|c|c|c|c|c|c|c}
+      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{BIR} & \textbf{EIR} & \textbf{FIR} & \textbf{MIR} & \textbf{PIR} & \textbf{QIR}\\
+      \hline
+
+      Regresión Logística & \textit{Oversampled} & 0,25 & 0,26 & 0,24 & 0,76 & 0,24 & 0,24 \\
+      LSTM & \textit{Oversampled} & 0,30 & 0,27 & 0,23 & 0,60 & 0,26 & 0,31\\
+      BiLSTM+Attn & \textit{Oversampled} & 0,23 & 0,24 & 0,21 & 0,62 & 0,24 & 0,24\\
+      QA-LSTM & \textit{Oversampled} & 0,25 & 0,27 & 0,25 & 0,24 & 0,26 & 0,24\\
+      QA-LSTM/CNN & \textit{Oversampled} & 0,29 & 0,23 & 0,25 & 0,23 & 0,27 & 0,27\\
+
+      Regresión Logística & \textit{Mixed} & 0,25 & 0,24 & 0,24 & 0,76 & 0,24 & 0,23\\
+      LSTM & \textit{Mixed} & 0,28 & 0,27 & 0,28 & 0,60 & 0,25 & 0,32\\
+      BiLSTM+Attn & \textit{Mixed} & 0,25 & 0,24 & 0,24 & 0,60 & 0,24 & 0,24 \\
+      QA-LSTM & \textit{Mixed} & 0,26 & 0,27 & 0,24 & 0,30 & 0,25 & 0,20 \\
+      QA-LSTM/CNN & \textit{Mixed} & 0,23 & 0,25 & 0,26 & 0,29 & 0,28 & 0,31 \\
+
+      QA-BERT & \textit{Undersampled} & 0,27 & 0,26 & 0,25 & 0,27 & 0,28 & 0,24\\
+      Sim-BERT & \textit{No} & 0,21 & 0,25 & 0,21 & 0,27 & 0,22 & 0,26\\
+      \hline
+      RANDOM & - & 24,2 & 25,2 & 23,8 & 23,1 & 27,9 & 27,7 \\
+      $BLIND_3$ & - & 0,26 & 0,29 & 0,27 & 0,27 & 0,24 & 0,27 \\
+      $LENGTH$ & - & 0,32 & 0,32 & 0,30 & 0,27 & 0,30 & 0,30 \\
+      $IR$ & - & 0,36 & 0,36 & 0,40 & 0,26 & 0,36 & 0,36 \\
+
+    \end{tabular}
+  \end{center}
+  \label{comparison_accuracy}
+\end{table}
+
+
+Al filtrar el conjunto de datos original por categorías, la cantidad de muestras que 
 
 
 \subsection{Evaluación general}
 
 El conjunto de validación está compuesto solamente por 6 exámenes, uno de cada categoría, mientras que el conjunto de evaluación está confomado por 12, 2 de cada rama.
 
+En la Tabla \ref{comparison_points_general} se presentan los resultados obtenidos en función de la cantidad de puntos por todos los modelos implementados. 
 
 \begin{table}[!tb]
   \begin{center}
     \caption{Comparación general por cantidad de puntos TEST}
     \begin{tabular}{l|c|c|c}
-      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{Media Puntos} & \textbf{Max Puntos}\\
+      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{Media Pts.} & \textbf{Max Pts.}\\
       \hline
       Regresión Logística & Desbalanceado & - & - \\
       LSTM & Desbalanceado & 1 & 37 \\
@@ -103,12 +189,14 @@ El conjunto de validación está compuesto solamente por 6 exámenes, uno de cad
   \label{comparison_points_general}
 \end{table}
 
+Se puede notar que los modelos supervisados 
+
 
 \begin{table}[!tb]
   \begin{center}
-    \caption{Comparación general por cantidad de puntos TEST}
+    \caption{Comparación general por cantidad de Exactitud TEST}
     \begin{tabular}{l|c|c|c}
-      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{Media Exactitud} & \textbf{Max Exactitud}\\
+      \textbf{Modelo} & \textbf{Entrenamiento} & \textbf{Media Exact.} & \textbf{Max Exact.}\\
       \hline
       Regresión Logística & Desbalanceado & - & - \\
       LSTM & Desbalanceado & 0,25 & 0,29 \\
@@ -130,67 +218,21 @@ El conjunto de validación está compuesto solamente por 6 exámenes, uno de cad
 
       QA-BERT & \textit{Undersampled} & 0,25 & 0,30 \\
       Sim-BERT & \textit{No} & 0,23 & 0,28 \\
+      
     \end{tabular}
   \end{center}
   \label{comparison_acc_general}
 \end{table}
 
 
-\subsection{Evaluación por categorías}
-
-
-
-
-\begin{table}[!tb]
-  \begin{center}
-    \caption{Comparación de los modelos por categorías por Puntos}
-    \begin{tabular}{l|c|c|c|c|c|c}
-      \textbf{Modelo} & \textbf{Biología} & \textbf{Enfermería} & \textbf{Farmacología} & \textbf{Medicina} & \textbf{Psicología} & \textbf{Química}\\
-      \hline
-      Regresión Logística & 1.132 & 452 & 1.132 & 452 & 452 & 1.132\\
-      LSTM & 1.069 & 384 & 230 & 455 & 1.132 & 452 \\
-      BiLSTM+Attn & 1.139 & 457 & 225 & 457 & 452 & 1.132 \\
-      QA-LSTM & 1.149 & 455 & 231 & 463 & 231 & 463 \\
-      QA-LSTM/CNN & 1.134 & 453 & 226 & 455 & 226 & 455 \\
-      QA-BERT & 1.142 & 456 & 228 & 458 & 228 & 458 
-    \end{tabular}
-  \end{center}
-  \label{comparison_points}
-\end{table}
-
-
-\begin{table}[!tb]
-  \begin{center}
-    \caption{Comparación de los modelos por categorías por Exactitud}
-    \begin{tabular}{l|c|c|c|c|c|c}
-      \textbf{Modelo} & \textbf{Biología} & \textbf{Enfermería} & \textbf{Farmacología} & \textbf{Medicina} & \textbf{Psicología} & \textbf{Química}\\
-      \hline
-      Regresión Logística & 1.132 & 452 & 1.132 & 452 & 452 & 1.132\\
-      LSTM & 1.069 & 384 & 230 & 455 & 1.132 & 452 \\
-      BiLSTM+Attn & 1.139 & 457 & 225 & 457 & 452 & 1.132 \\
-      QA-LSTM & 1.149 & 455 & 231 & 463 & 231 & 463 \\
-      QA-LSTM/CNN & 1.134 & 453 & 226 & 455 & 226 & 455 \\
-      QA-BERT & 1.142 & 456 & 228 & 458 & 228 & 458 \\ 
-    \end{tabular}
-  \end{center}
-  \label{comparison_accuracy}
-\end{table}
-
-
-Al filtrar el conjunto de datos original por categorías, la cantidad de muestras que 
-
-
-
 \section{Análisis de los resultados}
 
-Los algoritmos de clasificación, a diferencia de los algoritmos de regresión, durante el entrenamiento minimizan la función de pérdida seleccionada y no directamente la exactitud del modelo, aunque ambas estén relaciondas. De manera que el desempeño de un modelo, depende en gran medida de la función de pérdida seleccionada. 
+Los modelos han demostrado que no tienen la capacidad de resolver este problema sobre este conjunto de datos. Dada la complejidad del problema en cuestión, la cantidad de datos no es suficiente para construir un modelo robusto basado solamente en aprendizaje supervisado. 
 
 
-Varias cosas que mejorar para la próxima:
 
-- Otro enfoque
-- Utilizar una función de pérdida que maximice la importancia de una respuesta correcta y penalice una incorrecta. Teniendo en cuenta ambos 
-- Diseñar algoritmos híbridos que combinen las técnicas anteriormente empleadas bajo el enfoque de recuperación de información no supervisada o supervisada a distancia, con modelos del aprendizaje supervisado.
+
+Los algoritmos de clasificación, a diferencia de los algoritmos de regresión, durante el entrenamiento minimizan una función de pérdida seleccionada y no directamente, la exactitud de los modelos, aunque ambas estén relaciondas. De manera que, el desempeño de un modelo, depende en gran medida de la función de pérdida seleccionada. La autora considera que una función de pérdida diseñada para maximizar la importancia de una respuesta correcta y penalizar una incorrecta podrá ofrecer notables ventajas y mejorar el desempeño de los algoritmos supervisados. 
 
 
 

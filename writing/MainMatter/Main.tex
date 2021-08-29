@@ -342,7 +342,7 @@ Los autores de BERT señalan como principal contribución la demostración de la
 
 El modelo que se presenta en esta sección comparte la esencia del modelo QA-LSTM, pero en lugar de utilizar un red de tipo BiLSTM en las capas bases, utiliza un modelo BERT pre-entrenado. Los autores de BERT en su trabajo \cite{2018-devlin-bert} afirman que el uso de BERT trae consigo una riqueza semántica mayor que los embeddings tradicionales. Aunque no fue probado formalmente que BERT tiene conocimiento del lenguaje humano, los resultados sugieren que este modelo posee una capacidad de entendimiento del lenguaje mayor que modelos vistos con anterioridad.
 
-Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema.El modelo BERT base que se utiliza fue entrenado sobre un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura \ref{bert_qa} se muestra gráficamente la arquitectura del modelo que se presenta.
+Bajo esta suposición, se considera que la representación que se puede lograr con BERT tanto de las preguntas como de las oraciones, puede tener más información del idioma español en general, dada la cantidad de información con que fue entrenado este sistema. El modelo BERT base que se utiliza fue entrenado sobre un corpus en idioma español presentado por \cite{2020-spanish-bert}. En la Figura \ref{bert_qa} se muestra gráficamente la arquitectura del modelo que se presenta.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -368,16 +368,11 @@ BERT no acepta secuencias de tamaño variable por lo que se recurre a la estrate
 
 Las propuestas no supervisadas publicadas hasta el momento se apoyan en un gran conjunto de documentos textuales de las temáticas relacionadas. Las propuestas presentadas en \cite{2019-head-qa} y \cite{2020-multi-step}, las únicas a saber de la autora sobre este conjunto de datos, utilizan como fuente de información externa artículos de Wikipedia, artículos de la revista Scielo, entre otras. 
 
-El gran volumen de datos que contienen estas bibliotecas hacen que el procesamiento sea muy costoso, tanto de recursos computacionales como de tiempo. Esta propuesta busca aprovechar los recursos y el tipo de procesamiento dedicados anteriormente proponiendo el uso de un modelo pre-entrenado. Como se mencionó anteriormente la introducción de BERT revolucionó el mundo del procesamiento natural, ...
+El gran volumen de datos que contienen estas bibliotecas hacen que el procesamiento sea muy costoso, tanto de recursos computacionales como de tiempo. Esta propuesta busca aprovechar los recursos y el tipo de procesamiento dedicados anteriormente proponiendo el uso de un modelo pre-entrenado. 
 
-Se propone hallar una representación a partir de BERT, esta representación tiene incluida de alguna manera conocimiento sobre los documentos con que fue entrenado BERT.
-Una limitante es que dado lo costosa de entrenar desde cero un modelo coomo BERT no existen modelos entrenados en idioma español especializado en el dominio biomédico por lo que se utiliza el presentado por \cite{2020-spanish-bert}.
+Se propone hallar una representación a partir de BERT, esta representación tiene incluida de alguna manera conocimiento sobre los documentos con que fue entrenado BERT. Una limitante es que dado lo costosa de entrenar desde cero un modelo coomo BERT no existen modelos entrenados en idioma español especializados en el dominio biomédico por lo que se utiliza el presentado por \cite{2020-spanish-bert}, que ha sido entrenado sobre un gran corpus de documentos en idioma español.
 
-La arquitectura es muy sencilla ...
-
-
-La Figura \ref{bert_sim} ...
-
+En la Figura \ref{bert_sim} se presenta la arquitectura del modelo en cuestión.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -385,6 +380,23 @@ La Figura \ref{bert_sim} ...
   \end{center}
     \caption{Arquitectura del modelo BERT-Sim}\label{bert_sim}
 \end{figure}
+
+BERT es básicamente una pila de codificadores de arquitectura \textit{Transformer}, como se muestra en la base de la imagen. Una arquitectura \textit{Transformer} es una red de codificador-decodificador basadas en diferentes mecanismos de atención. BERT BASE, la versión más ligera, tiene 12 capas en la pila del codificador, mientras que BERT LARGE tiene 24 capas en la pila del codificador. \cite{2020-spanish-bert}, modelo que se utiliza en esta propuesta, utiliza la arquitectura BERT BASE.
+
+La idea es utilizar BERT como codificador de las oraciones de entrada, tanto la pregunta como la respuesta, y posteriormente, aplicar un modelo vectorial clásico. El modelo que se propone codifica la pregunta y la respuesta por separado utilizando la salida de las últimas cuatro capas de BERT. Los vectores salida se concatenan de manera que se obtiene un vector de gran tamaño para cada oración. A partir de estos vectores se aplica el coseno del ángulo como medida de similitud, cuyo resultado es la salida del modelo y puede ser interpretado como el nivel de correspondencia entre la pregunta y la respuesta.
+
+El objetivo de este modelo tan sencillo es comprobar si un modelo tan poderoso como BERT puede a través de la representacíón contextual de las palabras que obtiene ser aplicado eficazmente a la selección de respuestas.
+
+\section{Comentarios de Implementación}\label{section:implementation}
+
+En esta sección, se abordan los elementos esenciales para la programación y ejecución de los modelos propuestos y se describen de manera breve las herramientas utilizadas en el proceso de implementación.
+
+En toda la solución se utilizó Python\footnote{http://www.python.org} como lenguaje de programación. Fue seleccionado porque debido a que el código es libre, existe una gran cantidad de bibliotecas implementadas por la comunidad de desarrolladores para dar respuesta a problemas diversos. De igual manera, Python constituye uno de los lenguajes más populares en el procesamiento del lenguaje natural. Contiene bibliotecas como Spacy\footnote{https://spacy.io/} y NLTK\footnote{https://www.nltk.org/} que cuentan con un gran número de funcionalidades implementadas. La completitud de Spacy y la facilidad de uso fueron determinantes en la selección como biblioteca para el procesamiento textual, empleada en la fase de preprocesamiento de las oraciones. 
+
+Asimismo, Python contiene varias alternativas en cuanto a bibliotecas de aprendizaje profundo y ofrece opciones para la visualización y comparación de resultados. Keras\footnote{https://keras.io/}, TensorFlow\footnote{https://www.tensorflow.org/} y PyTorch\footnote{https://pytorch.org/} se encuentran entre los tres marcos principales preferidos por los científicos de datos y los principiantes en el campo del aprendizaje profundo. En este caso, se utiliza PyTorch para implementar los modelos de aprendizaje pues es una herramienta de más bajo nivel que posibilita el trabajo con tensores, facilitando la manipulación interna de las arquitecturas neuronales, a diferencia de Keras y TensorFlow, que ofrecen APIs más generales.
+
+En el capítulo \ref{chapter:proposal} se presentó el proceso de concepción, modelación y diseño de los modelos a aplicar al problema de selección de respuestas como un problema de clasificación multiclase. Asimismo, se abordaron los detalles del proceso de implementación de los modelos expuestos. El próximo capítulo está dedicado a evaluar y comparar los modelos implementados en términos de métricas estándares para la evaluación de tareas de procesamiento del lenguaje natural.
+
 
 
 
