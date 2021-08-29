@@ -48,9 +48,10 @@
 \backcite {2018-devlin-bert}{{35}{3.5}{section.3.5}}
 \backcite {2018-devlin-bert}{{35}{3.5}{section.3.5}}
 \backcite {2020-spanish-bert}{{36}{3.5}{section.3.5}}
-\backcite {2018-devlin-bert}{{36}{3.5.1}{subsection.3.5.1}}
+\backcite {2018-devlin-bert}{{37}{3.5.1}{subsection.3.5.1}}
 \backcite {2019-head-qa}{{37}{3.6}{section.3.6}}
 \backcite {2020-multi-step}{{37}{3.6}{section.3.6}}
 \backcite {2020-spanish-bert}{{37}{3.6}{section.3.6}}
-\backcite {spanish-word-embeddings}{{42}{4.2}{section.4.2}}
-\backcite {2019-head-qa}{{43}{4.3.1}{subsection.4.3.1}}
+\backcite {2020-spanish-bert}{{38}{3.6}{figure.3.6}}
+\backcite {spanish-word-embeddings}{{44}{4.2}{section.4.2}}
+\backcite {2019-head-qa}{{45}{4.3.1}{subsection.4.3.1}}
