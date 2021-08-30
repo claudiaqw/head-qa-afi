@@ -198,7 +198,7 @@ Después del análisis, preprocesamiento y transformación del conjunto de datos
 
 \chapter{Modelos propuestos}\label{chapter:models}
 
-En el presente capítulo se propone interpretar el problema de selección de respuestas como un problema de clasificación binaria, según el enfoque \textit{Pointwise}, explicado en el Capítulo 2. Se ha seleccionado este enfoque por ser el más sencillo de los tres, y se propone para trabajos futuros incursionar en los demás métodos mencionados. En esta metodología cada par $<pregunta, respuesta>$ se convierte en una instancia y se clasifica en positiva o negativa dependiendo si la respuesta es correcta. Habiendo obtenido el corpus, el objetivo desde este punto es concebir modelos matemáticos-computacionales de aprendizaje profundo principalmente. En este capítulo se presentan diferentes propuestas de modelos para la selección automática de respuestas. 
+En el presente capítulo se propone interpretar el problema de selección de respuestas como un problema de clasificación binaria, según el enfoque \textit{Pointwise}, explicado en el Capítulo 1. Se ha seleccionado este enfoque por ser el más sencillo de los tres, y se propone para trabajos futuros incursionar en los demás métodos mencionados. En esta metodología cada par $<pregunta, respuesta>$ se convierte en una instancia y se clasifica en positiva o negativa dependiendo si la respuesta es correcta. Habiendo obtenido el corpus, el objetivo desde este punto es concebir modelos matemáticos-computacionales de aprendizaje profundo principalmente. En este capítulo se presentan diferentes propuestas de modelos para la selección automática de respuestas. 
 
 La decisión de implementar modelos de aprendizaje profundo, existiendo modelos supervisados más sencillos y explicables, se basa en que tras un estudio de los modelos del estado del arte, se puede concluir que la mayor parte con diferencia emplea este enfoque. La razón se debe a que estos conjuntos de datos son más complejos semánticamente por lo que requieren un mayor entendimiento del lenguaje humano y por lo tanto, modelos mucho más complejos. 
 
@@ -207,9 +207,9 @@ De hecho, el aprendizaje supervisado puede no ser un enfoque adecuado para este 
 
 \section{\textit{LSTM} Básico}\label{lstm_t}
 
-La primera propuesta se puede considerar un modelo de aprendizaje profundo relativamente sencillo cuyo objetivo principal es verificar las ventajas que proporcionan las redes recurrentes en la resolución del problema de selección de respuestas. Por esta razón, el modelo presentado aprovecha la arquitectura recurrente de la manera más simple posible.
+La primera propuesta se puede considerar un modelo de aprendizaje profundo relativamente sencillo cuyo objetivo principal es verificar las ventajas que proporcionan las redes recurrentes en la resolución del problema de selección de respuestas.
 
-La primera propuesta consiste en una red neuronal recurrente de tipo \textit{LSTM}, la cual recibe como entrada una oración vectorizada. La arquitectura se divide en tres capas: representación de los \textit{tokens}, representación de la oración y predicción de la etiqueta (respuesta correcta). En la Figura \ref{lstm} se presenta la arquitectura de la red correspondiente al modelo matemático que se expone a continuación. El modelo matemático solo se incluirá en este primer modelo, puesto que su sencillez lo permite y a la vez, permite familiarizarnos con las arquitecturas recurrentes. 
+La primera propuesta consiste en una red neuronal recurrente de tipo \textit{LSTM}, la cual recibe como entrada una oración vectorizada. La arquitectura se divide en tres capas: representación de los \textit{tokens}, representación de la oración y predicción de la etiqueta (respuesta correcta). En la Figura \ref{lstm} se presenta la arquitectura de la red correspondiente al modelo matemático que se expone a continuación. El modelo matemático solo se incluirá en este primer caso, puesto que su sencillez lo permite y a la vez, permite familiarizarnos con las arquitecturas recurrentes. 
 
 \begin{figure}[!tb]
   \begin{center}    
@@ -269,7 +269,7 @@ Una celda \textit{LSTM} está compuesta por tres componentes fundamentales:
   \item La \textit{output gate}, en español "válvula de salida", representada en la Ecuación \ref{lstm:og}, tiene la función de determinar el nivel de activación del estado $c_{t}$ para la salida final.
 \end{itemize}
 
-En todos estos casos, se utiliza como función de activación la función sigmoide $\sigma$ con el propósito de que los valores sean positivos y se encuentren entre 0 y 1; de esa manera es sencillo interpretar la importancia de las componentes.
+En todos estos casos, se utiliza como función de activación la función sigmoide $\sigma$ con el propósito de que los valores sean positivos y se encuentren entre 0 y 1.
 
 La Ecuación \ref{lstm:new_memory_generation}, conocida como \textit{new memory generation} o \textit{candidate cell}, calcula un estado recurrente temporal $\tilde{c_{t}}$ teniendo en cuenta la entrada $x_{t}$ y el estado anterior $h_{t-1}$. En este caso, para superar el problema de \textit{vanishing gradient}\footnote{https://towardsdatascience.com/the-vanishing-gradient-problem-69bf08b15484} se necesita una función de activación cuya segunda derivada pueda mantenerse durante un largo rango antes de llegar a cero, razón por la cual se utiliza la tangente.
 
@@ -304,7 +304,7 @@ Una segunda capa está conformada por una red \textit{Bi-LSTM}, la cual permite 
 
 \section{QA-LSTM}
 
-Este modelo hace uso de las redes bidireccionales y emplea un enfoque clásico del área de recuperación de información y está inspirado en el introducido por \cite{2015-tan-qalstm}, aunque con algunas diferencias. En la Figura \ref{lstm_qa} se presenta la arquitectura del modelo. Es imporante destacar que mientras las arquitecturas presentadas anteriormente combinaban la pregunta y la respuesta en una misma entrada, los modelos que se presentan a partir de este momento utilizan una representación separada para pregunta y respuesta. Por esta razón, en la figura se presentan dos veces la misma arquitectura, cuyo objetivo es codificar el texto perteneciente a la pregunta y a la respuesta por separado, aunque en la práctica se utiliza la misma red para ambos textos.
+Este modelo hace uso de las redes bidireccionales y a su vez emplea un enfoque clásico del área de recuperación de información, está inspirado en el introducido por \cite{2015-tan-qalstm}, aunque con algunas diferencias. En la Figura \ref{lstm_qa} se presenta la arquitectura del modelo. Es importante destacar que mientras las arquitecturas presentadas anteriormente combinaban la pregunta y la respuesta en una misma entrada, los modelos que se presentan a partir de este momento utilizan una representación separada para pregunta y respuesta. Por esta razón, en la figura se presentan dos veces la misma arquitectura, cuyo objetivo es codificar el texto perteneciente a la pregunta y a la respuesta por separado, aunque en la práctica se utiliza la misma red para ambos textos.
 
 Ambas arquitecturas, notables en la base de la red por capas, comparten la misma arquitectura. Se ha visualizado de esta forma para lograr una mejor comprensión por parte del lector.
 
@@ -325,7 +325,7 @@ En el modelo que se expone se utilizan todos los estados intermedios de la red p
 
 \section{QA-LSTM/CNN}
 
-En esta sección se expone el modelo QA-LSTM+CNN, el cual es muy similar al anterior y su arquitectura fue también introducida por \cite{2015-tan-qalstm}. En la Figura \ref{lstm_cnn_qa} se muestra de manera gráfica la arquitectura de este modelo. Como se puede apreciar es muy parecida a la arquitectura presentada anteriormente, la única diferencia es la inclusión de una capa convolucional tras las redes bidireccionales.
+En esta sección se expone el modelo QA-LSTM/CNN, el cual es muy similar al anterior y su arquitectura fue también introducida por \cite{2015-tan-qalstm}. En la Figura \ref{lstm_cnn_qa} se muestra de manera gráfica la arquitectura de este modelo. Como se puede apreciar es muy parecida a la arquitectura presentada anteriormente, la única diferencia es la inclusión de una capa convolucional tras las redes bidireccionales.
 
 \begin{figure}[!tb]
   \begin{center}
@@ -334,9 +334,9 @@ En esta sección se expone el modelo QA-LSTM+CNN, el cual es muy similar al ante
     \caption{Arquitectura del modelo QA-LSTM/CNN }\label{lstm_cnn_qa}
 \end{figure}
 
-En la sección anterior, las representaciones de preguntas y respuestas se generan solo por simple operaciones, en este caso, la concatenación. Este nuevo modelo recurre a una estructura de CNN construida sobre los resultados de BiLSTM, con el fin de ofrecer una representación más compuesta de las preguntas y las respuestas. A diferencia de la red neuronal tradicional, donde cada salida es interactiva con cada entrada, la estructura convolucional solo impone interacciones locales entre las entradas dentro de un tamaño de filtro m. Eesto quiere decir que la representación resultante tiene en cuenta la interacción de las palabras más cercanas, tanto a la derecha como a la izquierda.
+En la sección anterior, las representaciones de preguntas y respuestas se generan solo por simple operaciones, en este caso, la concatenación. Este nuevo modelo recurre a una estructura de CNN construida sobre los resultados de BiLSTM, con el fin de ofrecer una representación más compacta de las preguntas y las respuestas. A diferencia de la red neuronal tradicional, donde cada salida es interactiva con cada entrada, la estructura convolucional solo impone interacciones locales entre las entradas dentro de un tamaño de filtro $m$. Eesto quiere decir que la representación resultante tiene en cuenta la interacción de las palabras más cercanas, tanto a la derecha como a la izquierda.
 
-Se decide incorporar esta arquitectura porque los autores de \cite{2015-tan-qalstm} alcanzan resultados superiores que con la arquitectura anterior. Sin embargo, aunque esto es una razón para incluirla en la experimentación no asegura el éxito dadas las diferencia de los contextos.  
+Se decide incorporar esta arquitectura porque los autores de \cite{2015-tan-qalstm} señalan que alcanzan resultados superiores que con la arquitectura anterior. Sin embargo, aunque esto es una razón para incluirla en la experimentación no asegura el éxito dadas las diferencia de los contextos.  
 
 \section{QA-BERT: \textit{Transfer Learning}}\label{bert_t}
 
@@ -381,7 +381,7 @@ Las propuestas no supervisadas publicadas hasta el momento se apoyan en un gran 
 
 El gran volumen de datos que contienen estas bibliotecas hacen que el procesamiento sea muy costoso, tanto de recursos computacionales como de tiempo. Esta propuesta busca aprovechar los recursos y el tipo de procesamiento dedicados anteriormente proponiendo el uso de un modelo pre-entrenado. 
 
-Se propone hallar una representación a partir de BERT, esta representación tiene incluida de alguna manera conocimiento sobre los documentos con que fue entrenado BERT. Una limitante es que dado lo costosa de entrenar desde cero un modelo coomo BERT no existen modelos entrenados en idioma español especializados en el dominio biomédico por lo que se utiliza el presentado por \cite{2020-spanish-bert}, que ha sido entrenado sobre un gran corpus de documentos en idioma español.
+Se propone hallar una representación a partir de BERT, esta representación tiene incluida de alguna manera conocimiento sobre los documentos con que fue entrenado BERT. Una limitante es que dado el coste de entrenar desde cero un modelo como BERT no existen modelos entrenados en idioma español especializados en el dominio biomédico por lo que se utiliza el presentado por \cite{2020-spanish-bert}, que ha sido entrenado sobre un gran corpus de documentos en idioma español.
 
 En la Figura \ref{bert_sim} se presenta la arquitectura del modelo en cuestión.
 
@@ -392,12 +392,11 @@ En la Figura \ref{bert_sim} se presenta la arquitectura del modelo en cuestión.
     \caption{Arquitectura del modelo BERT-Sim}\label{bert_sim}
 \end{figure}
 
-La idea es utilizar BERT como codificador de las oraciones de entrada, tanto la pregunta como la respuesta, y posteriormente, aplicar un modelo vectorial clásico. Como se mencionó anteriormente 
-BERT es básicamente una pila de codificadores de arquitectura \textit{Transformer}, como se muestra en la base de la imagen, cuya versión más ligera y la utilizada en este caso (publicada en \cite{2020-spanish-bert}), tiene 12 capas en la pila del codificador. 
+La idea es utilizar BERT como codificador de las oraciones de entrada, tanto la pregunta como la respuesta, y posteriormente, aplicar un modelo vectorial clásico. Como se mencionó anteriormente BERT es básicamente una pila de codificadores de arquitectura \textit{Transformer}, como se muestra en la base de la imagen, cuya versión más ligera y la utilizada en este caso (publicada en \cite{2020-spanish-bert}), tiene 12 capas en la pila del codificador. 
 
 El modelo que se propone codifica la pregunta y la respuesta por separado utilizando la salida de las últimas cuatro capas de BERT. Los vectores salida se concatenan de manera que se obtiene un vector de gran tamaño para cada oración. A partir de estos vectores se aplica el coseno del ángulo como medida de similitud, cuyo resultado es la salida del modelo y puede ser interpretado como el nivel de correspondencia entre la pregunta y la respuesta.
 
-El objetivo de este modelo tan sencillo es comprobar si un modelo tan poderoso como BERT puede a través de la representación contextual de las palabras que obtiene ser aplicado eficazmente a la selección de respuestas.
+El objetivo de este modelo tan sencillo es comprobar si un modelo tan poderoso como BERT puede a través de la representación contextual de las palabras que obtiene y un modelo vectorial clásico ser aplicado eficazmente a la selección de respuestas.
 
 \section{Implementación}\label{section:implementation}
 
@@ -407,7 +406,7 @@ En toda la solución se utilizó Python\footnote{http://www.python.org} como len
 
 Asimismo, Python contiene varias alternativas en cuanto a bibliotecas de aprendizaje profundo y ofrece opciones para la visualización y comparación de resultados. Keras\footnote{https://keras.io/}, TensorFlow\footnote{https://www.tensorflow.org/} y PyTorch\footnote{https://pytorch.org/} se encuentran entre los tres marcos principales preferidos por los científicos de datos y los principiantes en el campo del aprendizaje profundo. En este caso, se utiliza PyTorch para implementar los modelos de aprendizaje pues es una herramienta de más bajo nivel que posibilita el trabajo con tensores, facilitando la manipulación interna de las arquitecturas neuronales, a diferencia de Keras y TensorFlow, que ofrecen APIs más generales.
 
-En el capítulo \ref{chapter:models} se presentó el proceso de concepción, modelación y diseño de los modelos a aplicar al problema de selección de respuestas como un problema de clasificación binario. Asimismo, se abordaron los detalles del proceso de implementación de los modelos expuestos. El próximo capítulo está dedicado a evaluar y comparar los modelos implementados en términos de métricas estándares para la evaluación de tareas de procesamiento del lenguaje natural.
+En el capítulo \ref{chapter:models} se presentó el proceso de concepción, modelación y diseño de los modelos a aplicar al problema de selección de respuestas como un problema de clasificación binario. Asimismo, se abordaron los detalles del proceso de implementación de los modelos expuestos. El próximo capítulo está dedicado a evaluar y comparar los modelos implementados en términos de métricas estándares para la evaluación de tareas de clasificación.
 
 
 
